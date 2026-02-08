@@ -4,11 +4,23 @@ This directory contains detailed notes on various large AI models from a develop
 
 ## Files in this Directory
 
+### Core Sequential Models
 - **[rnn.md](rnn.md)**: Recurrent Neural Networks - Sequential data processing with memory
 - **[lstm.md](lstm.md)**: Long Short-Term Memory - Advanced RNN for long-term dependencies
 - **[transformers.md](transformers.md)**: Transformer architecture - Attention-based models for NLP
-- **[audio-speech-models.md](audio-speech-models.md)**: Audio and speech processing models (VAEs, Waveform, Siamese)
-- **[vision-models.md](vision-models.md)**: Computer vision models (CNNs, YOLO)
+
+### Audio and Speech Models
+- **[variational-autoencoders.md](variational-autoencoders.md)**: VAEs for generative audio modeling
+- **[waveform-models.md](waveform-models.md)**: WaveNet, WaveRNN, WaveGlow for raw audio processing
+- **[siamese-networks.md](siamese-networks.md)**: Similarity learning for audio verification and matching
+
+### Vision Models
+- **[cnn.md](cnn.md)**: Convolutional Neural Networks for image processing
+- **[yolo.md](yolo.md)**: YOLO for real-time object detection
+
+### Best Practices and Overviews
+- **[audio-speech-models.md](audio-speech-models.md)**: Overview of audio and speech processing models
+- **[vision-models.md](vision-models.md)**: Overview of computer vision models
 - **[best-practices.md](best-practices.md)**: Best practices for training, optimization, and deployment
 
 ## Overview

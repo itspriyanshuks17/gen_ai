@@ -9,33 +9,55 @@ Classification predicts discrete categorical labels. It assigns data points to p
 - **Multi-label Classification**: Multiple labels per instance
 
 ## Classification Process
-Input Features (x1, x2, x3)
-           |
-           | Decision Function
-           v
-  Classification Model
-           |
-           | Class Probabilities
-           v
-P(Class1), P(Class2), ...
-           |
-           | argmax(P)
-           v
-   Predicted Class
-           |
-           | Cross-Entropy Loss
-           v
-    Loss Function
-           |
-           | Update parameters
+
+```
+┌─────────────────┐
+│ Input Features  │
+│ (x₁, x₂, x₃)    │
+└─────────┬───────┘
+          │
+          │ Decision Function
+          ▼
+┌─────────────────┐
+│ Classification  │
+│ Model           │
+└─────────┬───────┘
+          │
+          │ Class Probabilities
+          ▼
+┌─────────────────┐
+│ P(Class₁),      │
+│ P(Class₂), ...  │
+└─────────┬───────┘
+          │
+          │ argmax(P)
+          ▼
+┌─────────────────┐
+│ Predicted Class │
+└─────────┬───────┘
+          │
+          │ Cross-Entropy Loss
+          ▼
+┌─────────────────┐
+│ Loss Function   │
+└─────────┬───────┘
+          │
+          │ Update parameters
+          ▼
+┌─────────────────┐    ┌─────────────────┐
+│ Optimization    │◄───│ Training Data   │
+│                 │    │ (Labeled        │
+│ Backpropagation │    │ examples)       │
+└─────────────────┘    └─────────────────┘
+
            v
    Optimization <-------- Training Data (Labeled examples)
            ^
            |
     (Backpropagation)
-```
 
-```
+
+
 Email Classification Flow:
 ┌─────────────────────────────────┐
 │ Email Features                  │
@@ -60,18 +82,30 @@ Email Classification Flow:
 │ Yes: Spam   │   No: Not Spam    │
 └─────────────┴───────────────────┘
 
-Decision Boundary:
+Decision Boundary Visualization:
+
+
+Feature Space (2D)
 ┌─────────────────────────────────┐
-│ Feature Space (2D projection)   │
 │                                 │
-│           ┌─────────────┐       │
-│           │ Decision    │       │
-│           │ Line        │       │
-│           └─────────────┘       │
+│           Class A               │
 │                                 │
-│ Class A         │         Class B │
+│         ┌──────────────┐        │
+│         │ Decision     │        │
+│         │ Boundary     │        │
+│         │ (Line)        │        │
+│         └──────────────┘        │
+│                                 │
+│                    Class B      │
+│                                 │
 └─────────────────────────────────┘
+
+Legend:
+• Class A points (above/below line)
+• Class B points (above/below line)
+▬ Decision boundary separating classes
 ```
+
 
 ```python
 # Comprehensive Classification Example

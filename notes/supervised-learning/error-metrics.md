@@ -25,38 +25,79 @@ Error metrics are evaluation measures used to assess the performance of supervis
    - Formula: MAPE = (100/n) × Sum|(yi - y_pred_i)/yi|
    - Useful for comparing across different scales
 
-```
-Actual Values (y1, y2, ..., yn) ──┐
-                                   │
-Predicted Values (y_pred1, y_pred2, ..., y_predn) ──┐
-                                   │
-                                   └─ Errors (ei = yi - y_pred_i)
-                                        │
-                                        ├─── MAE: Sum(abs(ei)) / n
-                                        │
-                                        ├─── MSE: Sum((ei)^2) / n
-                                        │
-                                        ├─── RMSE: sqrt(MSE)
-                                        │
-                                        └─── MAPE: 100 * Sum(abs(ei/yi)) / n
-                                             │
-                                             └─ Error Metrics
-```
+## Error Calculation Flow
 
 ```
-Prediction Errors Scale:
-Perfect Prediction (Error = 0) ──► Small Errors (MAE < 1) ──► Medium Errors (MAE 1-5) ──► Large Errors (MAE > 5)
+┌─────────────────┐    ┌─────────────────┐
+│ Actual Values   │    │ Predicted       │
+│ y₁, y₂, ..., yₙ │    │ Values          │
+│                 │    │ ŷ₁, ŷ₂, ..., ŷₙ │
+└─────────┬───────┘    └─────────┬───────┘
+          │                      │
+          └──────────┬───────────┘
+                     │
+                     ▼
+          ┌─────────────────┐
+          │ Error           │
+          │ Calculation     │
+          │ eᵢ = yᵢ - ŷᵢ     │
+          └─────────┬───────┘
+                    │
+          ┌─────────┼─────────┼─────────┐
+          │         │         │         │
+          ▼         ▼         ▼         ▼
+┌─────────────────┐ ┌─────────────────┐ ┌─────────────────┐ ┌─────────────────┐
+│   MAE           │ │   MSE           │ │   RMSE          │ │   MAPE          │
+│ Sum│eᵢ│/n       │ │ Sum(eᵢ)²/n      │ │ √(MSE)          │ │ 100*Sum│eᵢ/yᵢ│/n │
+│                 │ │                 │ │                 │ │                 │
+│ Mean Absolute   │ │ Mean Squared    │ │ Root Mean Sq.   │ │ Mean Abs. %     │
+│ Error           │ │ Error           │ │ Error           │ │ Error           │
+└─────────────────┘ └─────────────────┘ └─────────────────┘ └─────────────────┘
+```
 
-Error Distribution Analysis:
+## Error Analysis Visualization
+
+```
+Error Magnitude Scale:
+┌─────────────┐  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐
+│ Perfect     │─►│ Small       │─►│ Medium      │─►│ Large       │
+│ Prediction  │  │ Errors      │  │ Errors      │  │ Errors      │
+│ Error = 0   │  │ MAE < 1     │  │ MAE 1-5     │  │ MAE > 5     │
+└─────────────┘  └─────────────┘  └─────────────┘  └─────────────┘
+
+Diagnostic Plots:
 ┌─────────────────────────────────┐
 │ Residual Plot                   │
-│ (Errors vs Predictions)         │
+│ (Errors vs Predicted Values)    │
+│                                 │
+│   ▲                             │
+│   │        •                    │
+│   │     •     •                 │
+│   │  •           •              │
+│   │ •             •             │
+│   └─────────────────────────►   │
+│              Predicted          │
 ├─────────────────────────────────┤
-│ Q-Q Plot                        │
-│ (Normality Check)               │
+│ Q-Q Plot (Normality Check)      │
+│                                 │
+│   ▲                             │
+│   │        •••••••              │
+│   │      •          •           │
+│   │    •              •         │
+│   │  •                  •       │
+│   └─────────────────────────►   │
+│         Theoretical Quantiles   │
 ├─────────────────────────────────┤
 │ Error Histogram                 │
 │ (Distribution Shape)            │
+│                                 │
+│         ▓▓▓▓▓                   │
+│       ▓▓    ▓▓                 │
+│     ▓▓        ▓▓               │
+│   ▓▓            ▓▓             │
+│ ▓▓                ▓▓           │
+│ └─────────────────────────────┘│
+│         Error Values           │
 └─────────────────────────────────┘
 ```
 

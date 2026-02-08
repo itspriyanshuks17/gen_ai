@@ -9,14 +9,52 @@ Random Forest is an ensemble learning method that constructs multiple decision t
 - **Voting/Averaging**: Combine predictions from all trees
 
 ## Random Forest Architecture
-Training Data
-     │
-     ├─── Bootstrap Sample 1 ─── Decision Tree 1 (Random Features) ─── Prediction 1 ──┐
-     │                                                                                  │
-     ├─── Bootstrap Sample 2 ─── Decision Tree 2 (Random Features) ─── Prediction 2 ──┼── Ensemble Voting ─── Final Prediction
-     │                                                                                  │
-     └─── Bootstrap Sample 3 ─── Decision Tree 3 (Random Features) ─── Prediction 3 ──┘
+
 ```
+┌─────────────────────────────────┐
+│         Training Data           │
+│     (Original Dataset)          │
+└─────────────┬───────────────────┘
+              │
+              │ Bootstrap Sampling
+              │ (Random sampling with replacement)
+              ▼
+    ┌─────────┼─────────┼─────────┐
+    │         │         │         │
+┌───▼───┐ ┌───▼───┐ ┌───▼───┐
+│Bootstrap│ │Bootstrap│ │Bootstrap│
+│Sample 1 │ │Sample 2 │ │Sample 3 │
+└───┬────┘ └────┬──┘ └────┬──┘
+    │            │         │
+    │            │         │ Feature Randomness
+    ▼            ▼         ▼ (Random subset of features)
+┌───┴────┐ ┌────┴───┐ ┌────┴───┐
+│Decision│ │Decision│ │Decision│
+│Tree 1  │ │Tree 2  │ │Tree 3  │
+│(Random │ │(Random │ │(Random │
+│Features│ │Features│ │Features│
+└───┬────┘ └────┬──┘ └────┬──┘
+    │            │         │
+    ▼            ▼         ▼
+┌───┴────┐ ┌────┴───┐ ┌────┴───┐
+│Pred 1  │ │Pred 2  │ │Pred 3  │
+└───┬────┘ └────┬──┘ └────┬──┘
+    │            │         │
+    └────────────┼─────────┘
+                 │
+                 ▼
+        ┌─────────────────┐
+        │ Ensemble Voting │
+        │ (Majority/Avg)  │
+        └─────────┬───────┘
+                  │
+                  ▼
+        ┌─────────────────┐
+        │ Final           │
+        │ Prediction      │
+        └─────────────────┘
+```
+
 
 ```
 Random Forest Process:
@@ -75,7 +113,7 @@ Random Forest Process:
 │ Final           │
 │ prediction      │
 └─────────────────┘
-
+```
 
 ```python
 # Random Forest Classification Example

@@ -10,22 +10,36 @@ Decision trees are flowchart-like structures where each internal node represents
 4. **Splitting Criteria**: Gini impurity, Information gain, etc.
 
 ## Decision Tree Structure
-                    Root Node: Age
-                   /           \
-                  /             \
-            Age ≤ 30          Age > 30
-            /     \           /     \
-           /       \         /       \
-     Student?  Credit Rating?  Income > 50k?  Income ≤ 50k?
-     /     \     /     \     /     \     /     \
-    /       \   /       \   /       \   /       \
-Yes:High Risk No:Low Risk Exc:Low Risk Good:Med Risk Yes:Low Risk No:High Risk
-                                      /     \
-                                     /       \
-                               Yes:Med Risk No:High Risk
+
+```
+                    ┌─────────────┐
+                    │ Root Node   │
+                    │ Feature: Age│
+                    └─────┬───────┘
+                          │
+                ┌─────────┴─────────┐
+                │                   │
+          ┌─────▼─────┐       ┌─────▼─────┐
+          │ Age ≤ 30  │       │ Age > 30  │
+          └─────┬─────┘       └─────┬─────┘
+                │                   │
+        ┌───────┴───────┐   ┌───────┴───────┐
+        │               │   │               │
+    ┌───▼───┐       ┌───▼───┐   ┌───▼───┐       ┌───▼───┐
+    │Student│       │Credit │   │Income │       │Income │
+    │?      │       │Rating │   │> 50k? │       │≤ 50k? │
+    └───────┘       └───────┘   └───────┘       └───────┘
+        │                   │           │                   │
+   ┌────┴────┐       ┌──────┴─────┐   ┌──┴──┐       ┌─────┴─────┐
+   │         │       │            │   │     │       │           │
+┌──▼──┐  ┌──▼──┐  ┌──▼──┐  ┌────▼────┐ ┌─▼─┐ ┌───▼───┐ ┌────▼────┐ ┌──▼──┐
+│High │  │Low  │  │Low  │  │Medium    │ │Low│ │High   │ │Medium    │ │High │
+│Risk │  │Risk │  │Risk │  │Risk      │ │Risk│ │Risk   │ │Risk      │ │Risk │
+└─────┘  └─────┘  └─────┘  └──────────┘ └────┘ └───────┘ └──────────┘ └─────┘
 ```
 
 ```
+
 Decision Tree Algorithm:
 ┌─────────────────────────────────┐
 │ Start with all training data    │
@@ -70,6 +84,7 @@ Decision Tree Algorithm:
 └─────┼───────┘
       │
       └─────────────────────────────┘
+
 ```
 
 ```python

@@ -9,51 +9,66 @@ Regression predicts continuous numerical values. It finds the relationship betwe
 - **Ridge/Lasso Regression**: Regularized linear regression
 
 ## Regression Process
-Input Features (x1, x2, x3)
-           |
-           | (w1*x1 + w2*x2 + ... + b)
-           v
-    Regression Model f(x)
-           |
-           | Continuous Output
-           v
-    y_pred (predicted value)
-           |
-           | MSE = Sum((y - y_pred)^2)/n
-           v
-     Loss Function
-           |
-           | Update weights
-           v
-  Gradient Descent <-------- Training Data (Labeled examples)
-           ^
-           |
-     (Backpropagation)
+
+```
+┌─────────────────┐
+│ Input Features  │
+│ (x₁, x₂, x₃)    │
+└─────────┬───────┘
+          │
+          │ f(x) = w₁*x₁ + w₂*x₂ + ... + b
+          ▼
+┌─────────────────┐
+│ Regression      │
+│ Model           │
+└─────────┬───────┘
+          │
+          │ Continuous Output
+          ▼
+┌─────────────────┐
+│ ŷ (Predicted    │
+│ Value)          │
+└─────────┬───────┘
+          │
+          │ MSE = Σ((y - ŷ)²)/n
+          ▼
+┌─────────────────┐
+│ Loss Function   │
+└─────────┬───────┘
+          │
+          │ Update weights
+          ▼
+┌─────────────────┐    ┌─────────────────┐
+│ Gradient        │◄───│ Training Data   │
+│ Descent         │    │ (Labeled        │
+│                 │    │ examples)       │
+│ Backpropagation │    └─────────────────┘
+└─────────────────┘
+```
 <!-- ``` -->
 
 ```
-House Price Prediction:
 ┌─────────────────┐
 │ House Size      │
 │ (sq ft)         │
 └─────────┬───────┘
           │
-          v
+          ▼
 ┌─────────────────┐
 │ Linear          │
 │ Regression      │
 │ Model           │
 └─────────┬───────┘
           │
-          v
+          ▼
 ┌─────────────────┐
 │ Predicted Price │
 │ ($)             │
 └─────────────────┘
 
-Sample Data Points:
+Sample Training Data:
 • (1000 sq ft, $200k)
-• (1500 sq ft, $280k)  
+• (1500 sq ft, $280k)
 • (2000 sq ft, $350k)
 ```
 

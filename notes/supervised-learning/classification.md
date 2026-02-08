@@ -93,7 +93,7 @@ Feature Space (2D)
 │         ┌──────────────┐        │
 │         │ Decision     │        │
 │         │ Boundary     │        │
-│         │ (Line)        │        │
+│         │ (Line)       │        │
 │         └──────────────┘        │
 │                                 │
 │                    Class B      │

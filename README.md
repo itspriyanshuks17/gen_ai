@@ -1,1 +1,1 @@
-# reatjs_learning
+# GenAI

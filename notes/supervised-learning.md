@@ -15,31 +15,53 @@ Regression predicts continuous numerical values. It finds the relationship betwe
 - **Polynomial Regression**: Curved relationships
 - **Ridge/Lasso Regression**: Regularized linear regression
 
-```mermaid
-graph TD
-    A[Input Features<br/>x1, x2, x3] --> B[Regression Model<br/>f(x) = w1*x1 + w2*x2 + ... + b]
-    B --> C[Continuous Output<br/>y_pred (predicted value)]
-    D[Training Data<br/>Labeled examples] --> B
-    C --> E[Loss Function<br/>MSE = Sum((y - y_pred)^2)/n]
-    E --> F[Gradient Descent<br/>Update weights]
-    F --> B
+```
+Input Features (x1, x2, x3)
+           |
+           | (w1*x1 + w2*x2 + ... + b)
+           v
+    Regression Model f(x)
+           |
+           | Continuous Output
+           v
+    y_pred (predicted value)
+           |
+           | MSE = Sum((y - y_pred)^2)/n
+           v
+     Loss Function
+           |
+           | Update weights
+           v
+  Gradient Descent <-------- Training Data (Labeled examples)
+           ^
+           |
+     (Backpropagation)
 ```
 
-**Regression Graph Example:**
-```mermaid
-graph LR
-    subgraph "House Price Prediction"
-    A[House Size (sq ft)] --> B[Linear Regression Model]
-    B --> C[Predicted Price ($)]
-    end
+```
+House Price Prediction:
+┌─────────────────┐
+│ House Size      │
+│ (sq ft)         │
+└─────────┬───────┘
+          │
+          v
+┌─────────────────┐
+│ Linear          │
+│ Regression      │
+│ Model           │
+└─────────┬───────┘
+          │
+          v
+┌─────────────────┐
+│ Predicted Price │
+│ ($)             │
+└─────────────────┘
 
-    subgraph "Sample Data Points"
-    D[(1000, $200k)]
-    E[(1500, $280k)]
-    F[(2000, $350k)]
-    end
-
-    end
+Sample Data Points:
+• (1000 sq ft, $200k)
+• (1500 sq ft, $280k)  
+• (2000 sq ft, $350k)
 ```
 
 ```python
@@ -90,32 +112,69 @@ Classification predicts discrete categorical labels. It assigns data points to p
 - **Multi-class Classification**: Multiple classes (Digits 0-9, Animal types)
 - **Multi-label Classification**: Multiple labels per instance
 
-```mermaid
-graph TD
-    A[Input Features<br/>x1, x2, x3] --> B[Classification Model<br/>Decision Function]
-    B --> C[Class Probabilities<br/>P(Class1), P(Class2), ...]
-    C --> D[Predicted Class<br/>argmax(P)]
-    E[Training Data<br/>Labeled examples] --> B
-    D --> F[Loss Function<br/>Cross-Entropy Loss]
-    F --> G[Optimization<br/>Update parameters]
-    G --> B
+```
+Input Features (x1, x2, x3)
+           |
+           | Decision Function
+           v
+  Classification Model
+           |
+           | Class Probabilities
+           v
+P(Class1), P(Class2), ...
+           |
+           | argmax(P)
+           v
+   Predicted Class
+           |
+           | Cross-Entropy Loss
+           v
+    Loss Function
+           |
+           | Update parameters
+           v
+   Optimization <-------- Training Data (Labeled examples)
+           ^
+           |
+    (Backpropagation)
 ```
 
-**Classification Graph Example:**
-```mermaid
-graph LR
-    subgraph "Email Classification"
-    A[Email Features<br/>Word count, sender, subject] --> B[Logistic Regression]
-    B --> C[Probability of Spam<br/>0.0 to 1.0]
-    C --> D{Threshold<br/>≥ 0.5?}
-    D -->|Yes| E[Spam]
-    D -->|No| F[Not Spam]
-    end
+```
+Email Classification Flow:
+┌─────────────────────────────────┐
+│ Email Features                  │
+│ (Word count, sender, subject)   │
+└─────────────┬───────────────────┘
+              │
+              v
+┌─────────────────────────────────┐
+│ Logistic Regression Model       │
+└─────────────┬───────────────────┘
+              │
+              v
+┌─────────────────────────────────┐
+│ Probability of Spam             │
+│ (0.0 to 1.0)                    │
+└─────────────┬───────────────────┘
+              │
+              v
+┌─────────────────────────────────┐
+│ Threshold >= 0.5?               │
+├─────────────┬───────────────────┤
+│ Yes: Spam   │   No: Not Spam    │
+└─────────────┴───────────────────┘
 
-    subgraph "Decision Boundary"
-    G[Feature Space<br/>2D projection]
-    H[Decision Line<br/>separates classes]
-    end
+Decision Boundary:
+┌─────────────────────────────────┐
+│ Feature Space (2D projection)   │
+│                                 │
+│           ┌─────────────┐       │
+│           │ Decision    │       │
+│           │ Line        │       │
+│           └─────────────┘       │
+│                                 │
+│ Class A         │         Class B │
+└─────────────────────────────────┘
 ```
 
 ```python
@@ -165,39 +224,67 @@ Decision trees are flowchart-like structures where each internal node represents
 3. **Leaf Nodes**: Final class predictions
 4. **Splitting Criteria**: Gini impurity, Information gain, etc.
 
-```mermaid
-graph TD
-    A[Root Node<br/>Feature: Age] --> B[Age ≤ 30]
-    A --> C[Age > 30]
-    B --> D[Student?]
-    B --> E[Credit Rating?]
-    C --> F[Income > 50k?]
-    C --> G[Income ≤ 50k?]
-
-    D -->|Yes| H[Class: High Risk]
-    D -->|No| I[Class: Low Risk]
-
-    E -->|Excellent| J[Class: Low Risk]
-    E -->|Good| K[Class: Medium Risk]
-
-    F -->|Yes| L[Class: Low Risk]
-    F -->|No| M[Class: High Risk]
-
-    G -->|Yes| N[Class: Medium Risk]
-    G -->|No| O[Class: High Risk]
+```
+                    Root Node: Age
+                   /           \
+                  /             \
+            Age ≤ 30          Age > 30
+            /     \           /     \
+           /       \         /       \
+     Student?  Credit Rating?  Income > 50k?  Income ≤ 50k?
+     /     \     /     \     /     \     /     \
+    /       \   /       \   /       \   /       \
+Yes:High Risk No:Low Risk Exc:Low Risk Good:Med Risk Yes:Low Risk No:High Risk
+                                      /     \
+                                     /       \
+                               Yes:Med Risk No:High Risk
 ```
 
-**Decision Tree Algorithm:**
-```mermaid
-flowchart TD
-    A[Start with all training data] --> B[Select best feature to split]
-    B --> C[Calculate impurity reduction<br/>Gini/Entropy]
-    C --> D[Create decision node]
-    D --> E[Split data into subsets]
-    E --> F{All subsets pure<br/>or max depth reached?}
-    F -->|No| G[Repeat for each subset]
-    F -->|Yes| H[Create leaf nodes<br/>with class labels]
-    G --> B
+```
+Decision Tree Algorithm:
+┌─────────────────────────────────┐
+│ Start with all training data    │
+└─────────────┬───────────────────┘
+              │
+              v
+┌─────────────────────────────────┐
+│ Select best feature to split    │
+└─────────────┬───────────────────┘
+              │
+              v
+┌─────────────────────────────────┐
+│ Calculate impurity reduction    │
+│ (Gini/Entropy)                  │
+└─────────────┬───────────────────┘
+              │
+              v
+┌─────────────────────────────────┐
+│ Create decision node            │
+└─────────────┬───────────────────┘
+              │
+              v
+┌─────────────────────────────────┐
+│ Split data into subsets         │
+└─────────────┬───────────────────┘
+              │
+              v
+┌─────────────────────────────────┐
+│ All subsets pure or             │
+│ max depth reached?              │
+├─────────────┬───────────────────┤
+│ No          │         Yes       │
+└─────┬───────┘         └─────┬────┘
+      │                       │
+      v                       v
+┌─────────────┐     ┌─────────────────┐
+│ Repeat for  │     │ Create leaf     │
+│ each subset │     │ nodes with      │
+│             │     │ class labels    │
+│     ↑       │     └─────────────────┘
+│     │       │
+└─────┼───────┘
+      │
+      └─────────────────────────────┘
 ```
 
 ```python
@@ -254,38 +341,73 @@ Random Forest is an ensemble learning method that constructs multiple decision t
 - **Feature Randomness**: Random feature subset at each split
 - **Voting/Averaging**: Combine predictions from all trees
 
-```mermaid
-graph TD
-    A[Training Data] --> B[Bootstrap Sample 1]
-    A --> C[Bootstrap Sample 2]
-    A --> D[Bootstrap Sample 3]
-
-    B --> E[Decision Tree 1<br/>Random Features]
-    C --> F[Decision Tree 2<br/>Random Features]
-    D --> G[Decision Tree 3<br/>Random Features]
-
-    E --> H[Prediction 1]
-    F --> I[Prediction 2]
-    G --> J[Prediction 3]
-
-    H --> K[Ensemble Voting]
-    I --> K
-    J --> K
-
-    K --> L[Final Prediction]
+```
+Training Data
+     │
+     ├─── Bootstrap Sample 1 ─── Decision Tree 1 (Random Features) ─── Prediction 1 ──┐
+     │                                                                                  │
+     ├─── Bootstrap Sample 2 ─── Decision Tree 2 (Random Features) ─── Prediction 2 ──┼── Ensemble Voting ─── Final Prediction
+     │                                                                                  │
+     └─── Bootstrap Sample 3 ─── Decision Tree 3 (Random Features) ─── Prediction 3 ──┘
 ```
 
-**Random Forest Process:**
-```mermaid
-flowchart TD
-    A[Input Data] --> B[Create Multiple<br/>Bootstrap Samples]
-    B --> C[Train Decision Tree<br/>on each sample]
-    C --> D[At each split:<br/>Random feature subset]
-    D --> E[Grow full trees<br/>without pruning]
-    E --> F[New data prediction]
-    F --> G[Each tree predicts]
-    G --> H[Majority voting<br/>for classification]
-    H --> I[Final prediction]
+```
+Random Forest Process:
+┌─────────────────┐
+│ Input Data      │
+└─────┬───────────┘
+      │
+      v
+┌─────────────────┐
+│ Create Multiple │
+│ Bootstrap       │
+│ Samples         │
+└─────┬───────────┘
+      │
+      v
+┌─────────────────┐
+│ Train Decision  │
+│ Tree on each    │
+│ sample          │
+└─────┬───────────┘
+      │
+      v
+┌─────────────────┐
+│ At each split:  │
+│ Random feature  │
+│ subset          │
+└─────┬───────────┘
+      │
+      v
+┌─────────────────┐
+│ Grow full trees │
+│ without pruning │
+└─────┬───────────┘
+      │
+      v
+┌─────────────────┐
+│ New data        │
+│ prediction      │
+└─────┬───────────┘
+      │
+      v
+┌─────────────────┐
+│ Each tree       │
+│ predicts        │
+└─────┬───────────┘
+      │
+      v
+┌─────────────────┐
+│ Majority voting │
+│ for             │
+│ classification  │
+└─────┬───────────┘
+      │
+      v
+┌─────────────────┐
+│ Final           │
+│ prediction      │
+└─────────────────┘
 ```
 
 ```python
@@ -366,36 +488,39 @@ Sequence error refers to evaluation metrics used to measure the performance of m
    - Formula: MAPE = (100/n) × Sum|(yi - y_pred_i)/yi|
    - Useful for comparing across different scales
 
-```mermaid
-graph TD
-    A[Actual Values<br/>y1, y2, ..., yn] --> B[Predicted Values<br/>y_pred1, y_pred2, ..., y_predn]
-    A --> C[Errors<br/>ei = yi - y_pred_i]
-
-    C --> D[MAE<br/>Sum(abs(ei)) / n]
-    C --> E[MSE<br/>Sum((ei)^2) / n]
-    C --> F[RMSE<br/>sqrt(MSE)]
-    C --> G[MAPE<br/>100 * Sum(abs(ei/yi)) / n]
-
-    D --> H[Error Metrics]
-    E --> H
-    F --> H
-    G --> H
+```
+Actual Values (y1, y2, ..., yn) ──┐
+                                   │
+Predicted Values (y_pred1, y_pred2, ..., y_predn) ──┐
+                                   │
+                                   └─ Errors (ei = yi - y_pred_i)
+                                        │
+                                        ├─── MAE: Sum(abs(ei)) / n
+                                        │
+                                        ├─── MSE: Sum((ei)^2) / n
+                                        │
+                                        ├─── RMSE: sqrt(MSE)
+                                        │
+                                        └─── MAPE: 100 * Sum(abs(ei/yi)) / n
+                                             │
+                                             └─ Error Metrics
 ```
 
-**Error Analysis Graph:**
-```mermaid
-graph LR
-    subgraph "Prediction Errors"
-    A[Perfect Prediction<br/>Error = 0] --> B[Small Errors<br/>MAE < 1]
-    B --> C[Medium Errors<br/>MAE 1-5]
-    C --> D[Large Errors<br/>MAE > 5]
-    end
+```
+Prediction Errors Scale:
+Perfect Prediction (Error = 0) ──► Small Errors (MAE < 1) ──► Medium Errors (MAE 1-5) ──► Large Errors (MAE > 5)
 
-    subgraph "Error Distribution"
-    E[Residual Plot<br/>Errors vs Predictions]
-    F[Q-Q Plot<br/>Normality Check]
-    G[Error Histogram<br/>Distribution Shape]
-    end
+Error Distribution Analysis:
+┌─────────────────────────────────┐
+│ Residual Plot                   │
+│ (Errors vs Predictions)         │
+├─────────────────────────────────┤
+│ Q-Q Plot                        │
+│ (Normality Check)               │
+├─────────────────────────────────┤
+│ Error Histogram                 │
+│ (Distribution Shape)            │
+└─────────────────────────────────┘
 ```
 
 ```python

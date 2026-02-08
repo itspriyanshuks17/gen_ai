@@ -34,6 +34,7 @@ The repository is organized as follows:
 - `README.md`: This main file providing an overview and introduction
 - `notes/`: Directory containing detailed notes on various topics
   - `ai.md`: Notes on Artificial Intelligence
+  - `large-ai-models.md`: Notes on Large AI Models (RNN, LSTM, Transformers, Audio/Speech, Vision)
 - `projects/`: Directory for code examples and projects (to be created)
 - `diagrams/`: Visual diagrams explaining concepts (to be created)
 - `resources.md`: Additional resources, links, and references (to be created)

@@ -34,7 +34,14 @@ The repository is organized as follows:
 - `README.md`: This main file providing an overview and introduction
 - `notes/`: Directory containing detailed notes on various topics
   - `ai.md`: Notes on Artificial Intelligence
-  - `large-ai-models.md`: Notes on Large AI Models (RNN, LSTM, Transformers, Audio/Speech, Vision)
+  - `large-ai-models/`: Directory with notes on Large AI Models
+    - `index.md`: Overview and index of large AI models
+    - `rnn.md`: Recurrent Neural Networks
+    - `lstm.md`: Long Short-Term Memory
+    - `transformers.md`: Transformer architecture
+    - `audio-speech-models.md`: Audio and speech processing models
+    - `vision-models.md`: Computer vision models
+    - `best-practices.md`: Best practices for large AI models
 - `projects/`: Directory for code examples and projects (to be created)
 - `diagrams/`: Visual diagrams explaining concepts (to be created)
 - `resources.md`: Additional resources, links, and references (to be created)

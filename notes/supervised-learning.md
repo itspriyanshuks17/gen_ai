@@ -17,10 +17,10 @@ Regression predicts continuous numerical values. It finds the relationship betwe
 
 ```mermaid
 graph TD
-    A[Input Features<br/>x₁, x₂, x₃] --> B[Regression Model<br/>f(x) = w₁x₁ + w₂x₂ + ... + b]
-    B --> C[Continuous Output<br/>ŷ (predicted value)]
+    A[Input Features<br/>x1, x2, x3] --> B[Regression Model<br/>f(x) = w1*x1 + w2*x2 + ... + b]
+    B --> C[Continuous Output<br/>y_pred (predicted value)]
     D[Training Data<br/>Labeled examples] --> B
-    C --> E[Loss Function<br/>MSE = Σ(y - ŷ)²/n]
+    C --> E[Loss Function<br/>MSE = Sum((y - y_pred)^2)/n]
     E --> F[Gradient Descent<br/>Update weights]
     F --> B
 ```
@@ -39,8 +39,6 @@ graph LR
     F[(2000, $350k)]
     end
 
-    subgraph "Regression Line"
-    G[y = 0.15x + 50k]
     end
 ```
 
@@ -94,8 +92,8 @@ Classification predicts discrete categorical labels. It assigns data points to p
 
 ```mermaid
 graph TD
-    A[Input Features<br/>x₁, x₂, x₃] --> B[Classification Model<br/>Decision Function]
-    B --> C[Class Probabilities<br/>P(Class₁), P(Class₂), ...]
+    A[Input Features<br/>x1, x2, x3] --> B[Classification Model<br/>Decision Function]
+    B --> C[Class Probabilities<br/>P(Class1), P(Class2), ...]
     C --> D[Predicted Class<br/>argmax(P)]
     E[Training Data<br/>Labeled examples] --> B
     D --> F[Loss Function<br/>Cross-Entropy Loss]
@@ -370,13 +368,13 @@ Sequence error refers to evaluation metrics used to measure the performance of m
 
 ```mermaid
 graph TD
-    A[Actual Values<br/>y₁, y₂, ..., yn] --> B[Predicted Values<br/>ŷ₁, ŷ₂, ..., ŷn]
-    A --> C[Errors<br/>eᵢ = yᵢ - ŷᵢ]
+    A[Actual Values<br/>y1, y2, ..., yn] --> B[Predicted Values<br/>y_pred1, y_pred2, ..., y_predn]
+    A --> C[Errors<br/>e_i = y_i - y_pred_i]
 
-    C --> D[MAE<br/>Σ|eᵢ| / n]
-    C --> E[MSE<br/>Σ(eᵢ)² / n]
-    C --> F[RMSE<br/>√(MSE)]
-    C --> G[MAPE<br/>100 × Σ|eᵢ/yᵢ| / n]
+    C --> D[MAE<br/>Sum(abs(e_i)) / n]
+    C --> E[MSE<br/>Sum((e_i)^2) / n]
+    C --> F[RMSE<br/>sqrt(MSE)]
+    C --> G[MAPE<br/>100 * Sum(abs(e_i/y_i)) / n]
 
     D --> H[Error Metrics]
     E --> H

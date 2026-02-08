@@ -327,4 +327,5 @@ Remember to consider ethical implications and responsible development practices 
 ---
 
 *For more information on AI fundamentals, see: [ai.md](ai.md)*
+*For Retrieval-Augmented Generation techniques, see: [rag.md](rag.md)*
 *For specific model architectures, see: [large-ai-models/](large-ai-models/)*

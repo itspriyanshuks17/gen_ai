@@ -34,6 +34,7 @@ The repository is organized as follows:
 - `README.md`: This main file providing an overview and introduction
 - `notes/`: Directory containing detailed notes on various topics
   - `ai.md`: Notes on Artificial Intelligence
+  - `supervised-learning.md`: Comprehensive guide to supervised learning algorithms
   - `large-ai-models/`: Directory with detailed notes on Large AI Models
     - `index.md`: Overview and index of large AI models
     - `architecture-nodes.md`: Building blocks and layers for neural networks
@@ -87,7 +88,8 @@ AI Agents are autonomous systems that can perform tasks. Key developer aspects i
 
 Core ML and AI concepts for developers:
 
-- **Supervised/Unsupervised Learning**: Algorithms and implementations
+- **Supervised Learning**: Regression, classification, decision trees, random forest ([detailed guide](notes/supervised-learning.md))
+- **Unsupervised Learning**: Clustering, dimensionality reduction
 - **Deep Learning**: Neural networks, CNNs, RNNs
 - **Model Deployment**: Serving models in production
 - **MLOps**: Best practices for ML lifecycle management

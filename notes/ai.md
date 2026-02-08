@@ -96,31 +96,52 @@ Key technologies:
 ## Machine Learning Basics
 
 ### Supervised Learning
-- Uses labeled data to train models
-- Predicts outcomes based on input features
-- Examples: Classification, Regression
+Supervised learning is a type of machine learning where models learn from labeled training data to make predictions on new, unseen data. The algorithm learns the relationship between input features and target outputs.
+
+**Key Concepts:**
+- **Regression**: Predicts continuous numerical values (prices, temperatures, quantities)
+- **Classification**: Predicts discrete categorical labels (spam/not spam, digit recognition)
+- **Decision Trees**: Tree-based models for classification and regression
+- **Random Forest**: Ensemble of decision trees for improved accuracy
+- **Error Metrics**: Evaluation methods (MAE, MSE, RMSE, accuracy, etc.)
+
+**Popular Algorithms:**
+- Linear/Logistic Regression
+- Decision Trees and Random Forest
+- Support Vector Machines (SVM)
+- Neural Networks
 
 ```python
-# Example: Simple Linear Regression with scikit-learn
+# Simple Supervised Learning Example
 from sklearn.linear_model import LinearRegression
 from sklearn.model_selection import train_test_split
 import numpy as np
 
-# Sample data
+# Sample regression data
 X = np.array([[1], [2], [3], [4], [5]])
 y = np.array([2, 4, 6, 8, 10])
 
-# Split data
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2)
-
-# Train model
+# Split and train
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 model = LinearRegression()
 model.fit(X_train, y_train)
 
-# Make prediction
+# Predict
 prediction = model.predict([[6]])
-print(f"Prediction for x=6: {prediction[0]}")
+print(f"Prediction for x=6: {prediction[0]:.2f}")
 ```
+
+### Hinglish Explanation
+Supervised Learning ek machine learning type hai jismein models labeled training data se learn karte hain aur new data pe predictions karte hain. Algorithm input features aur target outputs ke beech relationship seekhta hai.
+
+**Key Concepts:**
+- **Regression**: Continuous numerical values predict karta hai
+- **Classification**: Discrete categorical labels predict karta hai
+- **Decision Trees**: Classification aur regression ke liye tree-based models
+- **Random Forest**: Improved accuracy ke liye decision trees ka ensemble
+- **Error Metrics**: Evaluation methods (MAE, MSE, RMSE, accuracy, etc.)
+
+**For detailed implementation and examples, see:** [supervised-learning.md](supervised-learning.md)
 
 ### Unsupervised Learning
 - Finds patterns in unlabeled data

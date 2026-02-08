@@ -348,33 +348,33 @@ Sequence error refers to evaluation metrics used to measure the performance of m
 
 1. **Mean Absolute Error (MAE)**
    - Average absolute differences between predictions and actual values
-   - Formula: MAE = Σ|yᵢ - ŷᵢ| / n
+   - Formula: MAE = Sum|yi - y_pred_i| / n
    - Range: [0, ∞), lower is better
 
 2. **Mean Squared Error (MSE)**
    - Average squared differences between predictions and actual values
-   - Formula: MSE = Σ(yᵢ - ŷᵢ)² / n
+   - Formula: MSE = Sum(yi - y_pred_i)^2 / n
    - Penalizes large errors more heavily
 
 3. **Root Mean Squared Error (RMSE)**
    - Square root of MSE
-   - Formula: RMSE = √(Σ(yᵢ - ŷᵢ)² / n)
+   - Formula: RMSE = sqrt(Sum(yi - y_pred_i)^2 / n)
    - Same units as original data
 
 4. **Mean Absolute Percentage Error (MAPE)**
    - Percentage error relative to actual values
-   - Formula: MAPE = (100/n) × Σ|(yᵢ - ŷᵢ)/yᵢ|
+   - Formula: MAPE = (100/n) × Sum|(yi - y_pred_i)/yi|
    - Useful for comparing across different scales
 
 ```mermaid
 graph TD
     A[Actual Values<br/>y1, y2, ..., yn] --> B[Predicted Values<br/>y_pred1, y_pred2, ..., y_predn]
-    A --> C[Errors<br/>e_i = y_i - y_pred_i]
+    A --> C[Errors<br/>ei = yi - y_pred_i]
 
-    C --> D[MAE<br/>Sum(abs(e_i)) / n]
-    C --> E[MSE<br/>Sum((e_i)^2) / n]
+    C --> D[MAE<br/>Sum(abs(ei)) / n]
+    C --> E[MSE<br/>Sum((ei)^2) / n]
     C --> F[RMSE<br/>sqrt(MSE)]
-    C --> G[MAPE<br/>100 * Sum(abs(e_i/y_i)) / n]
+    C --> G[MAPE<br/>100 * Sum(abs(ei/yi)) / n]
 
     D --> H[Error Metrics]
     E --> H

@@ -34,6 +34,7 @@ The repository is organized as follows:
 - `README.md`: This main file providing an overview and introduction
 - `notes/`: Directory containing detailed notes on various topics
   - `ai.md`: Notes on Artificial Intelligence
+  - `generative-ai.md`: Comprehensive guide to Generative AI concepts, models, and applications
   - `supervised-learning.md`: Overview of supervised learning concepts
   - `supervised-learning/`: Directory with detailed supervised learning topics
     - `regression.md`: Linear and polynomial regression

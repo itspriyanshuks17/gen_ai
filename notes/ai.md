@@ -453,4 +453,4 @@ The journey into AI is continuous learning and experimentation. Start with small
 
 ---
 
-*This document provides a foundation for understanding AI from a developer's perspective. For more specific topics like LLMs or AI agents, refer to the respective notes in this repository.*
+*This document provides a foundation for understanding AI from a developer's perspective. For Generative AI concepts, models, and applications, see: [generative-ai.md](generative-ai.md). For more specific topics like LLMs or AI agents, refer to the respective notes in this repository.*

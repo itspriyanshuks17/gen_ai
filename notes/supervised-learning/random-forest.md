@@ -14,41 +14,41 @@ Random Forest is an ensemble learning method that constructs multiple decision t
 ┌─────────────────────────────────┐
 │         Training Data           │
 │     (Original Dataset)          │
-└─────────────┬───────────────────┘
-              │
-              │ Bootstrap Sampling
-              │ (Random sampling with replacement)
-              ▼
-    ┌─────────┼─────────┼─────────┐
-    │         │         │         │
-┌───▼───┐ ┌───▼───┐ ┌───▼───┐
-│Bootstrap│ │Bootstrap│ │Bootstrap│
-│Sample 1 │ │Sample 2 │ │Sample 3 │
-└───┬────┘ └────┬──┘ └────┬──┘
-    │            │         │
-    │            │         │ Feature Randomness
-    ▼            ▼         ▼ (Random subset of features)
-┌───┴────┐ ┌────┴───┐ ┌────┴───┐
-│Decision│ │Decision│ │Decision│
-│Tree 1  │ │Tree 2  │ │Tree 3  │
-│(Random │ │(Random │ │(Random │
-│Features│ │Features│ │Features│
-└───┬────┘ └────┬──┘ └────┬──┘
-    │            │         │
-    ▼            ▼         ▼
-┌───┴────┐ ┌────┴───┐ ┌────┴───┐
-│Pred 1  │ │Pred 2  │ │Pred 3  │
-└───┬────┘ └────┬──┘ └────┬──┘
-    │            │         │
-    └────────────┼─────────┘
+└────────────────┬────────────────┘
                  │
+                 │ Bootstrap Sampling
+                 │ (Random sampling with replacement)
                  ▼
+    ┼────────────┼─────────────┼
+    │            │             │
+┌───▼─────┐ ┌────▼────┐  ┌─────▼───┐
+│Bootstrap│ │Bootstrap│  │Bootstrap│
+│Sample 1 │ │Sample 2 │  │Sample 3 │
+└───┬─────┘ └────┬────┘  └───┬─────┘
+    │            │           │
+    │            │           │ Feature Randomness
+    ▼            ▼           ▼ (Random subset of features)
+┌───┴────┐  ┌────┴───┐   ┌───┴────┐
+│Decision│  │Decision│   │Decision│
+│Tree 1  │  │Tree 2  │   │Tree 3  │
+│(Random │  │(Random │   │(Random │
+│Features│  │Features│   │Features│
+└───┬────┘  └────┬───┘   └────┬───┘
+    │            │            │
+    ▼            ▼            ▼
+┌───┴────┐  ┌────┴───┐   ┌────┴───┐
+│Pred 1  │  │Pred 2  │   │Pred 3  │
+└───┬────┘  └───┬────┘   └─────┬──┘
+    │           │              │
+    └───────────┼──────────────┘
+                │
+                ▼
         ┌─────────────────┐
         │ Ensemble Voting │
         │ (Majority/Avg)  │
-        └─────────┬───────┘
-                  │
-                  ▼
+        └───────┬─────────┘
+                │
+                ▼
         ┌─────────────────┐
         │ Final           │
         │ Prediction      │

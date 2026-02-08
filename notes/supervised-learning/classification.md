@@ -55,9 +55,9 @@ Classification predicts discrete categorical labels. It assigns data points to p
            ^
            |
     (Backpropagation)
+```
 
-
-
+```
 Email Classification Flow:
 ┌─────────────────────────────────┐
 │ Email Features                  │
@@ -81,7 +81,8 @@ Email Classification Flow:
 ├─────────────┬───────────────────┤
 │ Yes: Spam   │   No: Not Spam    │
 └─────────────┴───────────────────┘
-
+```
+```
 Decision Boundary Visualization:
 
 

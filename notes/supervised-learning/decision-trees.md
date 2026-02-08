@@ -17,25 +17,25 @@ Decision trees are flowchart-like structures where each internal node represents
                     │ Feature: Age│
                     └─────┬───────┘
                           │
-                ┌─────────┴─────────┐
-                │                   │
-          ┌─────▼─────┐       ┌─────▼─────┐
-          │ Age ≤ 30  │       │ Age > 30  │
-          └─────┬─────┘       └─────┬─────┘
-                │                   │
-        ┌───────┴───────┐   ┌───────┴───────┐
-        │               │   │               │
-    ┌───▼───┐       ┌───▼───┐       ┌───▼───┐       ┌───▼───┐
-    │Student│       │Credit │       │Income │       │Income │
-    │?      │       │Rating │       │> 50k? │       │≤ 50k? │
-    └───────┘       └───────┘       └───────┘       └───────┘
-        │                   │            │                │
-   ┌────┴────┐       ┌──────┴─────┐   ┌──┴──┐       ┌─────┴─────┐
-   │         │       │            │   │     │       │           │
-┌──▼──┐  ┌──▼──┐  ┌──▼──┐  ┌────▼──┐┌─▼─┐ ┌───▼───┐┌▼──────┐ ┌──▼──┐
-│High │  │Low  │  │Low  │  │Medium ││Low│ │High   ││Mediu  │ │High │
-│Risk │  │Risk │  │Risk │  │Risk   ││Risk││Risk   ││Risk   │ │Risk │
-└─────┘  └─────┘  └─────┘  └───────┘└────┘└───────┘└───────┘ └─────┘
+                ┌─────────┴───────────────────┐
+                │                             │
+          ┌─────▼─────┐                 ┌─────▼─────┐
+          │ Age ≤ 30  │                 │ Age > 30  │
+          └─────┬─────┘                 └─────┬─────┘
+                │                             │
+        ┌───────┴───────┐             ┌───────┴────────────┐
+        │               │             │                    │
+    ┌───▼───┐       ┌───▼───┐       ┌───▼───┐          ┌───▼───┐
+    │Student│       │Credit │       │Income │          │Income │
+    │?      │       │Rating │       │> 50k? │          │≤ 50k? │
+    └───────┘       └───────┘       └───────┘          └───────┘
+        │                   │            │                 │
+   ┌────┴────┐       ┌──────┴─────┐   ┌──┴──┐         ┌────┴─────┐
+   │         │       │            │   │     │         │          │
+┌──▼──┐  ┌──▼──┐  ┌──▼──┐  ┌────▼──┐┌─▼──┐ ┌───▼───┐ ┌▼──────┐ ┌─▼───┐
+│High │  │Low  │  │Low  │  │Medium ││Low │ │High   │ │Mediu  │ │High │
+│Risk │  │Risk │  │Risk │  │Risk   ││Risk│ │Risk   │ │Risk   │ │Risk │
+└─────┘  └─────┘  └─────┘  └───────┘└────┘ └───────┘ └───────┘ └─────┘
 ```
 
 ```
@@ -80,10 +80,10 @@ Decision Tree Algorithm:
 │ each subset │     │ nodes with      │
 │             │     │ class labels    │
 │     ↑       │     └─────────────────┘
-│     │       │
-└─────┼───────┘
-      │
-      └─────────────────────────────┘
+│     │       │              │
+└─────┼───────┘              │
+      │                      │
+      └──────────────────────┘
 
 ```
 
@@ -132,4 +132,3 @@ for name, importance in zip(feature_names, dt_model.feature_importances_):
 
 ### Hinglish Explanation
 Decision trees flowchart-like structures hain jismein har internal node ek feature test represent karta hai, har branch ek outcome, aur har leaf node ek class label.
-

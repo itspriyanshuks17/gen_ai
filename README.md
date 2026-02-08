@@ -36,6 +36,7 @@ The repository is organized as follows:
   - `ai.md`: Notes on Artificial Intelligence
   - `large-ai-models/`: Directory with detailed notes on Large AI Models
     - `index.md`: Overview and index of large AI models
+    - `architecture-nodes.md`: Building blocks and layers for neural networks
     - `rnn.md`: Recurrent Neural Networks
     - `lstm.md`: Long Short-Term Memory
     - `transformers.md`: Transformer architecture

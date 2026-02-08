@@ -37,6 +37,100 @@ flowchart LR
     G --> H[Softmax Output]
 ```
 
+### Detailed Flowchart Node Explanation
+
+#### A: Input Image
+- **Purpose**: Raw image data entry point
+- **Format**: Typically 3D tensor (Height × Width × Channels)
+- **Example**: 224×224×3 for RGB color images, 28×28×1 for grayscale MNIST
+- **Preprocessing**: Images are usually normalized (0-1 range) and resized to fixed dimensions
+- **Data Type**: Float32 for GPU processing
+
+#### B: Conv Layer + ReLU
+- **Conv Layer Purpose**: Extract spatial features using learnable filters
+- **Key Parameters**:
+  - **Filters**: Number of feature maps (e.g., 32, 64, 128)
+  - **Kernel Size**: Filter dimensions (e.g., 3×3, 5×5)
+  - **Stride**: Step size for filter movement (usually 1)
+  - **Padding**: 'same' to maintain spatial dimensions
+- **Operation**: Convolution + bias + activation
+- **ReLU Purpose**: Introduce non-linearity, prevent vanishing gradients
+- **Output**: Feature maps highlighting edges, textures, patterns
+
+#### C: Pooling Layer
+- **Purpose**: Reduce spatial dimensions, provide translation invariance
+- **Types**: Max Pooling (most common) or Average Pooling
+- **Parameters**:
+  - **Pool Size**: Window size (e.g., 2×2)
+  - **Stride**: Usually same as pool size
+- **Benefits**: Reduces computation, prevents overfitting, focuses on dominant features
+- **Output**: Downsampled feature maps
+
+#### D: Conv Layer + ReLU (Second)
+- **Purpose**: Extract higher-level features from pooled feature maps
+- **Increased Filters**: More filters (e.g., 64) to capture complex patterns
+- **Same Components**: Convolution, bias, ReLU activation
+- **Hierarchical Learning**: Learns combinations of lower-level features
+- **Output**: More abstract feature representations
+
+#### E: Pooling Layer (Second)
+- **Purpose**: Further reduce spatial dimensions before classification
+- **Same Operation**: Max/Average pooling with 2×2 windows
+- **Progressive Reduction**: Gradually decrease spatial resolution
+- **Output**: Compact feature representations
+
+#### F: Flatten
+- **Purpose**: Convert 3D feature maps to 1D vector for dense layers
+- **Operation**: Reshape (H×W×C) → (H×W×C,) 
+- **Example**: (7×7×128) → (6272,)
+- **No Parameters**: Pure reshaping operation
+- **Output**: 1D feature vector
+
+#### G: Fully Connected
+- **Purpose**: Learn non-linear combinations of all features for classification
+- **Parameters**:
+  - **Units**: Number of neurons (e.g., 512, 256)
+  - **Activation**: Usually ReLU for hidden layers
+- **Connections**: Every input connected to every output neuron
+- **Feature Integration**: Combine spatial features into decision-making
+- **Output**: High-level feature representations
+
+#### H: Softmax Output
+- **Purpose**: Convert logits to probability distribution over classes
+- **Formula**: softmax(x_i) = e^(x_i) / Σ e^(x_j)
+- **Units**: Equal to number of classes (e.g., 10 for CIFAR-10)
+- **Output Range**: Probabilities summing to 1.0
+- **Interpretation**: Confidence scores for each class
+
+### Flowchart Data Flow Summary
+1. **Input (224×224×3)** → Raw RGB image
+2. **Conv+ReLU (224×224×32)** → Low-level features (edges, colors)
+3. **Pool (112×112×32)** → Reduced spatial size, translation invariance
+4. **Conv+ReLU (112×112×64)** → Mid-level features (textures, shapes)
+5. **Pool (56×56×64)** → Further reduction
+6. **Flatten (200704,)** → 1D vector for classification
+7. **Dense (512,)** → Feature integration
+8. **Softmax (10,)** → Class probabilities
+
+### Hinglish Explanation
+CNN Architecture ke har node ka purpose:
+
+**A: Input Image**: Raw image data, jaise 224x224 pixels ka RGB image
+
+**B: Conv Layer + ReLU**: Spatial features extract karta hai using filters, ReLU non-linearity add karta hai
+
+**C: Pooling Layer**: Spatial dimensions reduce karta hai, translation invariance provide karta hai
+
+**D: Second Conv + ReLU**: Higher-level features learn karta hai, complex patterns detect karta hai
+
+**E: Second Pooling**: Aur spatial reduction, compact representation banata hai
+
+**F: Flatten**: 3D feature maps ko 1D vector mein convert karta hai dense layers ke liye
+
+**G: Fully Connected**: Saare features ko combine karke classification ke liye use karta hai
+
+**H: Softmax Output**: Logits ko probabilities mein convert karta hai, har class ke liye confidence score deta hai
+
 ### Code Example: CNN for Image Classification
 
 ```python

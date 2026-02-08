@@ -18,6 +18,9 @@ This directory contains detailed notes on various large AI models from a develop
 - **[cnn.md](cnn.md)**: Convolutional Neural Networks for image processing
 - **[yolo.md](yolo.md)**: YOLO for real-time object detection
 
+### Architecture Fundamentals
+- **[architecture-nodes.md](architecture-nodes.md)**: Building blocks and layers used in neural network architectures
+
 ### Best Practices and Overviews
 - **[audio-speech-models.md](audio-speech-models.md)**: Overview of audio and speech processing models
 - **[vision-models.md](vision-models.md)**: Overview of computer vision models

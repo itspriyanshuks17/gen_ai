@@ -21,6 +21,88 @@ flowchart LR
     D --> G[Confidence Scores]
 ```
 
+### Detailed Flowchart Node Explanation
+
+#### A: Input Image 448x448
+- **Purpose**: Raw input image for object detection
+- **Dimensions**: 448×448 pixels (YOLOv1), varies by version
+- **Format**: RGB image, usually resized and normalized
+- **Preprocessing**: Letterbox resizing to maintain aspect ratio
+- **Input**: Single image processed in one forward pass
+
+#### B: Darknet-53 Backbone
+- **Purpose**: Feature extraction from input image
+- **Architecture**: 53 convolutional layers with residual connections
+- **Components**: Conv layers, batch norm, leaky ReLU activations
+- **Depth**: 53 layers (hence Darknet-53)
+- **Output**: Feature maps at multiple scales
+- **Function**: Learns hierarchical features (edges → textures → objects)
+
+#### C: Detection Head
+- **Purpose**: Final prediction layers for object detection
+- **Architecture**: Additional convolutional layers
+- **Input**: Feature maps from backbone
+- **Function**: Transforms features into detection predictions
+- **Output**: Tensor containing all predictions
+
+#### D: 13x13x(5*B+C) Tensor
+- **Purpose**: Raw prediction tensor from detection head
+- **Dimensions**: 13×13 grid (for 416×416 input, stride 32)
+- **Structure**: For each grid cell:
+  - **5*B**: 5 values per bounding box (x, y, w, h, confidence)
+  - **C**: Class probabilities for each class
+- **B**: Number of bounding boxes per cell (usually 3-5)
+- **C**: Number of classes (80 for COCO, 20 for VOC)
+
+#### E: Bounding Boxes
+- **Purpose**: Predicted locations of detected objects
+- **Format**: (x, y, width, height) relative to grid cell
+- **Coordinates**: Normalized [0,1] within each grid cell
+- **Anchor Boxes**: Predefined aspect ratios for better localization
+- **Post-processing**: Convert to absolute image coordinates
+
+#### F: Class Probabilities
+- **Purpose**: Predicted class labels for detected objects
+- **Format**: Probability distribution over C classes
+- **Computation**: Softmax over class scores
+- **Output**: One-hot style probabilities per bounding box
+- **Classes**: COCO (80), Pascal VOC (20), custom datasets
+
+#### G: Confidence Scores
+- **Purpose**: Measure of object presence and localization accuracy
+- **Computation**: Pr(Object) × IOU(pred, truth)
+- **Range**: [0,1] where 1 = perfect detection
+- **Components**:
+  - **Object Presence**: Probability object exists in cell
+  - **IOU Accuracy**: How well bounding box fits ground truth
+- **Thresholding**: Filter predictions above confidence threshold
+
+### YOLO Data Flow Summary
+1. **Input Image 448x448** → Raw image for detection
+2. **Darknet-53 Backbone** → Extract hierarchical features
+3. **Detection Head** → Transform features to predictions
+4. **13x13x(5*B+C) Tensor** → Raw prediction tensor
+5. **Bounding Boxes** → Object location predictions
+6. **Class Probabilities** → Object class predictions
+7. **Confidence Scores** → Detection confidence values
+
+### Hinglish Explanation
+YOLO Architecture ke har component ka purpose:
+
+**A: Input Image 448x448**: Raw input image jo detect karna hai
+
+**B: Darknet-53 Backbone**: Image se features extract karta hai (53 convolutional layers)
+
+**C: Detection Head**: Final prediction layers jo detection predictions banate hain
+
+**D: 13x13x(5*B+C) Tensor**: Raw prediction tensor - har grid cell ke liye bounding boxes aur classes
+
+**E: Bounding Boxes**: Detected objects ki locations (x, y, width, height)
+
+**F: Class Probabilities**: Har detected object ke liye class probabilities
+
+**G: Confidence Scores**: Object presence aur localization accuracy ka measure
+
 ### YOLO Versions
 
 #### YOLOv1

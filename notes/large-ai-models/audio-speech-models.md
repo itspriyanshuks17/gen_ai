@@ -65,6 +65,63 @@ flowchart LR
     D --> E[Similarity Score]
 ```
 
+#### Detailed Flowchart Node Explanation
+
+##### A: Audio 1
+- **Purpose**: First audio sample in comparison pair
+- **Format**: Raw waveform, spectrogram, or MFCC features
+- **Dimensions**: Variable length audio sequence
+- **Example**: Speaker A's voice sample for verification
+- **Preprocessing**: Normalization, feature extraction
+
+##### B: Audio 2
+- **Purpose**: Second audio sample for comparison
+- **Format**: Same as Audio 1
+- **Dimensions**: Matching length or padded to same size
+- **Example**: Voice sample to verify against Audio 1
+- **Use Case**: Same speaker verification or different speaker rejection
+
+##### C: Shared Encoder
+- **Purpose**: Feature extraction network applied identically to both audio samples
+- **Architecture**: CNN/RNN layers for audio processing
+- **Weights**: Same parameters used for both inputs
+- **Function**: Map variable-length audio to fixed-dimensional embeddings
+- **Output**: Compact feature representations
+
+##### D: Feature Vectors
+- **Purpose**: Learned embeddings from both audio samples
+- **Dimensions**: Fixed size (e.g., 128, 256, 512 dimensions)
+- **Content**: Speaker characteristics, acoustic features, semantic content
+- **Training**: Optimized to make similar audio have similar vectors
+- **Pair Output**: Two vectors for distance computation
+
+##### E: Similarity Score
+- **Purpose**: Quantify similarity between the two audio embeddings
+- **Metrics**: Cosine similarity, Euclidean distance, or learned distance
+- **Range**: Depends on metric (similarity: [-1,1], distance: [0,∞))
+- **Threshold**: Decision boundary for same/different classification
+- **Training**: Contrastive loss minimizes distance for similar pairs
+
+#### Siamese Network Data Flow Summary
+1. **Audio 1 & Audio 2** → Pair of audio samples to compare
+2. **Shared Encoder** → Same network processes both audio inputs
+3. **Feature Vectors** → Fixed-dimensional embeddings
+4. **Similarity Score** → Distance/similarity measurement
+5. **Output** → Similarity prediction for verification
+
+#### Hinglish Explanation
+Siamese Network Architecture ke har component ka purpose:
+
+**A: Audio 1**: Comparison pair ka pehla audio sample
+
+**B: Audio 2**: Comparison pair ka dusra audio sample
+
+**C: Shared Encoder**: Dono audio samples pe same network apply hota hai
+
+**D: Feature Vectors**: Learned embeddings jo audio characteristics represent karte hain
+
+**E: Similarity Score**: Dono embeddings ke beech similarity ka measure
+
 ### Hinglish Explanation
 Audio and Speech Models:
 

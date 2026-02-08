@@ -22,6 +22,80 @@ flowchart LR
     F --> G[Output]
 ```
 
+### Detailed Flowchart Node Explanation
+
+#### A: Input 1
+- **Purpose**: First input in the comparison pair
+- **Format**: Audio waveform, spectrogram, or feature representation
+- **Dimensions**: Varies by application (e.g., (time_steps, features) for audio)
+- **Example**: Audio sample from speaker A
+
+#### B: Input 2
+- **Purpose**: Second input in the comparison pair
+- **Format**: Same format as Input 1
+- **Dimensions**: Same as Input 1
+- **Example**: Audio sample to compare (same speaker or different)
+
+#### C: Shared Encoder
+- **Purpose**: Feature extraction network applied to both inputs identically
+- **Architecture**: CNN/RNN layers that process raw inputs
+- **Weights**: Same weights used for both Input 1 and Input 2
+- **Output**: Fixed-dimensional embedding vectors
+- **Function**: Maps variable-length inputs to consistent feature space
+
+#### D: Embedding 1
+- **Purpose**: Learned feature representation of Input 1
+- **Dimensions**: Fixed size (e.g., 128, 256, 512 dimensions)
+- **Content**: Compact representation capturing essential characteristics
+- **Training**: Optimized to make similar inputs have similar embeddings
+
+#### E: Embedding 2
+- **Purpose**: Learned feature representation of Input 2
+- **Dimensions**: Same as Embedding 1
+- **Content**: Feature vector from the same encoder network
+- **Comparison**: Will be compared with Embedding 1
+
+#### F: Distance/Similarity
+- **Purpose**: Quantify similarity between the two embeddings
+- **Metrics**:
+  - **Euclidean Distance**: L2 norm between vectors
+  - **Cosine Similarity**: Angle between vectors
+  - **Manhattan Distance**: L1 norm between vectors
+- **Output**: Scalar value representing similarity/dissimilarity
+- **Range**: Depends on metric (distance: [0,∞), similarity: [-1,1])
+
+#### G: Output
+- **Purpose**: Final prediction for the pair comparison
+- **Format**: Probability or binary classification
+- **Interpretation**:
+  - **Similarity Score**: How similar the inputs are
+  - **Verification Result**: Same/different speaker, same/different class
+- **Training Target**: Ground truth labels (similar=1, dissimilar=0)
+
+### Siamese Network Data Flow Summary
+1. **Input 1 & Input 2** → Pair of items to compare
+2. **Shared Encoder** → Same network processes both inputs
+3. **Embedding 1 & Embedding 2** → Feature representations
+4. **Distance/Similarity** → Quantify relationship between embeddings
+5. **Output** → Similarity prediction or verification result
+
+### Hinglish Explanation
+Siamese Network Architecture ke har component ka purpose:
+
+**A: Input 1**: Comparison pair ka pehla input (e.g., speaker A ka audio)
+
+**B: Input 2**: Comparison pair ka dusra input (compare karne ke liye)
+
+**C: Shared Encoder**: Dono inputs pe same network apply hota hai, features extract karta hai
+
+**D: Embedding 1**: Input 1 ka learned feature representation
+
+**E: Embedding 2**: Input 2 ka learned feature representation
+
+**F: Distance/Similarity**: Dono embeddings ke beech distance ya similarity calculate karta hai
+
+**G: Output**: Final prediction - kitne similar hain ya same class ke hain
+
 ### Key Components
 - **Shared Encoder**: Convolutional or fully-connected network
 - **Distance Metric**: Euclidean distance, cosine similarity, etc.

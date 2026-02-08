@@ -34,7 +34,13 @@ The repository is organized as follows:
 - `README.md`: This main file providing an overview and introduction
 - `notes/`: Directory containing detailed notes on various topics
   - `ai.md`: Notes on Artificial Intelligence
-  - `supervised-learning.md`: Comprehensive guide to supervised learning algorithms
+  - `supervised-learning.md`: Overview of supervised learning concepts
+  - `supervised-learning/`: Directory with detailed supervised learning topics
+    - `regression.md`: Linear and polynomial regression
+    - `classification.md`: Binary and multi-class classification
+    - `decision-trees.md`: Decision tree algorithms and ID3
+    - `random-forest.md`: Ensemble learning with random forests
+    - `error-metrics.md`: Performance evaluation metrics
   - `large-ai-models/`: Directory with detailed notes on Large AI Models
     - `index.md`: Overview and index of large AI models
     - `architecture-nodes.md`: Building blocks and layers for neural networks

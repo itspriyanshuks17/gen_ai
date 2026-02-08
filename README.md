@@ -9,7 +9,7 @@ Whether you're a beginner looking to understand the fundamentals or an experienc
 ## Learning Objectives
 
 By the end of this learning journey, you will be able to:
-- Understand the core concepts of LLMs, GenAI, and AI agents
+- Understand the core concepts of LLMs, GenAI, RAG, and AI agents
 - Implement basic to advanced AI models using popular frameworks
 - Build and deploy AI-powered applications
 - Integrate AI agents into software systems
@@ -22,10 +22,11 @@ This repository covers the following key areas:
 
 1. **Large Language Models (LLMs)**: Fundamentals, architectures, fine-tuning, and applications
 2. **Generative AI (GenAI)**: Techniques for generating text, images, and other content
-3. **AI Agents**: Building autonomous agents, multi-agent systems, and agent frameworks
-4. **Machine Learning (ML) and AI**: Core ML concepts, deep learning, and AI integration
-5. **Practical Projects**: Hands-on implementations and case studies
-6. **Tools and Frameworks**: Popular libraries, APIs, and development tools
+3. **Retrieval-Augmented Generation (RAG)**: Combining retrieval systems with generative models
+4. **AI Agents**: Building autonomous agents, multi-agent systems, and agent frameworks
+5. **Machine Learning (ML) and AI**: Core ML concepts, deep learning, and AI integration
+6. **Practical Projects**: Hands-on implementations and case studies
+7. **Tools and Frameworks**: Popular libraries, APIs, and development tools
 
 ## Repository Structure
 
@@ -35,6 +36,7 @@ The repository is organized as follows:
 - `notes/`: Directory containing detailed notes on various topics
   - `ai.md`: Notes on Artificial Intelligence
   - `generative-ai.md`: Comprehensive guide to Generative AI concepts, models, and applications
+  - `rag.md`: Retrieval-Augmented Generation techniques and implementation
   - `supervised-learning.md`: Overview of supervised learning concepts
   - `supervised-learning/`: Directory with detailed supervised learning topics
     - `regression.md`: Linear and polynomial regression

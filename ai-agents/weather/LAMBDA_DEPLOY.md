@@ -6,15 +6,26 @@ This guide deploys your project (`index.js`, `public/index.html`, `template.yaml
 
 ```mermaid
 flowchart TD
-    A[Local Project\nindex.js + public + template.yaml] --> B[aws sts get-caller-identity]
-    B --> C[sam build -t template.yaml]
-    C --> D[sam deploy]
-    D --> E[CloudFormation Stack: wweather]
-    E --> F[Lambda Function: weather-agent-app]
-    E --> G[API Gateway HTTP API]
-    F --> H[Gemini API call\nusing GEMINI_API_KEY env var]
-    G --> I[Public URL]
-    I --> J[Browser opens app]
+    A["Local Project<br/>index.js + public + template.yaml"];
+    B["aws sts get-caller-identity"];
+    C["sam build -t template.yaml"];
+    D["sam deploy"];
+    E["CloudFormation Stack: wweather"];
+    F["Lambda Function: weather-agent-app"];
+    G["API Gateway HTTP API"];
+    H["Gemini API call<br/>using GEMINI_API_KEY env var"];
+    I["Public URL"];
+    J["Browser opens app"];
+
+    A --> B;
+    B --> C;
+    C --> D;
+    D --> E;
+    E --> F;
+    E --> G;
+    F --> H;
+    G --> I;
+    I --> J;
 ```
 
 ### Deployment Flow (ASCII)

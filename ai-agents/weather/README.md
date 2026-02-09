@@ -48,28 +48,45 @@ ai-agents/weather/
 
 ```mermaid
 flowchart TD
-    A[Browser UI] -->|POST /api/weather| B[API Layer]
-    B --> C[index.js handleRequest]
-    C --> D[getGeminiWeather(city)]
-    C --> E[getWeatherDetails(city)]
-    D --> F[Gemini API]
-    F --> C
-    E --> C
-    C --> G[JSON response\n{ city, geminiReply, localWeather }]
-    G --> A
+    A["Browser UI"];
+    B["API Layer"];
+    C["index.js handleRequest"];
+    D["getGeminiWeather(city)"];
+    E["getWeatherDetails(city)"];
+    F["Gemini API"];
+    G["JSON response<br/>{ city, geminiReply, localWeather }"];
+
+    A -->|POST /api/weather| B;
+    B --> C;
+    C --> D;
+    C --> E;
+    D --> F;
+    F --> C;
+    E --> C;
+    C --> G;
+    G --> A;
 ```
 
 ## Lambda Deployment Flow Diagram
 
 ```mermaid
 flowchart LR
-    A[Local code] --> B[sam build]
-    B --> C[sam deploy]
-    C --> D[CloudFormation stack: wweather]
-    D --> E[Lambda function: index.handler]
-    D --> F[API Gateway HTTP API]
-    E --> G[Gemini API]
-    F --> H[Public URL]
+    A["Local code"];
+    B["sam build"];
+    C["sam deploy"];
+    D["CloudFormation stack: wweather"];
+    E["Lambda function: index.handler"];
+    F["API Gateway HTTP API"];
+    G["Gemini API"];
+    H["Public URL"];
+
+    A --> B;
+    B --> C;
+    C --> D;
+    D --> E;
+    D --> F;
+    E --> G;
+    F --> H;
 ```
 
 ## Core Function Code (Key Parts)

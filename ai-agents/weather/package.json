@@ -1,0 +1,30 @@
+{
+  "name": "weather",
+  "version": "1.0.0",
+  "description": "AI Agent for Real Time Weather Application",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start:web": "node index.js",
+    "start": "node index.js",
+    "sam:build": "sam build -t template.yaml",
+    "sam:deploy": "sam deploy --guided -t template.yaml",
+    "sam:local": "sam local start-api -t template.yaml",
+    "deploy:aws": "bash deploy.sh"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/itspriyanshuks17/gen_ai.git"
+  },
+  "author": "Priyanshu Kumar Sharma",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/itspriyanshuks17/gen_ai/issues"
+  },
+  "homepage": "https://github.com/itspriyanshuks17/gen_ai#readme",
+  "dependencies": {
+    "@google/genai": "^1.25.0",
+    "dotenv": "^16.6.1"
+  }
+}

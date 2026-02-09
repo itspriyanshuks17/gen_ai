@@ -1,0 +1,6 @@
+# Node dependencies are large and reproducible from package-lock.json.
+ai-agents/weather/node_modules
+# Contains local secrets (Gemini API key), never commit.
+ai-agents/weather/.env
+# Generated build artifacts from `sam build`.
+ai-agents/weather/.aws-sam

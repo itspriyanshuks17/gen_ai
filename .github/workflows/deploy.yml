@@ -1,0 +1,98 @@
+name: Weather SAM CI/CD
+
+on:
+  push:
+    branches:
+      - main
+      - '**'
+    paths:
+      - 'ai-agents/weather/**'
+      - '.github/workflows/deploy.yml'
+  pull_request:
+    paths:
+      - 'ai-agents/weather/**'
+      - '.github/workflows/deploy.yml'
+
+permissions:
+  contents: read
+
+env:
+  APP_DIR: ai-agents/weather
+  TEMPLATE_FILE: template.yaml
+  STACK_NAME: wweather
+  AWS_REGION: ap-south-1
+
+jobs:
+  validate:
+    name: Validate SAM Template
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup SAM CLI
+        uses: aws-actions/setup-sam@v2
+
+      - name: Validate template
+        run: |
+          cd "$APP_DIR"
+          sam validate -t "$TEMPLATE_FILE"
+
+  build:
+    name: Build SAM App
+    runs-on: ubuntu-latest
+    needs: validate
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup SAM CLI
+        uses: aws-actions/setup-sam@v2
+
+      - name: Build
+        run: |
+          cd "$APP_DIR"
+          sam build -t "$TEMPLATE_FILE"
+
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: sam-build-output
+          path: ai-agents/weather/.aws-sam/
+
+  deploy:
+    name: Deploy to AWS (main only)
+    runs-on: ubuntu-latest
+    needs: build
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup SAM CLI
+        uses: aws-actions/setup-sam@v2
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION || env.AWS_REGION }}
+
+      - name: Deploy
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          STACK_NAME: ${{ secrets.STACK_NAME || env.STACK_NAME }}
+          AWS_REGION: ${{ secrets.AWS_REGION || env.AWS_REGION }}
+        run: |
+          cd "$APP_DIR"
+          sam build -t "$TEMPLATE_FILE"
+          sam deploy \
+            -t "$TEMPLATE_FILE" \
+            --stack-name "$STACK_NAME" \
+            --region "$AWS_REGION" \
+            --capabilities CAPABILITY_IAM \
+            --resolve-s3 \
+            --parameter-overrides "GeminiApiKey=$GEMINI_API_KEY" \
+            --no-confirm-changeset \
+            --no-fail-on-empty-changeset

@@ -75,7 +75,7 @@ flowchart LR
     B["sam build"];
     C["sam deploy"];
     D["CloudFormation stack: wweather"];
-    E["Lambda function: index.handler"];
+    E["Lambda function: <stack>-weather-agent-app"];
     F["API Gateway HTTP API"];
     G["Gemini API"];
     H["Public URL"];

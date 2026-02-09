@@ -11,7 +11,7 @@ flowchart TD
     C["sam build -t template.yaml"];
     D["sam deploy"];
     E["CloudFormation Stack: wweather"];
-    F["Lambda Function: weather-agent-app"];
+    F["Lambda Function: <stack>-weather-agent-app"];
     G["API Gateway HTTP API"];
     H["Gemini API call<br/>using GEMINI_API_KEY env var"];
     I["Public URL"];
@@ -48,7 +48,7 @@ flowchart TD
                            v
 +-----------------------------------------------------------+
 | CloudFormation Stack: wweather                            |
-|   |- Lambda Function: weather-agent-app                   |
+|   |- Lambda Function: <stack>-weather-agent-app           |
 |   |- API Gateway HTTP API                                 |
 +--------------------------+--------------------------------+
                            |

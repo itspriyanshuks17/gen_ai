@@ -96,3 +96,35 @@ jobs:
             --parameter-overrides "GeminiApiKey=$GEMINI_API_KEY" \
             --no-confirm-changeset \
             --no-fail-on-empty-changeset
+
+      - name: Show active deployment URL
+        if: ${{ success() }}
+        env:
+          STACK_NAME: ${{ secrets.STACK_NAME || env.STACK_NAME }}
+          AWS_REGION: ${{ secrets.AWS_REGION || env.AWS_REGION }}
+        run: |
+          API_URL=$(aws cloudformation describe-stacks \
+            --stack-name "$STACK_NAME" \
+            --region "$AWS_REGION" \
+            --query "Stacks[0].Outputs[?OutputKey=='ApiUrl'].OutputValue" \
+            --output text)
+
+          echo "Active deployment URL: $API_URL"
+          echo "api_url=$API_URL" >> "$GITHUB_OUTPUT"
+
+          {
+            echo "## Deployment Result"
+            echo ""
+            echo "- Active URL: $API_URL"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Show CloudFormation events on failure
+        if: ${{ failure() }}
+        env:
+          STACK_NAME: ${{ secrets.STACK_NAME || env.STACK_NAME }}
+          AWS_REGION: ${{ secrets.AWS_REGION || env.AWS_REGION }}
+        run: |
+          aws cloudformation describe-stack-events \
+            --stack-name "$STACK_NAME" \
+            --region "$AWS_REGION" \
+            --max-items 30 || true

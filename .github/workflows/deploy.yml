@@ -54,11 +54,26 @@ jobs:
           cd "$APP_DIR"
           sam build -t "$TEMPLATE_FILE"
 
-      - name: Upload build artifact
+      - name: Prepare limited upload files
+        run: |
+          cd "$APP_DIR"
+          # Create a deployable zip bundle.
+          npm ci --omit=dev
+          zip -r weather-agent.zip index.js public package.json package-lock.json node_modules
+
+          # Create a safe .env artifact (placeholder values, no secrets).
+          cp .env.example .env
+
+      - name: Upload selected artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: sam-build-output
-          path: ai-agents/weather/.aws-sam/
+          name: weather-selected-files
+          path: |
+            ai-agents/weather/index.js
+            ai-agents/weather/public/**
+            ai-agents/weather/.env
+            ai-agents/weather/package.json
+          if-no-files-found: error
 
   deploy:
     name: Deploy to AWS (main only)

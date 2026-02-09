@@ -33,6 +33,7 @@ This repository covers the following key areas:
 The repository is organized as follows:
 
 - `README.md`: This main file providing an overview and introduction
+- `ai-agents/weather/README.md`: Complete weather app guide (architecture, function code, local run, and Lambda deployment)
 - `notes/`: Directory containing detailed notes on various topics
   - `ai.md`: Notes on Artificial Intelligence
   - `generative-ai.md`: Comprehensive guide to Generative AI concepts, models, and applications

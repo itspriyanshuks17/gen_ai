@@ -1,0 +1,213 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <!-- Basic page metadata -->
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Weather Agent</title>
+  <style>
+    /* Design tokens: colors used across the page */
+    :root {
+      --bg-1: #f3f6ff;
+      --bg-2: #e9fff5;
+      --text: #0f172a;
+      --muted: #475569;
+      --card: rgba(255, 255, 255, 0.88);
+      --border: rgba(15, 23, 42, 0.12);
+      --accent: #0ea5a1;
+      --accent-2: #0284c7;
+    }
+
+    * { box-sizing: border-box; }
+
+    /* Full-page centered layout with soft gradient background */
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: "IBM Plex Sans", "Segoe UI", sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at 12% 18%, #d9f0ff 0%, transparent 34%),
+        radial-gradient(circle at 82% 12%, #d8ffe6 0%, transparent 32%),
+        linear-gradient(130deg, var(--bg-1), var(--bg-2));
+      display: grid;
+      place-items: center;
+      padding: 24px;
+    }
+
+    /* Main glass-card container */
+    .app {
+      width: min(720px, 100%);
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      backdrop-filter: blur(8px);
+      padding: 24px;
+      box-shadow: 0 16px 45px rgba(2, 8, 23, 0.1);
+      animation: enter 420ms ease-out;
+    }
+
+    @keyframes enter {
+      from { transform: translateY(8px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+
+    h1 {
+      margin: 0 0 6px;
+      font-size: clamp(1.5rem, 4vw, 2rem);
+      letter-spacing: 0.01em;
+    }
+
+    p {
+      margin: 0;
+      color: var(--muted);
+    }
+
+    form {
+      margin-top: 18px;
+      display: grid;
+      gap: 10px;
+      grid-template-columns: 1fr auto;
+    }
+
+    input {
+      height: 44px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 0 14px;
+      font-size: 1rem;
+      outline: none;
+      transition: border-color 180ms ease;
+    }
+
+    input:focus { border-color: var(--accent-2); }
+
+    button {
+      height: 44px;
+      border: 0;
+      border-radius: 12px;
+      padding: 0 18px;
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      color: white;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 120ms ease;
+    }
+
+    button:hover { transform: translateY(-1px); }
+    button:disabled { opacity: 0.65; cursor: not-allowed; transform: none; }
+
+    .results {
+      margin-top: 18px;
+      display: grid;
+      gap: 12px;
+    }
+
+    .card {
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 12px;
+      background: rgba(255, 255, 255, 0.9);
+    }
+
+    .label {
+      font-size: 0.84rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+
+    .value {
+      line-height: 1.5;
+      white-space: pre-wrap;
+    }
+
+    .status {
+      margin-top: 8px;
+      color: var(--muted);
+      min-height: 1.2em;
+    }
+
+    @media (max-width: 640px) {
+      form { grid-template-columns: 1fr; }
+      button { width: 100%; }
+    }
+  </style>
+</head>
+<body>
+  <!-- App shell -->
+  <main class="app">
+    <h1>Weather Agent Web App</h1>
+    <p>Ask for a city and compare Gemini output with your local weather tool response.</p>
+
+    <form id="weather-form">
+      <input id="city" name="city" placeholder="Enter city (e.g., Pune)" required />
+      <button id="submit-btn" type="submit">Get Weather</button>
+    </form>
+
+    <div class="status" id="status"></div>
+
+    <section class="results">
+      <article class="card">
+        <div class="label">Gemini Response</div>
+        <div class="value" id="gemini-output">-</div>
+      </article>
+      <article class="card">
+        <div class="label">Local Tool Output</div>
+        <div class="value" id="local-output">-</div>
+      </article>
+    </section>
+  </main>
+
+  <script>
+    // Cache DOM references once for faster and cleaner event code.
+    const form = document.getElementById('weather-form');
+    const cityInput = document.getElementById('city');
+    const submitBtn = document.getElementById('submit-btn');
+    const statusEl = document.getElementById('status');
+    const geminiOutput = document.getElementById('gemini-output');
+    const localOutput = document.getElementById('local-output');
+
+    // Submit handler: call backend API and render results.
+    form.addEventListener('submit', async (event) => {
+      event.preventDefault();
+
+      const city = cityInput.value.trim();
+      if (!city) return;
+
+      // Avoid duplicate submissions while request is in flight.
+      submitBtn.disabled = true;
+      statusEl.textContent = 'Loading weather data...';
+
+      try {
+        // Frontend posts city input to backend endpoint.
+        const response = await fetch('/api/weather', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ city }),
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          // Propagate backend-provided message for UI display.
+          throw new Error(data.error || 'Request failed');
+        }
+
+        // Render successful response from Lambda/local server.
+        geminiOutput.textContent = data.geminiReply;
+        localOutput.textContent = data.localWeather;
+        statusEl.textContent = `Updated for ${data.city}.`;
+      } catch (error) {
+        // Show readable error to user instead of console-only failure.
+        statusEl.textContent = error.message || 'Something went wrong.';
+      } finally {
+        // Re-enable button regardless of success/failure.
+        submitBtn.disabled = false;
+      }
+    });
+  </script>
+</body>
+</html>

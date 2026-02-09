@@ -1,0 +1,27 @@
+# SAM CLI config file used by `sam build` and `sam deploy`.
+version = 0.1
+
+# Shared defaults for all SAM commands.
+[default.global.parameters]
+region = "ap-south-1"
+
+# Build command defaults.
+[default.build.parameters]
+template_file = "template.yaml"
+
+# Deploy command defaults.
+[default.deploy.parameters]
+# CloudFormation stack name.
+stack_name = "wweather"
+# Template path to deploy.
+template_file = "template.yaml"
+# Let SAM create/manage S3 bucket for artifacts automatically.
+resolve_s3 = true
+# Target region for deployment.
+region = "ap-south-1"
+# Required when SAM creates IAM roles.
+capabilities = "CAPABILITY_IAM"
+# Show change set preview before execution.
+confirm_changeset = true
+# Keep rollback enabled for cleaner failed deploy state.
+disable_rollback = false

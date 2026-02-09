@@ -1,0 +1,50 @@
+# SAM template version and transform declaration.
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: Weather Agent web app on AWS Lambda + API Gateway HTTP API
+
+# Input parameter so secret key is not hardcoded in template.
+Parameters:
+  GeminiApiKey:
+    Type: String
+    NoEcho: true
+    Description: Gemini API key used by @google/genai
+
+# Main serverless resources to create.
+Resources:
+  WeatherFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      # Lambda name in AWS account.
+      FunctionName: weather-agent-app
+      # Node runtime must match your code target.
+      Runtime: nodejs20.x
+      # Exported handler in index.js.
+      Handler: index.handler
+      # Deploy current folder as Lambda code package.
+      CodeUri: .
+      # Function runtime limits.
+      Timeout: 30
+      MemorySize: 256
+      # Runtime environment variables available to code.
+      Environment:
+        Variables:
+          GEMINI_API_KEY: !Ref GeminiApiKey
+      # API Gateway event sources (root + proxy for all routes).
+      Events:
+        RootRoute:
+          Type: HttpApi
+          Properties:
+            Path: /
+            Method: ANY
+        ProxyRoute:
+          Type: HttpApi
+          Properties:
+            Path: /{proxy+}
+            Method: ANY
+
+# Values printed after successful deployment.
+Outputs:
+  ApiUrl:
+    Description: Public URL for the deployed weather web app
+    Value: !Sub "https://${ServerlessHttpApi}.execute-api.${AWS::Region}.amazonaws.com"

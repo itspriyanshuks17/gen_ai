@@ -1,0 +1,6 @@
+# Historical install commands used while building this project.
+# Note: some packages below were replaced by newer setup choices.
+npm install dotenv
+npm install openai --save
+npm install gemini --save
+npm install readline-sync

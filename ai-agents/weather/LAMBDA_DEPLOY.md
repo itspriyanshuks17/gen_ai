@@ -17,6 +17,37 @@ flowchart TD
     I --> J[Browser opens app]
 ```
 
+### Deployment Flow (ASCII)
+
+```text
++----------------------------------------------+
+| Local Project                                |
+| index.js + public/ + template.yaml           |
++--------------------------+-------------------+
+                           |
+                           v
+                  aws sts get-caller-identity
+                           |
+                           v
+                    sam build -t template.yaml
+                           |
+                           v
+                          sam deploy
+                           |
+                           v
++-----------------------------------------------------------+
+| CloudFormation Stack: wweather                            |
+|   |- Lambda Function: weather-agent-app                   |
+|   |- API Gateway HTTP API                                 |
++--------------------------+--------------------------------+
+                           |
+                           v
+                    Public API URL generated
+                           |
+                           v
+                       Browser opens app
+```
+
 ## Runtime Architecture (Diagram)
 
 ```mermaid
@@ -37,6 +68,45 @@ sequenceDiagram
     G-->>L: Gemini response
     L-->>API: JSON { city, geminiReply, localWeather }
     API-->>User: API response
+```
+
+### Runtime Architecture (ASCII)
+
+```text
+Browser User
+   |
+   | GET /
+   v
+API Gateway HTTP API
+   |
+   | invoke
+   v
+Lambda (index.handler)
+   |
+   | read public/index.html
+   v
+API Gateway  ------> returns HTML to Browser User
+
+Browser User
+   |
+   | POST /api/weather { city }
+   v
+API Gateway HTTP API
+   |
+   | invoke
+   v
+Lambda (index.handler)
+   |
+   | generateContent(city prompt)
+   v
+Gemini API
+   |
+   | response text
+   v
+Lambda builds JSON: { city, geminiReply, localWeather }
+   |
+   v
+API Gateway  ------> returns JSON to Browser User
 ```
 
 ## 1) Prerequisites

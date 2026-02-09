@@ -239,6 +239,35 @@ For full step-by-step, see:
 - `MANUAL_LAMBDA_DEPLOY.md`
 - `AWS_CONSOLE_DEPLOY.md`
 
+## CI/CD Integration (GitHub + Jenkins)
+
+This repository now includes:
+- GitHub Actions workflow: `.github/workflows/deploy.yml`
+- Jenkins pipeline: `Jenkinsfile`
+
+### GitHub Actions Setup
+
+1. Add repository secrets in GitHub:
+   - `AWS_ACCESS_KEY_ID`
+   - `AWS_SECRET_ACCESS_KEY`
+   - `GEMINI_API_KEY`
+   - Optional: `AWS_REGION` (default in workflow is `ap-south-1`)
+   - Optional: `STACK_NAME` (default in workflow is `wweather`)
+2. Push changes:
+   - `validate` and `build` run for PRs and pushes that touch `ai-agents/weather/`.
+   - `deploy` runs automatically only on pushes to `main`.
+
+### Jenkins Setup
+
+1. Create a Multibranch Pipeline using root `Jenkinsfile`.
+2. Ensure Jenkins agent has `node`, `sam`, and `aws` installed.
+3. Add Jenkins credentials:
+   - AWS credential id: `aws-ci-user`
+   - Secret text id: `gemini-api-key`
+4. Pipeline behavior:
+   - Validate + build on all branches.
+   - Deploy only on branch `main`.
+
 ## Common Issues
 
 - `sam: not found`: install SAM CLI.

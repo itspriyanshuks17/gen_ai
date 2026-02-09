@@ -15,8 +15,8 @@ Resources:
   WeatherFunction:
     Type: AWS::Serverless::Function
     Properties:
-      # Lambda name in AWS account.
-      FunctionName: weather-agent-app
+      # Use stack-scoped naming to avoid collisions with manually-created functions.
+      FunctionName: !Sub "${AWS::StackName}-weather-agent-app"
       # Node runtime must match your code target.
       Runtime: nodejs20.x
       # Exported handler in index.js.

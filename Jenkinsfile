@@ -7,7 +7,7 @@ pipeline {
   environment {
     APP_DIR = 'ai-agents/weather'
     TEMPLATE_FILE = 'template.yaml'
-    STACK_NAME = 'wweather'
+    STACK_NAME = 'jenkins-wweather-a-agent'
     AWS_REGION = 'ap-south-1'
   }
 

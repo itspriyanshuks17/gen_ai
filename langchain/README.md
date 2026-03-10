@@ -247,6 +247,180 @@ result = agent.run("What is the capital of France?")
 print(result)
 ```
 
+## Sequential Chains
+
+Sequential chains allow you to combine multiple chains in a specific order, where the output of one chain becomes the input for the next. This enables complex multi-step workflows and data processing pipelines.
+
+### Types of Sequential Chains
+
+1. **SimpleSequentialChain**: Chains where each step has a single input/output
+2. **SequentialChain**: More flexible chains that can handle multiple inputs/outputs
+
+![Sequential Chain](images/sequential.png)
+
+
+### SimpleSequentialChain Example
+
+```python
+# Import necessary modules for sequential chains
+from langchain.llms import OpenAI  # LLM for processing
+from langchain.prompts import PromptTemplate  # For creating prompt templates
+from langchain.chains import LLMChain, SimpleSequentialChain  # Chain classes
+
+# Initialize the LLM
+llm = OpenAI(temperature=0.7)
+
+# Chain 1: Generate a topic idea
+# This chain takes a subject and generates a specific topic
+prompt1 = PromptTemplate(
+    input_variables=["subject"],  # Input: broad subject area
+    template="Generate a specific topic related to {subject} for a blog post."  # Task: make it specific
+)
+chain1 = LLMChain(llm=llm, prompt=prompt1)
+
+# Chain 2: Create an outline
+# This chain takes the specific topic and creates a structured outline
+prompt2 = PromptTemplate(
+    input_variables=["topic"],  # Input: specific topic from chain1
+    template="Create a 5-point outline for a blog post about: {topic}"  # Task: create outline
+)
+chain2 = LLMChain(llm=llm, prompt=prompt2)
+
+# Chain 3: Write the introduction
+# This chain takes the outline and writes an engaging introduction
+prompt3 = PromptTemplate(
+    input_variables=["outline"],  # Input: outline from chain2
+    template="Based on this outline, write an engaging 100-word introduction:\n{outline}"  # Task: write intro
+)
+chain3 = LLMChain(llm=llm, prompt=prompt3)
+
+# Create the sequential chain
+# Each chain's output automatically becomes the next chain's input
+overall_chain = SimpleSequentialChain(
+    chains=[chain1, chain2, chain3],  # Execute chains in this order
+    verbose=True  # Show progress of each step
+)
+
+# Run the sequential chain
+# Start with a broad subject, get a complete blog post introduction
+result = overall_chain.run("artificial intelligence")
+
+# The result will be the final output (introduction) from chain3
+print(result)
+```
+
+**Workflow Explanation:**
+1. **Chain 1** takes "artificial intelligence" → outputs "Machine Learning in Healthcare"
+2. **Chain 2** takes "Machine Learning in Healthcare" → outputs a 5-point outline
+3. **Chain 3** takes the outline → outputs a 100-word introduction
+
+### SequentialChain with Multiple Inputs/Outputs
+
+```python
+# Import SequentialChain for more complex workflows
+from langchain.chains import SequentialChain
+
+# Initialize LLM
+llm = OpenAI(temperature=0.7)
+
+# Chain 1: Research and summarize a topic
+research_prompt = PromptTemplate(
+    input_variables=["topic"],  # Input: topic to research
+    template="Research and provide key facts about {topic} in 3 bullet points."  # Task: research
+)
+research_chain = LLMChain(
+    llm=llm,
+    prompt=research_prompt,
+    output_key="research_summary"  # Named output for use in next chains
+)
+
+# Chain 2: Generate questions based on research
+questions_prompt = PromptTemplate(
+    input_variables=["research_summary", "audience"],  # Multiple inputs
+    template="Based on this research: {research_summary}\n"  # Use research from chain1
+           "Generate 3 thoughtful questions for {audience} readers."  # Add audience parameter
+)
+questions_chain = LLMChain(
+    llm=llm,
+    prompt=questions_prompt,
+    output_key="questions"  # Named output
+)
+
+# Chain 3: Create discussion points
+discussion_prompt = PromptTemplate(
+    input_variables=["research_summary", "questions", "tone"],  # Multiple inputs
+    template="Research: {research_summary}\n"  # Use research from chain1
+           "Questions: {questions}\n"  # Use questions from chain2
+           "Create 2 discussion points in a {tone} tone."  # Add tone parameter
+)
+discussion_chain = LLMChain(
+    llm=llm,
+    prompt=discussion_prompt,
+    output_key="discussion_points"  # Final output
+)
+
+# Create sequential chain with multiple inputs
+content_chain = SequentialChain(
+    chains=[research_chain, questions_chain, discussion_chain],  # Execution order
+    input_variables=["topic", "audience", "tone"],  # Initial inputs provided by user
+    output_variables=["research_summary", "questions", "discussion_points"],  # Final outputs
+    verbose=True  # Show detailed execution
+)
+
+# Run the chain with multiple inputs
+result = content_chain({
+    "topic": "renewable energy",
+    "audience": "high school students",
+    "tone": "engaging and educational"
+})
+
+# Access individual outputs
+print("Research Summary:")
+print(result["research_summary"])
+print("\nQuestions:")
+print(result["questions"])
+print("\nDiscussion Points:")
+print(result["discussion_points"])
+```
+
+**Key Features of SequentialChain:**
+- **Multiple Inputs**: Can accept several input variables at the start
+- **Named Outputs**: Each chain can output to a specific key for use by subsequent chains
+- **Complex Workflows**: Supports branching logic and conditional processing
+- **Output Selection**: Choose which outputs to return from the final result
+
+### Sequential Chain Workflow Diagram
+
+```mermaid
+graph TD
+    A[Input Variables] --> B[Chain 1]
+    B --> C[Chain 1 Output]
+    C --> D[Chain 2]
+    D --> E[Chain 2 Output]
+    E --> F[Chain 3]
+    F --> G[Final Output]
+
+    H[Additional Inputs] --> D
+    I[More Inputs] --> F
+```
+
+### Use Cases for Sequential Chains
+
+1. **Content Generation Pipeline**: Research → Outline → Write → Edit
+2. **Data Processing**: Extract → Transform → Load operations
+3. **Multi-step Analysis**: Gather data → Analyze → Summarize → Recommend
+4. **Educational Workflows**: Explain concept → Generate examples → Create quiz → Provide answers
+5. **Business Processes**: Customer inquiry → Research → Draft response → Quality check
+
+### Best Practices for Sequential Chains
+
+1. **Clear Input/Output Design**: Plan how data flows between chains
+2. **Error Handling**: Add validation between chain steps
+3. **Memory Management**: Consider memory usage for long chains
+4. **Testing**: Test each chain individually before combining
+5. **Verbose Logging**: Use verbose=True for debugging complex chains
+6. **Modular Design**: Keep individual chains focused on single responsibilities
+
 ## Advanced Features
 
 ### 1. Custom Chains

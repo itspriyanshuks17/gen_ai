@@ -11,3 +11,6 @@ langchain/.env
 langchain/secret_key.py
 langchain/.ipynb_checkpoints
 langchain/__pycache__
+
+langchain/RestaurantNameGenerator/__pycache__/secret_key.py
+langchain/RestaurantNameGenerator/secret_key.py

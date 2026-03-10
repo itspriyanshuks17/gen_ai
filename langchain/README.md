@@ -72,6 +72,8 @@ stateDiagram-v2
     Plan --> Respond: If direct answer
 ```
 
+![alt text](images/agent-workflow.png "Agent Workflow")
+
 ### RAG (Retrieval-Augmented Generation) Pipeline
 ```mermaid
 graph LR

@@ -4,6 +4,11 @@ This guide walks you through creating a fully functional AI telephony agent usin
 
 By the end, you will have a working AI assistant you can call from any phone.
 
+## Official VideoSDK Docs
+
+- Telephony Introduction: https://docs.videosdk.live/telephony/introduction
+- AI Telephony Agent Quick Start: https://docs.videosdk.live/telephony/ai-telephony-agent-quick-start
+
 ## Architecture
 
 At a high level:
@@ -187,4 +192,19 @@ Examples:
 - Deploy this agent to a cloud host for production uptime.
 - Add call logging and analytics.
 - Add domain-specific prompts and tools for your use case.
+
+## Additional Resources
+
+- Deploy your agent: https://docs.videosdk.live/telephony/ai-telephony-agent-quick-start
+- Explore telephony docs: https://docs.videosdk.live/telephony/introduction
+- Provider integrations (Twilio, Vonage, Telnyx, Plivo, etc.): https://docs.videosdk.live/telephony/introduction
+
+## Got a Question?
+
+Ask on Discord: https://discord.gg/videosdk
+
+## Source Note
+
+This README is based on the VideoSDK telephony docs content (including AI Telephony Agent Quick Start).
+Original doc metadata referenced: last updated Sep 17, 2025 by `sosumit001`.
 

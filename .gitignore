@@ -14,3 +14,7 @@ langchain/__pycache__
 
 langchain/RestaurantNameGenerator/__pycache__/secret_key.py
 langchain/RestaurantNameGenerator/secret_key.py
+
+
+ai-agents/voice-agents/.venv
+ai-agents/voice-agents/.env

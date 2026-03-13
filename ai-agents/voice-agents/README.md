@@ -51,6 +51,19 @@ VIDEOSDK_AUTH_TOKEN="your_videosdk_token_here"
 GOOGLE_API_KEY="your_google_api_key_here"
 ```
 
+Credential notes:
+
+- `VIDEOSDK_AUTH_TOKEN` must be a VideoSDK JWT token (`header.payload.signature`), not a raw API key UUID.
+- If you do not have a pre-generated token, you can provide:
+
+```env
+VIDEOSDK_API_KEY="your_videosdk_api_key"
+VIDEOSDK_SECRET_KEY="your_videosdk_secret_key"
+GOOGLE_API_KEY="your_google_api_key_here"
+```
+
+The app will generate a short-lived auth token at startup.
+
 ### 2) Install dependencies
 
 Your `requirements.txt` should contain:
@@ -183,6 +196,9 @@ Examples:
 - Agent starts but does not speak:
 	- Confirm `GOOGLE_API_KEY` is valid in `.env`.
 	- Reinstall dependencies from `requirements.txt`.
+- `Process ... failed to initialize within 10.0s`:
+	- Increase startup timeout in `.env` with `AGENT_INIT_TIMEOUT=45` (or higher).
+	- Keep `AGENT_MAX_PROCESSES=1` in local/WSL development.
 - Outbound call fails:
 	- Confirm outbound gateway credentials and SIP termination URI.
 	- Confirm API token and `gatewayId` are correct.

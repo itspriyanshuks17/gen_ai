@@ -3,556 +3,390 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Understanding Embeddings — Study Notes</title>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Mono:wght@300;400;500&family=Cabinet+Grotesk:wght@400;500;700;800&display=swap" rel="stylesheet">
-<style>
-  :root {
-    --ink: #1a1612; --ink-muted: #5c5248; --ink-faint: #9e958d;
-    --paper: #f7f4ef; --paper-warm: #efe9df; --paper-dark: #e5ddd2;
-    --accent: #2d6a4f; --accent-light: #d8f3dc; --accent-muted: #74c69d;
-    --gold: #b7791f; --gold-light: #fef3c7;
-    --rust: #9b2c2c; --blue: #2b4c8c; --blue-light: #dbeafe;
-    --border: rgba(26,22,18,0.12); --border-strong: rgba(26,22,18,0.25);
-    --shadow: 0 2px 20px rgba(26,22,18,0.08);
-    --radius: 4px; --radius-lg: 8px;
-  }
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  html { scroll-behavior: smooth; }
-  body { font-family: 'Cabinet Grotesk', sans-serif; background: var(--paper); color: var(--ink); line-height: 1.6; }
-
-  .site-header { background: var(--ink); color: var(--paper); padding: 0 2rem; position: sticky; top: 0; z-index: 100; border-bottom: 2px solid var(--accent); }
-  .header-inner { max-width: 1200px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; height: 56px; }
-  .logo { font-family: 'Fraunces', serif; font-size: 1.1rem; font-weight: 600; color: var(--paper); text-decoration: none; display: flex; align-items: center; gap: 8px; }
-  .logo span { color: var(--accent-muted); }
-  .nav { display: flex; gap: 2px; }
-  .nav a { color: rgba(247,244,239,0.7); text-decoration: none; font-size: 0.82rem; font-weight: 500; letter-spacing: 0.03em; text-transform: uppercase; padding: 6px 12px; border-radius: var(--radius); transition: all 0.2s; }
-  .nav a:hover { color: var(--paper); background: rgba(255,255,255,0.08); }
-  .nav a.active { color: var(--accent-muted); }
-
-  /* PAGE LAYOUT */
-  .page-layout { max-width: 1200px; margin: 0 auto; padding: 2rem; display: grid; grid-template-columns: 260px 1fr; gap: 3rem; align-items: start; }
-
-  /* SIDEBAR TOC */
-  .toc { position: sticky; top: 76px; }
-  .toc-label { font-size: 0.7rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-faint); margin-bottom: 0.8rem; }
-  .toc ul { list-style: none; }
-  .toc li { margin-bottom: 2px; }
-  .toc a { text-decoration: none; color: var(--ink-muted); font-size: 0.84rem; padding: 5px 10px; border-radius: var(--radius); display: block; border-left: 2px solid transparent; transition: all 0.15s; }
-  .toc a:hover { color: var(--ink); background: var(--paper-warm); }
-  .toc a.active { color: var(--accent); border-left-color: var(--accent); background: var(--accent-light); }
-  .toc-sub { padding-left: 12px !important; font-size: 0.78rem !important; }
-  .toc-divider { height: 1px; background: var(--border); margin: 8px 10px; }
-  .prev-next { margin-top: 1.5rem; display: flex; flex-direction: column; gap: 8px; }
-  .prev-next a { text-decoration: none; color: var(--ink-muted); font-size: 0.8rem; padding: 8px 10px; border: 1px solid var(--border); border-radius: var(--radius); transition: all 0.2s; }
-  .prev-next a:hover { border-color: var(--accent); color: var(--accent); }
-  .prev-next .nav-label { font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--ink-faint); display: block; margin-bottom: 2px; }
-
-  /* CONTENT */
-  .content { min-width: 0; }
-  .page-hero { margin-bottom: 2.5rem; padding-bottom: 2rem; border-bottom: 2px solid var(--border); }
-  .breadcrumb { font-size: 0.78rem; color: var(--ink-faint); margin-bottom: 0.8rem; }
-  .breadcrumb a { color: var(--accent); text-decoration: none; }
-  .page-title { font-family: 'Fraunces', serif; font-size: 2.5rem; font-weight: 300; letter-spacing: -0.02em; line-height: 1.1; margin-bottom: 0.8rem; }
-  .page-subtitle { font-size: 1rem; color: var(--ink-muted); line-height: 1.65; }
-
-  /* TYPOGRAPHY */
-  h2 { font-family: 'Fraunces', serif; font-size: 1.7rem; font-weight: 400; letter-spacing: -0.01em; margin: 2.5rem 0 1rem; padding-top: 0.5rem; scroll-margin-top: 80px; }
-  h3 { font-family: 'Cabinet Grotesk', sans-serif; font-size: 1.1rem; font-weight: 700; margin: 1.8rem 0 0.6rem; scroll-margin-top: 80px; }
-  h4 { font-size: 0.9rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--ink-muted); margin: 1.4rem 0 0.5rem; }
-  p { font-size: 0.95rem; color: var(--ink-muted); line-height: 1.75; margin-bottom: 1rem; }
-  strong { color: var(--ink); font-weight: 700; }
-
-  /* CALLOUTS */
-  .callout { border-radius: var(--radius-lg); padding: 1.2rem 1.4rem; margin: 1.5rem 0; border-left: 3px solid; }
-  .callout-title { font-size: 0.78rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 0.4rem; }
-  .callout-key { background: var(--accent-light); border-color: var(--accent); }
-  .callout-key .callout-title { color: var(--accent); }
-  .callout-key p { color: #1a3d2a; }
-  .callout-warn { background: #fef3c7; border-color: var(--gold); }
-  .callout-warn .callout-title { color: var(--gold); }
-  .callout-warn p { color: #6b4a0c; }
-  .callout-info { background: var(--blue-light); border-color: var(--blue); }
-  .callout-info .callout-title { color: var(--blue); }
-  .callout-info p { color: #1a2e5a; }
-
-  /* CODE */
-  code { font-family: 'DM Mono', monospace; font-size: 0.82rem; background: var(--paper-dark); padding: 2px 6px; border-radius: var(--radius); color: var(--rust); }
-  pre { background: var(--ink); color: #d4c9bb; border-radius: var(--radius-lg); padding: 1.4rem; overflow-x: auto; margin: 1.2rem 0; }
-  pre code { background: none; padding: 0; color: inherit; font-size: 0.82rem; line-height: 1.6; }
-  .code-comment { color: #6b7a5e; }
-  .code-keyword { color: #74c69d; }
-  .code-string { color: #f6ad55; }
-  .code-func { color: #90cdf4; }
-
-  /* TABLE */
-  .table-wrap { overflow-x: auto; margin: 1.2rem 0; }
-  table { width: 100%; border-collapse: collapse; font-size: 0.88rem; }
-  th { background: var(--ink); color: var(--paper); font-size: 0.78rem; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; padding: 10px 14px; text-align: left; }
-  td { padding: 9px 14px; border-bottom: 1px solid var(--border); color: var(--ink-muted); vertical-align: top; }
-  tr:hover td { background: var(--paper-warm); }
-
-  /* DEFINITION LIST */
-  .def-grid { display: grid; gap: 10px; margin: 1.2rem 0; }
-  .def-item { background: white; border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 1rem 1.2rem; }
-  .def-term { font-weight: 700; font-size: 0.9rem; color: var(--ink); margin-bottom: 3px; }
-  .def-desc { font-size: 0.85rem; color: var(--ink-muted); line-height: 1.6; }
-
-  /* COMPARISON BOX */
-  .compare-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 1.5rem 0; }
-  .compare-card { border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 1.2rem; background: white; }
-  .compare-card-title { font-size: 0.85rem; font-weight: 700; margin-bottom: 0.5rem; padding-bottom: 0.5rem; border-bottom: 1px solid var(--border); }
-  .compare-card ul { list-style: none; }
-  .compare-card li { font-size: 0.84rem; color: var(--ink-muted); padding: 3px 0; display: flex; gap: 6px; }
-  .compare-card li::before { content: '•'; color: var(--accent); flex-shrink: 0; }
-
-  /* FORMULA BOX */
-  .formula-box { background: var(--ink); color: var(--paper); border-radius: var(--radius-lg); padding: 1.2rem 1.5rem; margin: 1.2rem 0; font-family: 'DM Mono', monospace; }
-  .formula-name { font-size: 0.7rem; color: var(--accent-muted); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 8px; font-family: 'Cabinet Grotesk', sans-serif; font-weight: 700; }
-  .formula-expr { font-size: 1rem; color: #fef3c7; letter-spacing: 0.02em; }
-  .formula-desc { font-size: 0.78rem; color: rgba(247,244,239,0.5); margin-top: 6px; font-family: 'Cabinet Grotesk', sans-serif; }
-
-  /* TAGS */
-  .tag { font-size: 0.72rem; font-weight: 600; letter-spacing: 0.04em; padding: 2px 8px; border-radius: 100px; border: 1px solid; display: inline-block; margin: 2px; }
-  .tag-green { color: #166534; background: #dcfce7; border-color: #bbf7d0; }
-  .tag-blue { color: #1e3a8a; background: #dbeafe; border-color: #bfdbfe; }
-  .tag-amber { color: #92400e; background: #fef3c7; border-color: #fde68a; }
-  .tag-purple { color: #4c1d95; background: #ede9fe; border-color: #ddd6fe; }
-
-  /* VISUAL EMBED DIAGRAM */
-  .diagram { background: var(--paper-warm); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 1.5rem; margin: 1.5rem 0; }
-  .diagram-title { font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--ink-faint); margin-bottom: 1rem; }
-  .flow-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 8px; }
-  .flow-box { background: white; border: 1px solid var(--border); border-radius: var(--radius); padding: 6px 14px; font-size: 0.82rem; font-weight: 600; white-space: nowrap; }
-  .flow-box.accent { background: var(--accent); color: white; border-color: var(--accent); }
-  .flow-box.gold { background: var(--gold-light); border-color: rgba(183,121,31,0.4); color: #6b4a0c; }
-  .flow-arrow { color: var(--ink-faint); font-size: 1rem; }
-
-  footer { background: var(--ink); color: rgba(247,244,239,0.5); text-align: center; padding: 2rem; font-size: 0.8rem; margin-top: 4rem; }
-  footer a { color: var(--accent-muted); text-decoration: none; }
-  @media (max-width: 900px) { .page-layout { grid-template-columns: 1fr; } .toc { display: none; } .compare-grid { grid-template-columns: 1fr; } }
-</style>
+<title>Embeddings — Representations &amp; Quality | Vector Notes</title>
+<link rel="stylesheet" href="shared.css">
 </head>
 <body>
+<nav>
+  <a href="embeddings.html" class="nav-logo">Vector<span>.</span>Stores</a>
+  <ul class="nav-links">
+    <li><a href="embeddings.html" class="nav-back">← Hub</a></li>
+    <li><a href="index.html">ML Notes</a></li>
+    <li><a href="page-training.html">Ch.2 Training</a></li>
+  </ul>
+</nav>
 
-<header class="site-header">
-  <div class="header-inner">
-    <a href="index.html" class="logo"><span>⬡</span> Embeddings & Vector Stores</a>
-    <nav class="nav">
-      <a href="index.html">Home</a>
-      <a href="page-embeddings.html" class="active">Embeddings</a>
-      <a href="page-vector-search.html">Vector Search</a>
-      <a href="page-vector-db.html">Databases</a>
-      <a href="page-applications.html">Applications</a>
-      <a href="page-glossary.html">Glossary</a>
-    </nav>
-  </div>
-</header>
+<div class="page-hero">
+  <div class="page-hero-grid"></div>
+  <div class="page-hero-glow" style="background:radial-gradient(circle, rgba(0,180,216,0.15) 0%, transparent 70%)"></div>
+  <p class="page-eyebrow fade-up">Volume 01</p>
+  <h1 class="page-title fade-up d1">Embedding <em>Representations</em></h1>
+  <p class="page-desc fade-up d2">Explore how diverse text, images, and structured tables are projected into semantic vector manifolds and evaluated quantitatively.</p>
+</div>
 
 <div class="page-layout">
-  <aside class="toc">
-    <div class="toc-label">On this page</div>
-    <ul>
-      <li><a href="#what-are">What Are Embeddings?</a></li>
-      <li><a href="#evaluating" class="toc-sub">Evaluating Quality</a></li>
-      <li><a href="#metrics" class="toc-sub">Metrics (P, R, nDCG)</a></li>
-      <li><a href="#text-embeddings">Text Embeddings</a></li>
-      <li><a href="#tokenization" class="toc-sub">Tokenization</a></li>
-      <li><a href="#word-embeddings">Word Embeddings</a></li>
-      <li><a href="#word2vec" class="toc-sub">Word2Vec</a></li>
-      <li><a href="#glove-swivel" class="toc-sub">GloVe & SWIVEL</a></li>
-      <li><a href="#document-embeddings">Document Embeddings</a></li>
-      <li><a href="#bow" class="toc-sub">Shallow BoW Models</a></li>
-      <li><a href="#deep-llm" class="toc-sub">Deep Pretrained LLMs</a></li>
-      <li><a href="#multimodal">Image & Multimodal</a></li>
-      <li><a href="#structured">Structured Data</a></li>
-      <li><a href="#graph">Graph Embeddings</a></li>
-    </ul>
-    <div class="toc-divider"></div>
-    <div class="prev-next">
-      <a href="index.html"><span class="nav-label">← Previous</span> Home / Overview</a>
-      <a href="page-training.html"><span class="nav-label">Next →</span> Training Embeddings</a>
+  <aside class="sidebar">
+    <div class="sidebar-section">
+      <p class="sidebar-label">This Volume</p>
+      <ul class="sidebar-nav">
+        <li><a href="#intro" class="active">1.0 Introduction</a></li>
+        <li><a href="#importance">1.1 Core Importance</a></li>
+        <li><a href="#quality">1.2 Evaluating Quality</a></li>
+        <li><a href="#rag">1.3 Search &amp; RAG Flow</a></li>
+        <li><a href="#types">1.4 Taxonomy of Embeddings</a></li>
+        <li><a href="#text">1.4.1 Text Embeddings</a></li>
+        <li><a href="#word">1.4.2 Word Embeddings</a></li>
+        <li><a href="#doc">1.4.3 Document Embeddings</a></li>
+        <li><a href="#multimodal">1.4.4 Multimodal</a></li>
+        <li><a href="#structured">1.4.5 Structured &amp; Graph</a></li>
+      </ul>
+    </div>
+    <div class="sidebar-section">
+      <p class="sidebar-label">Next</p>
+      <ul class="sidebar-nav">
+        <li><a href="page-training.html">Ch.2 Training →</a></li>
+      </ul>
     </div>
   </aside>
 
-  <article class="content">
-    <div class="page-hero">
-      <div class="breadcrumb"><a href="index.html">Home</a> / Chapter 01</div>
-      <h1 class="page-title">Understanding<br>Embeddings</h1>
-      <p class="page-subtitle">From the mathematical intuition to practical types — text, image, multimodal, structured data, and graph embeddings — with evaluation metrics and key algorithms.</p>
+  <main class="main-content">
+
+    <!-- INTRO -->
+    <div class="content-section">
+      <span class="section-anchor" id="intro"></span>
+      <h2 class="section-h">1.0 Introduction <span class="section-badge">Vector Spaces</span></h2>
+      <p>Modern machine learning thrives on diverse, heterogeneous data types—images, text, audio, graph structures, and structured tables. <strong style="color:var(--white)">Embeddings</strong> act as a unified mathematical translation layer, transforming unstructured real-world objects into dense, low-dimensional numerical vectors in a shared latent space.</p>
+      <div class="callout green">
+        <div class="callout-title">Lossy Semantic Compression</div>
+        Embeddings represent a form of lossy compression. They compress high-dimensional raw content into highly condensed vectors (e.g., 768 or 1536 float values) while strictly preserving critical semantic relationships.
+      </div>
     </div>
 
-    <!-- SECTION 1 -->
-    <section id="what-are">
-      <h2>What Are Embeddings?</h2>
-      <p>Embeddings are <strong>numerical representations of real-world objects</strong> — text, speech, images, videos — expressed as low-dimensional vectors. The term "embedding" comes from mathematics, where one space is mapped (embedded) into another.</p>
-
-      <div class="callout callout-key">
-        <div class="callout-title">🔑 Core Intuition</div>
-        <p>Think of latitude and longitude. Any location on Earth maps to just two numbers, yet these two numbers let you measure distance and find nearby places. Embeddings do the same for abstract data — objects that are semantically similar end up <strong>geometrically close</strong> in the vector space.</p>
-      </div>
-
-      <p>The original BERT model embeds text into a vector of <code>768 numbers</code>, compressing the infinite space of possible sentences down to a manageable 768 dimensions, while preserving semantic relationships. If the word "computer" and "laptop" are similar in meaning, their embeddings will be close in vector space.</p>
-
-      <h3>Why Embeddings Matter</h3>
-      <div class="def-grid">
-        <div class="def-item">
-          <div class="def-term">Compact Representation</div>
-          <div class="def-desc">Lossy compression that retains the important semantic properties. Much smaller than one-hot encoding (which requires a dimension per vocabulary term).</div>
-        </div>
-        <div class="def-item">
-          <div class="def-term">Semantic Comparison</div>
-          <div class="def-desc">Two vectors can be compared numerically — their distance measures how semantically different the underlying objects are.</div>
-        </div>
-        <div class="def-item">
-          <div class="def-term">Cross-Modal Search</div>
-          <div class="def-desc">Joint embeddings place text and images in the same vector space, enabling text-to-image or image-to-text retrieval.</div>
-        </div>
-        <div class="def-item">
-          <div class="def-term">Downstream ML Features</div>
-          <div class="def-desc">Use as ready-made, dense feature vectors for classifiers, recommenders, and other ML models.</div>
-        </div>
-      </div>
-
-      <div class="callout callout-warn">
-        <div class="callout-title">⚠️ Important — Model Compatibility</div>
-        <p>Embeddings from <strong>different models are NOT compatible</strong>. You must use the same model for both indexing and querying. Mixing models gives meaningless similarity scores.</p>
-      </div>
-
-      <h3>Key Applications</h3>
-      <p>The three-step retrieval pipeline for production systems:</p>
-      <div class="diagram">
-        <div class="diagram-title">Production Retrieval Pipeline</div>
-        <div class="flow-row">
-          <div class="flow-box">Corpus Items<br><small style="font-weight:400; color:#888">(billions)</small></div>
-          <span class="flow-arrow">→</span>
-          <div class="flow-box accent">Precompute Embeddings</div>
-          <span class="flow-arrow">→</span>
-          <div class="flow-box">Vector Database</div>
-        </div>
-        <div class="flow-row">
-          <div class="flow-box">User Query</div>
-          <span class="flow-arrow">→</span>
-          <div class="flow-box accent">Embed Query</div>
-          <span class="flow-arrow">→</span>
-          <div class="flow-box gold">ANN Nearest Neighbor Search</div>
-          <span class="flow-arrow">→</span>
-          <div class="flow-box">Results</div>
-        </div>
-      </div>
-    </section>
-
-    <!-- SECTION: EVALUATION -->
-    <section id="evaluating">
-      <h2>Evaluating Embedding Quality</h2>
-      <p>Evaluation requires <strong>labeled datasets</strong> where the correct relevant documents are already known. The goal: embeddings that bring similar objects close together and dissimilar objects far apart.</p>
-
-      <section id="metrics">
-        <h3>Core Retrieval Metrics</h3>
-
-        <div class="formula-box">
-          <div class="formula-name">Precision@k</div>
-          <div class="formula-expr">P@k = (# relevant docs in top k) / k</div>
-          <div class="formula-desc">Example: 7 out of 10 retrieved docs are relevant → P@10 = 0.7</div>
-        </div>
-
-        <div class="formula-box">
-          <div class="formula-name">Recall@k</div>
-          <div class="formula-expr">R@k = (# relevant docs retrieved) / (total relevant in corpus)</div>
-          <div class="formula-desc">Example: 3 of 6 total relevant docs retrieved → R@20 = 0.5</div>
-        </div>
-
-        <div class="formula-box">
-          <div class="formula-name">DCG — Discounted Cumulative Gain</div>
-          <div class="formula-expr">DCG@p = Σᵢ₌₁ᵖ  relᵢ / log₂(i + 1)</div>
-          <div class="formula-desc">The denominator penalizes items lower in the ranking. Favors putting the most relevant result first.</div>
-        </div>
-
-        <div class="formula-box">
-          <div class="formula-name">nDCG — Normalized DCG</div>
-          <div class="formula-expr">nDCG = DCG / IDCG</div>
-          <div class="formula-desc">IDCG = ideal ordering. nDCG ∈ [0, 1.0], allows comparison across queries.</div>
-        </div>
-
-        <div class="callout callout-info">
-          <div class="callout-title">📊 Public Benchmarks</div>
-          <p><strong>BEIR</strong> — the standard benchmark for retrieval tasks. <strong>MTEB</strong> (Massive Text Embedding Benchmark) covers more tasks including classification and clustering. Use <code>trec_eval</code> or <code>pytrec_eval</code> (Python) for consistent measurement.</p>
-        </div>
-
-        <div class="table-wrap">
-          <table>
-            <thead><tr><th>Metric</th><th>Measures</th><th>Use When</th><th>Range</th></tr></thead>
-            <tbody>
-              <tr><td>Precision@k</td><td>Quality of top-k results</td><td>User only looks at top k</td><td>0–1</td></tr>
-              <tr><td>Recall@k</td><td>Coverage of relevant results</td><td>Missing items are costly</td><td>0–1</td></tr>
-              <tr><td>nDCG@k</td><td>Ranked relevance quality</td><td>Order of results matters</td><td>0–1</td></tr>
-              <tr><td>MRR</td><td>Mean Reciprocal Rank</td><td>First relevant result position</td><td>0–1</td></tr>
-            </tbody>
-          </table>
-        </div>
-        <p>Additional production considerations: <strong>model size</strong>, <strong>embedding dimension</strong>, <strong>latency</strong>, and overall <strong>cost</strong>.</p>
-      </section>
-    </section>
-
-    <!-- SECTION: TEXT EMBEDDINGS -->
-    <section id="text-embeddings">
-      <h2>Text Embeddings</h2>
-      <p>Text embeddings are central to NLP. They capture the meaning of natural language for use in text generation, classification, sentiment analysis, semantic search, and more. They fall into two main categories: <strong>token/word embeddings</strong> and <strong>document embeddings</strong>.</p>
-
-      <section id="tokenization">
-        <h3>Tokenization — The First Step</h3>
-        <p>Before embedding, text must be tokenized — split into meaningful units — then each token assigned a unique integer ID.</p>
-
-        <div class="diagram">
-          <div class="diagram-title">Text → Embedding Pipeline</div>
-          <div class="flow-row">
-            <div class="flow-box">Input String</div>
-            <span class="flow-arrow">→</span>
-            <div class="flow-box accent">Tokenization</div>
-            <span class="flow-arrow">→</span>
-            <div class="flow-box">Integer Indexing</div>
-            <span class="flow-arrow">→</span>
-            <div class="flow-box accent">Embedding Lookup</div>
-          </div>
-        </div>
-
-        <div class="def-grid">
-          <div class="def-item">
-            <div class="def-term">Token Types</div>
-            <div class="def-desc">Wordpieces, characters, whole words, numbers, punctuation. Subword tokenization (used in BERT) handles unknown words gracefully.</div>
-          </div>
-          <div class="def-item">
-            <div class="def-term">One-Hot Encoding</div>
-            <div class="def-desc">Binary vector — 1 for word present, 0 for absent. Simple but results in sparse, high-dimensional vectors with no semantic meaning.</div>
-          </div>
-        </div>
-      </section>
-    </section>
-
-    <!-- SECTION: WORD EMBEDDINGS -->
-    <section id="word-embeddings">
-      <h2>Word Embeddings</h2>
-      <p>Precursors to modern document embeddings. Context-free — the same word always gets the same vector regardless of sentence context. Major algorithms: <strong>Word2Vec</strong>, <strong>GloVe</strong>, <strong>SWIVEL</strong>.</p>
-
-      <section id="word2vec">
-        <h3>Word2Vec</h3>
-        <p>Principle: <em>"The semantic meaning of a word is defined by its neighbors."</em> Words that frequently appear together get similar embeddings.</p>
-
-        <div class="compare-grid">
-          <div class="compare-card">
-            <div class="compare-card-title" style="color: var(--blue);">CBOW — Continuous Bag of Words</div>
-            <ul>
-              <li>Predicts the <strong>middle word</strong> from surrounding context</li>
-              <li>Agnostic to word order in context window</li>
-              <li>Faster to train</li>
-              <li>Slightly more accurate for <strong>frequent words</strong></li>
-            </ul>
-          </div>
-          <div class="compare-card">
-            <div class="compare-card-title" style="color: var(--rust);">Skip-Gram</div>
-            <ul>
-              <li>Predicts <strong>surrounding words</strong> from the middle</li>
-              <li>Inverse setup to CBOW</li>
-              <li>Slower to train</li>
-              <li>Better for <strong>rare words</strong> and small datasets</li>
-            </ul>
-          </div>
-        </div>
-
-        <p>Word2Vec produces a matrix of shape <code>(vocab_size × embedding_dim)</code> used as a lookup table. Extended to sub-word level in <strong>FastText</strong>.</p>
-        <p><strong>Limitation:</strong> Word2Vec captures local statistics (within a sliding window) but misses global co-occurrence statistics across the whole corpus.</p>
-      </section>
-
-      <section id="glove-swivel">
-        <h3>GloVe & SWIVEL</h3>
-        <div class="compare-grid">
-          <div class="compare-card">
-            <div class="compare-card-title" style="color: var(--accent);">GloVe</div>
-            <ul>
-              <li>Builds a global <strong>co-occurrence matrix</strong></li>
-              <li>Uses matrix factorization</li>
-              <li>Captures both global AND local word statistics</li>
-              <li>Useful for a broad range of NLP tasks</li>
-            </ul>
-          </div>
-          <div class="compare-card">
-            <div class="compare-card-title" style="color: var(--gold);">SWIVEL</div>
-            <ul>
-              <li>Skip-Window Vectors with Negative Sampling</li>
-              <li>Also uses co-occurrence matrix</li>
-              <li>Handles <strong>unobserved co-occurrences</strong> with piecewise loss</li>
-              <li>Considerably faster via distributed training</li>
-              <li>Subdivides matrices into sub-matrices for parallel factorization</li>
-            </ul>
-          </div>
-        </div>
-      </section>
-    </section>
-
-    <!-- SECTION: DOCUMENT EMBEDDINGS -->
-    <section id="document-embeddings">
-      <h2>Document Embeddings</h2>
-      <p>Embed entire paragraphs or documents into dense vectors. Two main stages in the evolution:</p>
-
-      <section id="bow">
-        <h3>Stage 1 — Shallow Bag-of-Words (BoW) Models</h3>
-        <p>Assume documents are unordered collections of words. Fast but miss word order and context.</p>
-
-        <div class="table-wrap">
-          <table>
-            <thead><tr><th>Model</th><th>Approach</th><th>Key Feature</th></tr></thead>
-            <tbody>
-              <tr><td><strong>LSA</strong></td><td>SVD on word-document co-occurrence matrix</td><td>Captures latent topics</td></tr>
-              <tr><td><strong>LDA</strong></td><td>Bayesian network / probabilistic topic model</td><td>Interpretable topics</td></tr>
-              <tr><td><strong>TF-IDF</strong></td><td>Term frequency × inverse document frequency</td><td>Simple, still competitive (BM25)</td></tr>
-              <tr><td><strong>Doc2Vec</strong></td><td>Extends Word2Vec with paragraph ID vector</td><td>Dense doc embedding via neural net (2014)</td></tr>
-            </tbody>
-          </table>
-        </div>
-
-        <div class="callout callout-warn">
-          <div class="callout-title">⚠️ BoW Limitations</div>
-          <p>BoW models ignore <strong>word order</strong> and <strong>semantic context</strong>. "Dog bites man" and "Man bites dog" would produce identical embeddings. This is why deep neural network models became necessary.</p>
-        </div>
-      </section>
-
-      <section id="deep-llm">
-        <h3>Stage 2 — Deep Pretrained LLMs</h3>
-        <p>Key advances that made deep models transformative:</p>
-        <ol style="padding-left:1.2rem; margin-bottom:1rem;">
-          <li style="font-size:0.9rem; color:var(--ink-muted); margin-bottom:6px;"><strong>Bidirectional deep neural networks</strong> (not just left-to-right)</li>
-          <li style="font-size:0.9rem; color:var(--ink-muted); margin-bottom:6px;"><strong>Massive pre-training</strong> on unlabeled text corpora</li>
-          <li style="font-size:0.9rem; color:var(--ink-muted); margin-bottom:6px;"><strong>Subword tokenizers</strong> (handle unseen words gracefully)</li>
-          <li style="font-size:0.9rem; color:var(--ink-muted); margin-bottom:6px;"><strong>Fine-tuning</strong> for specific downstream NLP tasks</li>
-        </ol>
-
-        <h4>BERT (2018) — The Breakthrough</h4>
-        <p><strong>Bidirectional Encoder Representations from Transformers</strong>. Pre-trained on masked language modeling (MLM) — randomly mask tokens, predict them using both left AND right context.</p>
-
-        <div class="def-grid">
-          <div class="def-item">
-            <div class="def-term">Pre-training Objectives</div>
-            <div class="def-desc"><strong>Masked Language Model (MLM)</strong>: randomly mask ~15% of tokens; model must predict them using full bidirectional context. <strong>Next Sentence Prediction (NSP)</strong>: predict whether two sentences are consecutive.</div>
-          </div>
-          <div class="def-item">
-            <div class="def-term">Output</div>
-            <div class="def-desc">Contextualized embedding for every input token. The <code>[CLS]</code> token's embedding is used as the whole-document representation. <strong>Same word = different embeddings</strong> in different contexts (unlike Word2Vec).</div>
-          </div>
-        </div>
-
-        <h4>Evolution Beyond BERT</h4>
-        <div class="table-wrap">
-          <table>
-            <thead><tr><th>Model Family</th><th>Based On</th><th>Key Contribution</th></tr></thead>
-            <tbody>
-              <tr><td><strong>Sentence-BERT</strong></td><td>BERT</td><td>Sentence-level similarity via siamese networks</td></tr>
-              <tr><td><strong>SimCSE</strong></td><td>BERT</td><td>Contrastive learning with in-batch negatives</td></tr>
-              <tr><td><strong>GTR / Sentence-T5</strong></td><td>T5 (11B)</td><td>Better retrieval than BERT family</td></tr>
-              <tr><td><strong>E5</strong></td><td>Transformer</td><td>Weakly supervised contrastive pre-training</td></tr>
-              <tr><td><strong>Gecko</strong></td><td>Gemini</td><td>Gemini backbone; LLM-generated synthetic training data; best-in-class BEIR</td></tr>
-              <tr><td><strong>ColBERT / XTR</strong></td><td>BERT</td><td>Multi-vector embeddings for richer representations</td></tr>
-              <tr><td><strong>ColPali</strong></td><td>Multi-vector</td><td>Joint text+image embeddings for multimodal documents</td></tr>
-            </tbody>
-          </table>
-        </div>
-
-        <div class="callout callout-info">
-          <div class="callout-title">📈 BEIR Score Progress</div>
-          <p>Original BERT models scored <strong>10.6 on BEIR</strong>. Current 2025 Google embeddings via a simple API call now score <strong>55.7</strong> — a 5× improvement, achieved in under 7 years.</p>
-        </div>
-
-        <h4>Matryoshka Embeddings</h4>
-        <p>Allow users to select <strong>how many dimensions</strong> to use. Lower-dimensional prefixes are trained to be meaningful, so you can truncate the vector for speed without a complete quality collapse. Named after nested Russian dolls.</p>
-      </section>
-    </section>
-
-    <!-- SECTION: MULTIMODAL -->
-    <section id="multimodal">
-      <h2>Image & Multimodal Embeddings</h2>
+    <!-- CORE IMPORTANCE -->
+    <div class="content-section">
+      <span class="section-anchor" id="importance"></span>
+      <h2 class="section-h">1.1 Core Importance &amp; Semantic Geometry</h2>
+      <p>The name <em>embeddings</em> originates from mathematics, where one mathematical space is mapped, or embedded, into another. The core principle of embedding manifolds is that <strong style="color:var(--accent2)">geometric distance mirrors semantic similarity</strong>.</p>
 
       <div class="compare-grid">
         <div class="compare-card">
-          <div class="compare-card-title">Unimodal Image Embeddings</div>
-          <ul>
-            <li>Train CNN or Vision Transformer on large image classification task (e.g., ImageNet)</li>
-            <li>Use <strong>penultimate layer</strong> as the embedding</li>
-            <li>That layer learned discriminative features</li>
-            <li>Can be fine-tuned for other tasks</li>
-          </ul>
+          <div class="compare-card-title" style="color:var(--accent)">Semantic Proximity</div>
+          <p>If two data objects are semantically similar (e.g., the word "computer" and a picture of a laptop), their vectors will lie close together in the embedding space.</p>
         </div>
         <div class="compare-card">
-          <div class="compare-card-title">Multimodal / Joint Embeddings</div>
-          <ul>
-            <li>Map text AND images into the <strong>same vector space</strong></li>
-            <li>Train with cross-modal contrastive loss</li>
-            <li>Enables text-to-image retrieval and vice versa</li>
-            <li>ColPali: retrieves from document images without OCR</li>
-          </ul>
+          <div class="compare-card-title" style="color:var(--accent4)">Semantic Divergence</div>
+          <p>If objects have unrelated meanings (e.g., "computer" and "car"), their vectors will project far apart, exhibiting high geometric distance.</p>
         </div>
       </div>
 
-      <div class="callout callout-key">
-        <div class="callout-title">🔑 Joint Embedding Insight</div>
-        <p>In a joint embedding space, the text "a photo of a cat" and an actual photo of a cat should be <strong>close together</strong>, while both should be far from a photo of a dog. This enables cross-modal search at scale.</p>
+      <div class="callout yellow">
+        <div class="callout-title">Intuition: Latitude &amp; Longitude</div>
+        Consider latitude and longitude as a simple 2D embedding of physical locations on Earth. Given two coordinate vectors, we can instantly calculate their geodesic distance or query nearby locations without looking at the map. In the same way, neural networks learn high-dimensional mappings for complex language and visuals.
       </div>
-    </section>
+    </div>
 
-    <!-- SECTION: STRUCTURED DATA -->
-    <section id="structured">
-      <h2>Structured Data Embeddings</h2>
-      <p>Structured data has a defined schema (database tables). Unlike text/images, there are usually no pre-trained models — you must <strong>create the embedding model</strong> for your specific application.</p>
+    <!-- EVALUATING QUALITY -->
+    <div class="content-section">
+      <span class="section-anchor" id="quality"></span>
+      <h2 class="section-h">1.2 Evaluating Embedding Quality <span class="section-badge">Metrics</span></h2>
+      <p>Evaluating embedding models requires quantitative benchmarks to measure their information retrieval capability. Rather than binary correctness, quality is measured on ranked retrieval performance over gold standard labeled datasets.</p>
 
+      <h3 class="sub-h">Key Evaluation Metrics</h3>
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">1</div>
+          <div class="step-body">
+            <div class="step-title">Precision@K</div>
+            <div class="step-desc">
+              Measures what fraction of the top K retrieved documents are relevant.
+              <div class="formula" style="margin: 8px 0;">Precision@K = Relevant Retrieved Documents / K</div>
+              <em>Example:</em> If 7 of the top 10 retrieved chunks are relevant, Precision@10 is 0.7.
+            </div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">2</div>
+          <div class="step-body">
+            <div class="step-title">Recall@K</div>
+            <div class="step-desc">
+              Measures what fraction of the total relevant documents in the corpus were successfully retrieved in the top K.
+              <div class="formula" style="margin: 8px 0;">Recall@K = Relevant Retrieved / Total Relevant in Corpus</div>
+            </div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">3</div>
+          <div class="step-body">
+            <div class="step-title">nDCG@K (Normalized Discounted Cumulative Gain)</div>
+            <div class="step-desc">
+              Evaluates the ranked ordering of results, penalizing the model when highly relevant documents are placed lower in the list.
+              <div class="formula" style="margin: 8px 0;">
+                <span class="formula-label">nDCG@P</span>
+                nDCG@P = DCG@P / IDCG@P &nbsp;&nbsp;|&nbsp;&nbsp; DCG@P = &sum; [ (2^rel_i - 1) / log_2(i + 1) ]
+              </div>
+              Dividing by the Ideal DCG (IDCG@P) normalizes the final score to a scale of 0.0 to 1.0.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="callout green">
+        <div class="callout-title">Public Benchmarks</div>
+        Standard benchmarks like **BEIR** (Heterogeneous Information Retrieval) and **MTEB** (Massive Text Embedding Benchmark) provide extensive criteria. Practitioners use standard evaluations via <code>trec_eval</code> or its Python wrapper <code>pytrec_eval</code> for consistent ranking checks.
+      </div>
+    </div>
+
+    <!-- SEARCH & RAG FLOW -->
+    <div class="content-section">
+      <span class="section-anchor" id="rag"></span>
+      <h2 class="section-h">1.3 Search &amp; RAG Flow</h2>
+      <p>A production **Retrieval-Augmented Generation (RAG)** pipeline divides embedding utilization into two phases:</p>
+
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">1</div>
+          <div class="step-body">
+            <div class="step-title">Offline Index Creation</div>
+            <div class="step-desc">Documents are split into chunks &rarr; parsed &rarr; embedded using the <code>RETRIEVAL_DOCUMENT</code> task type of the model &rarr; loaded into a specialized high-performance Vector Database.</div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">2</div>
+          <div class="step-body">
+            <div class="step-title">Online Query Execution</div>
+            <div class="step-desc">The user query is embedded using the <code>RETRIEVAL_QUERY</code> task type &rarr; a similarity search retrieves the closest document vectors from the database &rarr; the matching text chunks are inserted into the LLM prompt to generate an answer.</div>
+          </div>
+        </div>
+      </div>
+
+      <h3 class="sub-h">Architectures: Siamese vs. Asymmetric Dual Encoders</h3>
       <div class="compare-grid">
         <div class="compare-card">
-          <div class="compare-card-title">General Structured Data</div>
-          <ul>
-            <li>Create row-level embeddings using dimensionality reduction (PCA etc.)</li>
-            <li>Use case: <strong>anomaly detection</strong> on sensor data</li>
-            <li>Use case: fewer labeled samples needed for supervised tasks</li>
+          <div class="compare-card-title" style="color:var(--accent)">Symmetric (Siamese) Network</div>
+          <p style="font-size:12.5px;color:var(--muted);margin-bottom:8px;">Uses a single, shared neural network to encode both queries and documents.</p>
+          <ul style="font-size:12px;">
+            <li>Best for sentence similarity or duplicate detection</li>
+            <li>Assumes queries and documents are structured identically</li>
           </ul>
         </div>
         <div class="compare-card">
-          <div class="compare-card-title">User/Item Structured Data</div>
-          <ul>
-            <li>Maps users AND items into the <strong>same embedding space</strong></li>
-            <li>Interaction data (ratings, clicks) used as training signal</li>
-            <li>Drives <strong>recommendation systems</strong></li>
-            <li>Can be combined with text/image embeddings</li>
+          <div class="compare-card-title" style="color:var(--accent3)">Asymmetric Dual Encoder</div>
+          <p style="font-size:12.5px;color:var(--muted);margin-bottom:8px;">Trains two distinct neural network towers together: one optimized for queries and one for documents.</p>
+          <ul style="font-size:12px;">
+            <li>Essential for question-answering systems</li>
+            <li>Handles queries (short, informal) and documents (long, structured) mapping into a shared space</li>
           </ul>
         </div>
       </div>
-    </section>
 
-    <!-- SECTION: GRAPH -->
-    <section id="graph">
-      <h2>Graph Embeddings</h2>
-      <p>Represent not just an object but also its <strong>neighborhood in a graph</strong>. In a social network, each person's embedding captures both their own attributes and who they're connected to.</p>
+      <h3 class="sub-h" style="margin-top: 32px;">Production Semantic Search with Faiss &amp; Vertex AI</h3>
+      <p>This code example loads a health question dataset (**NFCorpus**), embeds documents and queries asynchronously using the Vertex AI `text-embedding-005` model, creates an L2 distance Faiss index, and evaluates accuracy metrics using `pytrec_eval`:</p>
 
-      <div class="def-grid">
-        <div class="def-item">
-          <div class="def-term">Core Idea</div>
-          <div class="def-desc">If two nodes are connected by an edge, their vectors should be similar. Predict new connections, classify nodes, or recommend items.</div>
+      <pre class="formula" style="font-family:'DM Mono', monospace; font-size:12px; color:#e2e8f0; line-height:1.5; text-align:left; overflow-x:auto; padding:20px; border-left:4px solid var(--accent3);">
+<span style="color:var(--muted)"># 1. Helper function for batched semantic embedding</span>
+def embed_text(texts, model, task, batch_size=5):
+    embed_mat = np.zeros((len(texts), 768))
+    for batch_start in range(0, len(texts), batch_size):
+        size = min(len(texts) - batch_start, batch_size)
+        inputs = [TextEmbeddingInput(texts[batch_start+i], task_type=task) for i in range(size)]
+        embeddings = model.get_embeddings(inputs)
+        for i in range(size):
+            embed_mat[batch_start + i, :] = embeddings[i].values
+    return embed_mat
+
+<span style="color:var(--muted)"># 2. Initialize Vertex AI &amp; Load Gecko/005 model</span>
+vertexai.init(project="PROJECT_ID", location="us-central1")
+model = TextEmbeddingModel.from_pretrained("text-embedding-005")
+
+<span style="color:var(--muted)"># 3. Create document embeddings and load into Faiss L2 index</span>
+doc_embeddings = embed_text(docs, model, "RETRIEVAL_DOCUMENT")
+index = faiss.IndexFlatL2(doc_embeddings.shape[1])
+index.add(doc_embeddings)
+
+<span style="color:var(--muted)"># 4. Search and retrieve top nearest neighbors</span>
+query_embeddings = embed_text(questions, model, "RETRIEVAL_QUERY")
+q_scores, q_doc_ids = index.search(query_embeddings, 10)
+
+<span style="color:var(--muted)"># 5. Evaluate retrieval quality via pytrec_eval</span>
+search_qrels = {
+    q_ids[i] : {
+        doc_ids[_id] : -1.0 * s.item() 
+        for _id, s in zip(q_doc_ids[i], q_scores[i])
+    } for i in range(len(q_ids))
+}
+evaluator = pytrec_eval.RelevanceEvaluator(qrels, {'ndcg_cut.10','P_1','recall_10'})
+df = pd.DataFrame.from_dict(evaluator.evaluate(search_qrels), orient='index')
+print(df.mean())
+<span style="color:var(--accent3)"># P_1: 0.517  |  recall_10: 0.203  |  ndcg_cut_10: 0.402</span></pre>
+    </div>
+
+    <!-- TAXONOMY OF EMBEDDINGS -->
+    <div class="content-section">
+      <span class="section-anchor" id="types"></span>
+      <h2 class="section-h">1.4 Taxonomy of Embeddings</h2>
+      <p>Depending on the format and relational structure of the raw inputs, embeddings fall into five specialized categories:</p>
+      
+      <div class="compare-grid" style="grid-template-columns: 1fr 1fr;">
+        <div class="compare-card">
+          <div class="compare-card-title">1. Text Embeddings</div>
+          <p style="font-size:12px;">Mapping words, subwords, or full documents into dense vectors (Word2Vec, BERT, GTR, Gemini).</p>
         </div>
-        <div class="def-item">
-          <div class="def-term">Popular Algorithms</div>
-          <div class="def-desc"><strong>DeepWalk</strong>, <strong>Node2vec</strong>, <strong>LINE</strong>, <strong>GraphSAGE</strong> — each with different trade-offs between local and global neighborhood information.</div>
+        <div class="compare-card">
+          <div class="compare-card-title">2. Multimodal Embeddings</div>
+          <p style="font-size:12px;">Projecting multiple modalities (text, images, video) into a joint vector space (CLIP, SigLIP, ColPali).</p>
+        </div>
+        <div class="compare-card">
+          <div class="compare-card-title">3. Structured Data Embeddings</div>
+          <p style="font-size:12px;">Embedding row structures in relational databases, categorical schemas, or transaction tables.</p>
+        </div>
+        <div class="compare-card">
+          <div class="compare-card-title">4. Graph Embeddings</div>
+          <p style="font-size:12px;">Representing nodes, edges, and neighborhood connections inside complex network topologies (Node2Vec).</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- TEXT EMBEDDINGS -->
+    <div class="content-section">
+      <span class="section-anchor" id="text"></span>
+      <h2 class="section-h">1.4.1 Text Embeddings &amp; Tokenization</h2>
+      <p>Text cannot be inputted directly into neural networks. It must undergo tokenization and categorical conversions:</p>
+      <div class="steps">
+        <div class="step"><div class="step-num">1</div><div class="step-body"><div class="step-title">Tokenization</div><div class="step-desc">Splitting the input string into smaller units called tokens (wordpieces, characters, punctuation).</div></div></div>
+        <div class="step"><div class="step-num">2</div><div class="step-body"><div class="step-title">Token IDs</div><div class="step-desc">Assigning a unique integer index in the range $[0, V-1]$ where $V$ is vocabulary cardinality.</div></div></div>
+        <div class="step"><div class="step-num">3</div><div class="step-body"><div class="step-title">One-Hot Encoding</div><div class="step-desc">Creating a sparse binary vector where the present token's index is 1, and all others are 0.</div></div></div>
+      </div>
+      <div class="callout yellow">
+        <div class="callout-title">Limitation of One-Hot Encodings</div>
+        Since Integer IDs or one-hot vectors are assigned arbitrarily, they are strictly categorical and **lack any semantic meaning** or relation. They treat "computer" and "calculator" as equidistant as "computer" and "banana". Dense embeddings are required to solve this.
+      </div>
+    </div>
+
+    <!-- WORD EMBEDDINGS -->
+    <div class="content-section">
+      <span class="section-anchor" id="word"></span>
+      <h2 class="section-h">1.4.2 Word Embeddings <span class="section-badge">Precursors</span></h2>
+      <p>Historically, context-free word embeddings laid the foundations for modern language models by operating on the principle that <em>"a word is defined by its neighbors"</em>:</p>
+      
+      <h3 class="sub-h">Word2Vec: CBOW vs. Skip-Gram</h3>
+      <div class="compare-grid">
+        <div class="compare-card">
+          <div class="compare-card-title" style="color:var(--accent)">Continuous Bag of Words (CBOW)</div>
+          <p style="font-size:12.5px;color:var(--muted);margin-bottom:8px;">Predicts a target middle word using the embeddings of surrounding context words as input.</p>
+          <ul style="font-size:12px;">
+            <li>Fast to train</li>
+            <li>More accurate for highly frequent words</li>
+          </ul>
+        </div>
+        <div class="compare-card">
+          <div class="compare-card-title" style="color:var(--accent2)">Skip-Gram</div>
+          <p style="font-size:12.5px;color:var(--muted);margin-bottom:8px;">Inverse of CBOW; uses a single middle word to predict surrounding context words.</p>
+          <ul style="font-size:12px;">
+            <li>Slower to train</li>
+            <li>Significantly more accurate for rare words</li>
+          </ul>
         </div>
       </div>
 
-      <p><strong>Applications:</strong> node classification, link prediction, community detection, knowledge graph completion, fraud detection, recommendation systems.</p>
+      <h3 class="sub-h">Global Statistics: GloVe &amp; SWIVEL</h3>
+      <ul class="content-list">
+        <li><strong>GloVe (Global Vectors):</strong> Addresses Word2Vec's failure to capture corpus-wide global statistics by building a global word co-occurrence matrix and performing matrix factorization.</li>
+        <li><strong>SWIVEL (Skip-Window Vectors with Negative Sampling):</strong> Speeds up training on huge corpora by dividing the co-occurrence matrix into sub-matrices, performing distributed matrix factorization in parallel across multiple systems using a specialized piecewise loss to handle unobserved pairs.</li>
+      </ul>
+    </div>
 
-      <div class="callout callout-key">
-        <div class="callout-title">🔑 When to Use Graph Embeddings</div>
-        <p>When your data has an <strong>inherent graph structure</strong> — social networks, knowledge graphs, citation networks, supply chains — graph embeddings typically outperform standard text or structured data embeddings.</p>
+    <!-- DOCUMENT EMBEDDINGS -->
+    <div class="content-section">
+      <span class="section-anchor" id="doc"></span>
+      <h2 class="section-h">1.4.3 Document Embeddings <span class="section-badge">Evolution</span></h2>
+      <p>Document embeddings capture the semantic meaning of paragraphs and full texts. Their evolution split into two core eras:</p>
+
+      <h3 class="sub-h">1. Shallow Bag-of-Words (BoW) Era</h3>
+      <p>Assumes a document is an unordered bag of tokens, completely ignoring word order and syntax:</p>
+      <ul class="content-list">
+        <li><strong>LSA (Latent Semantic Analysis):</strong> Performs Singular Value Decomposition (SVD) on word co-occurrence matrices.</li>
+        <li><strong>LDA (Latent Dirichlet Allocation):</strong> A probabilistic Bayesian model grouping documents into latent topics.</li>
+        <li><strong>TF-IDF &amp; BM25:</strong> Statistical weighting schemes based on term frequencies. BM25 remains a powerful baseline.</li>
+        <li><strong>Doc2Vec:</strong> Extends Word2Vec by adding a trainable document/paragraph token vector that is concatenated with word tokens during context training.</li>
+      </ul>
+
+      <h3 class="sub-h">2. Deeper Pre-trained Transformer Era</h3>
+      <p>Leverages deep, bidirectional transformer blocks trained on massive unlabeled corpora:</p>
+      <ul class="content-list">
+        <li><strong>BERT:</strong> Bidirectional Encoder Representations from Transformers. Uses Masked Language Modeling (MLM) and Next Sentence Prediction (NSP). The first token's contextual embedding (<code>[CLS]</code>) represents the entire sequence.</li>
+        <li><strong>Sentence-T5 &amp; GTR (General Text Embeddings):</strong> Leverage encoder-decoder structures to capture richer retrieval mappings.</li>
+        <li><strong>Gemini Embeddings:</strong> Highly scalable models (e.g., <code>text-embedding-004</code> and <code>text-embedding-005</code>) achieving top scores on BEIR benchmarks.</li>
+        <li><strong>Matryoshka Embeddings:</strong> A highly optimized training method that forces the model to capture the most critical information in the first few dimensions. Downstream users can shrink a 768-dimension vector to 128 dimensions without retraining, saving massive vector storage costs.</li>
+        <li><strong>Multi-Vector Models (ColBERT &amp; XTR):</strong> Output distinct vectors for every token in a document rather than a single pooled vector, enabling highly granular token-level alignment checks.</li>
+      </ul>
+    </div>
+
+    <!-- MULTIMODAL EMBEDDINGS -->
+    <div class="content-section">
+      <span class="section-anchor" id="multimodal"></span>
+      <h2 class="section-h">1.4.4 Multimodal Embeddings</h2>
+      <p>Multimodal embeddings project different modalities (such as images, text, and audio) into a **joint vector space**, enabling cross-modal retrieval (e.g., retrieving videos using text queries).</p>
+      
+      <div class="compare-grid">
+        <div class="compare-card">
+          <div class="compare-card-title" style="color:var(--accent4)">Unimodal Image Feature Vectors</div>
+          <p style="font-size:12.5px;color:var(--muted);">Derived by passing images through CNNs or Vision Transformers (ViT) pre-trained on ImageNet and taking the penultimate pooling layer.</p>
+        </div>
+        <div class="compare-card">
+          <div class="compare-card-title" style="color:var(--accent3)">Joint Multimodal Spaces</div>
+          <p style="font-size:12.5px;color:var(--muted);">CLIP or SigLIP architecture aligns visual features and textual embeddings into a unified manifold using dual image-text encoders trained contrastively.</p>
+        </div>
       </div>
-    </section>
 
-  </article>
+      <div class="callout green">
+        <div class="callout-title">ColPali Visual Scanning</div>
+        Modern document retrieval approaches like **ColPali** leverage multimodal embeddings to index multi-modal documents (PDFs, slides) directly as visual page images. This bypasses highly error-prone OCR and layout parser pipelines by scanning and matching pages visually from text queries.
+      </div>
+    </div>
+
+    <!-- STRUCTURED & GRAPH -->
+    <div class="content-section">
+      <span class="section-anchor" id="structured"></span>
+      <h2 class="section-h">1.4.5 Structured &amp; Graph Embeddings</h2>
+      <p>Extending dense vector capabilities to relational tables and network systems:</p>
+
+      <h3 class="sub-h">Structured Row Mappings</h3>
+      <p>Relational database tables lack global pre-trained models. Mappings must be trained application-specifically:</p>
+      <ul class="content-list">
+        <li><strong>General Row-Wise Embeddings:</strong> PCA or Autoencoders map entire database rows into continuous embeddings, ideal for highly accurate anomaly detection in sensor arrays.</li>
+        <li><strong>User-Item Collaborative Manifolds:</strong> recommendation systems map sparse user-product interactions (ratings, clicks) into a dense, shared embedding space, allowing immediate nearest-neighbor recommendations.</li>
+      </ul>
+
+      <h3 class="sub-h">Graph Neighborhood Mappings</h3>
+      <p>Graph networks (e.g., social connections, molecular bonds) are mapped into vectors where node features incorporate spatial topologies:</p>
+      <div class="compare-grid">
+        <div class="compare-card">
+          <div class="compare-card-title" style="color:var(--accent)">Structural Adjacency</div>
+          <p style="font-size:12.5px;color:var(--muted);">If two nodes share an edge or exist inside the same localized neighborhood, their graph vectors will lie close together.</p>
+        </div>
+        <div class="compare-card">
+          <div class="compare-card-title" style="color:var(--accent3)">Algorithms</div>
+          <p style="font-size:12.5px;color:var(--muted);">Popular algorithms like **DeepWalk** and **Node2Vec** use random walks along graph nodes to create sequential sequences, which are then passed into Word2Vec training loops.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="chapter-nav">
+      <a href="embeddings.html"><span class="nav-dir">← Previous</span><span class="nav-title">Volume Hub</span></a>
+      <a href="page-training.html"><span class="nav-dir">Next Chapter →</span><span class="nav-title">Training &amp; Tuning Embeddings</span></a>
+    </div>
+
+  </main>
 </div>
 
-<footer>
-  <p>Study notes derived from <em>Embeddings & Vector Stores</em> — Google (Nawalgaria, Ren, Sugnet, Feb 2025)</p>
-  <p style="margin-top:6px;"><a href="index.html">Home</a> · <a href="page-training.html">Training</a> · <a href="page-vector-search.html">Vector Search</a> · <a href="page-vector-db.html">Databases</a> · <a href="page-applications.html">Applications</a></p>
-</footer>
-
+<script>
+  const sections = document.querySelectorAll('.section-anchor');
+  const links = document.querySelectorAll('.sidebar-nav a');
+  window.addEventListener('scroll', () => {
+    let cur = '';
+    sections.forEach(s => { if (window.scrollY >= s.offsetTop - 120) cur = s.id; });
+    links.forEach(l => { l.classList.remove('active'); if (l.getAttribute('href') === '#' + cur) l.classList.add('active'); });
+  });
+</script>
 </body>
 </html>

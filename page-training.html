@@ -3,432 +3,239 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Training Embeddings — Study Notes</title>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Mono:wght@300;400;500&family=Cabinet+Grotesk:wght@400;500;700;800&display=swap" rel="stylesheet">
-<style>
-  :root {
-    --ink:#1a1612;--ink-muted:#5c5248;--ink-faint:#9e958d;--paper:#f7f4ef;--paper-warm:#efe9df;--paper-dark:#e5ddd2;
-    --accent:#2d6a4f;--accent-light:#d8f3dc;--accent-muted:#74c69d;--gold:#b7791f;--gold-light:#fef3c7;
-    --rust:#9b2c2c;--blue:#2b4c8c;--blue-light:#dbeafe;--border:rgba(26,22,18,0.12);
-    --shadow:0 2px 20px rgba(26,22,18,0.08);--radius:4px;--radius-lg:8px;
-  }
-  *{box-sizing:border-box;margin:0;padding:0;}html{scroll-behavior:smooth;}
-  body{font-family:'Cabinet Grotesk',sans-serif;background:var(--paper);color:var(--ink);line-height:1.6;}
-  .site-header{background:var(--ink);color:var(--paper);padding:0 2rem;position:sticky;top:0;z-index:100;border-bottom:2px solid var(--accent);}
-  .header-inner{max-width:1200px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;height:56px;}
-  .logo{font-family:'Fraunces',serif;font-size:1.1rem;font-weight:600;color:var(--paper);text-decoration:none;display:flex;align-items:center;gap:8px;}
-  .logo span{color:var(--accent-muted);}
-  .nav{display:flex;gap:2px;}
-  .nav a{color:rgba(247,244,239,0.7);text-decoration:none;font-size:0.82rem;font-weight:500;letter-spacing:0.03em;text-transform:uppercase;padding:6px 12px;border-radius:var(--radius);transition:all 0.2s;}
-  .nav a:hover{color:var(--paper);background:rgba(255,255,255,0.08);}
-  .nav a.active{color:var(--accent-muted);}
-  .page-layout{max-width:1200px;margin:0 auto;padding:2rem;display:grid;grid-template-columns:260px 1fr;gap:3rem;align-items:start;}
-  .toc{position:sticky;top:76px;}
-  .toc-label{font-size:0.7rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--ink-faint);margin-bottom:0.8rem;}
-  .toc ul{list-style:none;}
-  .toc li{margin-bottom:2px;}
-  .toc a{text-decoration:none;color:var(--ink-muted);font-size:0.84rem;padding:5px 10px;border-radius:var(--radius);display:block;border-left:2px solid transparent;transition:all 0.15s;}
-  .toc a:hover{color:var(--ink);background:var(--paper-warm);}
-  .toc a.active{color:var(--accent);border-left-color:var(--accent);background:var(--accent-light);}
-  .toc-sub{padding-left:12px!important;font-size:0.78rem!important;}
-  .toc-divider{height:1px;background:var(--border);margin:8px 10px;}
-  .prev-next{margin-top:1.5rem;display:flex;flex-direction:column;gap:8px;}
-  .prev-next a{text-decoration:none;color:var(--ink-muted);font-size:0.8rem;padding:8px 10px;border:1px solid var(--border);border-radius:var(--radius);transition:all 0.2s;}
-  .prev-next a:hover{border-color:var(--accent);color:var(--accent);}
-  .prev-next .nav-label{font-size:0.68rem;text-transform:uppercase;letter-spacing:0.06em;color:var(--ink-faint);display:block;margin-bottom:2px;}
-  .content{min-width:0;}
-  .page-hero{margin-bottom:2.5rem;padding-bottom:2rem;border-bottom:2px solid var(--border);}
-  .breadcrumb{font-size:0.78rem;color:var(--ink-faint);margin-bottom:0.8rem;}
-  .breadcrumb a{color:var(--accent);text-decoration:none;}
-  .page-title{font-family:'Fraunces',serif;font-size:2.5rem;font-weight:300;letter-spacing:-0.02em;line-height:1.1;margin-bottom:0.8rem;}
-  .page-subtitle{font-size:1rem;color:var(--ink-muted);line-height:1.65;}
-  h2{font-family:'Fraunces',serif;font-size:1.7rem;font-weight:400;letter-spacing:-0.01em;margin:2.5rem 0 1rem;padding-top:0.5rem;scroll-margin-top:80px;}
-  h3{font-family:'Cabinet Grotesk',sans-serif;font-size:1.1rem;font-weight:700;margin:1.8rem 0 0.6rem;scroll-margin-top:80px;}
-  h4{font-size:0.9rem;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;color:var(--ink-muted);margin:1.4rem 0 0.5rem;}
-  p{font-size:0.95rem;color:var(--ink-muted);line-height:1.75;margin-bottom:1rem;}
-  strong{color:var(--ink);font-weight:700;}
-  .callout{border-radius:var(--radius-lg);padding:1.2rem 1.4rem;margin:1.5rem 0;border-left:3px solid;}
-  .callout-title{font-size:0.78rem;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:0.4rem;}
-  .callout-key{background:var(--accent-light);border-color:var(--accent);}
-  .callout-key .callout-title{color:var(--accent);}
-  .callout-key p{color:#1a3d2a;}
-  .callout-warn{background:#fef3c7;border-color:var(--gold);}
-  .callout-warn .callout-title{color:var(--gold);}
-  .callout-warn p{color:#6b4a0c;}
-  .callout-info{background:var(--blue-light);border-color:var(--blue);}
-  .callout-info .callout-title{color:var(--blue);}
-  .callout-info p{color:#1a2e5a;}
-  code{font-family:'DM Mono',monospace;font-size:0.82rem;background:var(--paper-dark);padding:2px 6px;border-radius:var(--radius);color:var(--rust);}
-  pre{background:var(--ink);color:#d4c9bb;border-radius:var(--radius-lg);padding:1.4rem;overflow-x:auto;margin:1.2rem 0;}
-  pre code{background:none;padding:0;color:inherit;font-size:0.82rem;line-height:1.6;}
-  .ck{color:#74c69d;}.cs{color:#f6ad55;}.cf{color:#90cdf4;}.cm{color:#6b7a5e;}
-  .table-wrap{overflow-x:auto;margin:1.2rem 0;}
-  table{width:100%;border-collapse:collapse;font-size:0.88rem;}
-  th{background:var(--ink);color:var(--paper);font-size:0.78rem;font-weight:600;letter-spacing:0.04em;text-transform:uppercase;padding:10px 14px;text-align:left;}
-  td{padding:9px 14px;border-bottom:1px solid var(--border);color:var(--ink-muted);vertical-align:top;}
-  tr:hover td{background:var(--paper-warm);}
-  .def-grid{display:grid;gap:10px;margin:1.2rem 0;}
-  .def-item{background:white;border:1px solid var(--border);border-radius:var(--radius-lg);padding:1rem 1.2rem;}
-  .def-term{font-weight:700;font-size:0.9rem;color:var(--ink);margin-bottom:3px;}
-  .def-desc{font-size:0.85rem;color:var(--ink-muted);line-height:1.6;}
-  .compare-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:1.5rem 0;}
-  .compare-card{border:1px solid var(--border);border-radius:var(--radius-lg);padding:1.2rem;background:white;}
-  .compare-card-title{font-size:0.85rem;font-weight:700;margin-bottom:0.5rem;padding-bottom:0.5rem;border-bottom:1px solid var(--border);}
-  .compare-card ul{list-style:none;}
-  .compare-card li{font-size:0.84rem;color:var(--ink-muted);padding:3px 0;display:flex;gap:6px;}
-  .compare-card li::before{content:'•';color:var(--accent);flex-shrink:0;}
-  .diagram{background:var(--paper-warm);border:1px solid var(--border);border-radius:var(--radius-lg);padding:1.5rem;margin:1.5rem 0;}
-  .diagram-title{font-size:0.75rem;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--ink-faint);margin-bottom:1rem;}
-  .flow-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:8px;}
-  .flow-box{background:white;border:1px solid var(--border);border-radius:var(--radius);padding:6px 14px;font-size:0.82rem;font-weight:600;white-space:nowrap;}
-  .flow-box.accent{background:var(--accent);color:white;border-color:var(--accent);}
-  .flow-box.gold{background:var(--gold-light);border-color:rgba(183,121,31,0.4);color:#6b4a0c;}
-  .flow-box.blue{background:var(--blue-light);border-color:rgba(43,76,140,0.4);color:#1a2e5a;}
-  .flow-arrow{color:var(--ink-faint);font-size:1rem;}
-  .arch-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px;margin:1.5rem 0;}
-  .arch-card{background:white;border:1px solid var(--border);border-radius:var(--radius-lg);padding:1rem;text-align:center;}
-  .arch-card-name{font-size:0.8rem;font-weight:700;font-family:'DM Mono',monospace;color:var(--blue);margin-bottom:8px;}
-  .arch-card-desc{font-size:0.75rem;color:var(--ink-muted);}
-  .arch-layer{background:var(--paper-warm);border:1px dashed var(--border);border-radius:var(--radius);padding:4px 8px;font-size:0.72rem;margin:3px auto;width:fit-content;max-width:140px;text-align:center;}
-  .arch-shared{background:var(--accent-light);border-color:var(--accent);color:var(--accent);}
-  footer{background:var(--ink);color:rgba(247,244,239,0.5);text-align:center;padding:2rem;font-size:0.8rem;margin-top:4rem;}
-  footer a{color:var(--accent-muted);text-decoration:none;}
-  @media(max-width:900px){.page-layout{grid-template-columns:1fr;}.toc{display:none;}.compare-grid{grid-template-columns:1fr;}.arch-grid{grid-template-columns:1fr 1fr;}}
-</style>
+<title>Training Embeddings | Vector Notes</title>
+<link rel="stylesheet" href="shared.css">
 </head>
 <body>
+<nav>
+  <a href="embeddings.html" class="nav-logo">Vector<span>.</span>Stores</a>
+  <ul class="nav-links">
+    <li><a href="embeddings.html" class="nav-back">← Hub</a></li>
+    <li><a href="page-embeddings.html">Ch.1 Embeddings</a></li>
+    <li><a href="llm.html" style="color:var(--accent2); font-weight:bold;">LLM Book →</a></li>
+  </ul>
+</nav>
 
-<header class="site-header">
-  <div class="header-inner">
-    <a href="index.html" class="logo"><span>⬡</span> Embeddings & Vector Stores</a>
-    <nav class="nav">
-      <a href="index.html">Home</a>
-      <a href="page-embeddings.html">Embeddings</a>
-      <a href="page-training.html" class="active">Training</a>
-      <a href="page-vector-search.html">Vector Search</a>
-      <a href="page-vector-db.html">Databases</a>
-      <a href="page-applications.html">Applications</a>
-      <a href="page-glossary.html">Glossary</a>
-    </nav>
-  </div>
-</header>
+<div class="page-hero">
+  <div class="page-hero-grid"></div>
+  <div class="page-hero-glow" style="background:radial-gradient(circle, rgba(106,247,200,0.15) 0%, transparent 70%)"></div>
+  <p class="page-eyebrow fade-up">Volume 02</p>
+  <h1 class="page-title fade-up d1">Training <em>Embeddings</em></h1>
+  <p class="page-desc fade-up d2">Master the architectures, loss functions, pre-training stages, and fine-tuning methods of modern semantic embedding models.</p>
+</div>
 
 <div class="page-layout">
-  <aside class="toc">
-    <div class="toc-label">On this page</div>
-    <ul>
-      <li><a href="#architecture">Dual Encoder Architecture</a></li>
-      <li><a href="#arch-variants" class="toc-sub">Architecture Variants</a></li>
-      <li><a href="#contrastive-loss">Contrastive Loss</a></li>
-      <li><a href="#training-stages">Training Stages</a></li>
-      <li><a href="#pretraining" class="toc-sub">Pre-training</a></li>
-      <li><a href="#finetuning" class="toc-sub">Fine-tuning</a></li>
-      <li><a href="#training-data">Training Data</a></li>
-      <li><a href="#synthetic" class="toc-sub">Synthetic Data (LLMs)</a></li>
-      <li><a href="#gecko" class="toc-sub">Gecko Model</a></li>
-      <li><a href="#downstream">Downstream Tasks</a></li>
-      <li><a href="#code">Code Examples</a></li>
-    </ul>
-    <div class="toc-divider"></div>
-    <div class="prev-next">
-      <a href="page-embeddings.html"><span class="nav-label">← Previous</span> Understanding Embeddings</a>
-      <a href="page-vector-search.html"><span class="nav-label">Next →</span> Vector Search Algorithms</a>
+  <aside class="sidebar">
+    <div class="sidebar-section">
+      <p class="sidebar-label">This Volume</p>
+      <ul class="sidebar-nav">
+        <li><a href="#architecture" class="active">2.1 Dual Encoder Architecture</a></li>
+        <li><a href="#contrastive">2.2 Contrastive Loss</a></li>
+        <li><a href="#stages">2.3 Pretraining &amp; Fine-Tuning</a></li>
+        <li><a href="#datasets">2.4 Dataset Creation</a></li>
+        <li><a href="#downstream">2.5 Downstream Classifiers</a></li>
+      </ul>
+    </div>
+    <div class="sidebar-section">
+      <p class="sidebar-label">Next Volume</p>
+      <ul class="sidebar-nav">
+        <li><a href="llm.html" style="color:var(--accent2); font-weight:bold;">Large Language Models →</a></li>
+      </ul>
     </div>
   </aside>
 
-  <article class="content">
-    <div class="page-hero">
-      <div class="breadcrumb"><a href="index.html">Home</a> / Chapter 02</div>
-      <h1 class="page-title">Training<br>Embeddings</h1>
-      <p class="page-subtitle">Dual encoder architectures, contrastive loss, pre-training vs. fine-tuning stages, and how modern LLMs generate synthetic training data at scale.</p>
+  <main class="main-content">
+
+    <!-- DUAL ENCODER ARCHITECTURE -->
+    <div class="content-section">
+      <span class="section-anchor" id="architecture"></span>
+      <h2 class="section-h">2.1 Dual Encoder Architecture <span class="section-badge">Two-Tower</span></h2>
+      <p>Modern embedding models typically leverage a **Dual Encoder (Two-Tower) neural network architecture** to map separate modalities or asymmetric inputs into a single, shared latent space.</p>
+      
+      <p>This setup trains two distinct neural network encoders, with sub-architectures configured depending on how weights are shared:</p>
+
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">1</div>
+          <div class="step-body">
+            <div class="step-title">Text Search Dual Encoder</div>
+            <div class="step-desc">
+              One neural network tower encodes the query string, while the other tower encodes the document chunks. The towers project both into a shared vector manifold.
+            </div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">2</div>
+          <div class="step-body">
+            <div class="step-title">Multimodal Dual Encoder</div>
+            <div class="step-desc">
+              An image-encoder tower (e.g., Vision Transformer) and a text-encoder tower map visuals and search phrases into the exact same vector space.
+            </div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">3</div>
+          <div class="step-body">
+            <div class="step-title">Weight-Sharing Configurations</div>
+            <div class="step-desc">
+              Towers can be **symmetric (sharing all weights)** for identical task alignments, or **asymmetric (separate layers)** when inputs differ drastically in size, structure, or modality.
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
 
-    <section id="architecture">
-      <h2>Dual Encoder Architecture</h2>
-      <p>Modern embedding models use a <strong>dual encoder (two-tower) architecture</strong>. Each tower encodes one type of input, and the two towers are trained jointly to map related inputs close together in vector space.</p>
-
-      <div class="callout callout-key">
-        <div class="callout-title">🔑 Why Two Towers?</div>
-        <p>A question and its answer are <em>semantically complementary</em>, not identical. A single encoder (siamese network) treats them symmetrically — but their linguistic style differs greatly. Two separate encoders, trained together, capture this asymmetry better.</p>
+    <!-- CONTRASTIVE LOSS -->
+    <div class="content-section">
+      <span class="section-anchor" id="contrastive"></span>
+      <h2 class="section-h">2.2 Contrastive Loss <span class="section-badge">Objective</span></h2>
+      <p>The loss function used to train embedding neural networks is typically a variation of **Contrastive Loss** or **InfoNCE Loss**. The training objective takes input tuples in the form of:</p>
+      
+      <div class="formula">
+        <span class="formula-label">Tuple Input</span>
+        Tuple = &lt; Input_anchor, Positive_target, [Optional] Negative_targets &gt;
       </div>
-
-      <div class="diagram">
-        <div class="diagram-title">Dual Encoder for Question Answering</div>
-        <div class="flow-row">
-          <div class="flow-box blue">Query: "How does BERT work?"</div>
-          <span class="flow-arrow">→</span>
-          <div class="flow-box blue">Query Encoder</div>
-          <span class="flow-arrow">→</span>
-          <div class="flow-box" style="background:#e0e7ff;color:#312e81;">q-vector</div>
-        </div>
-        <div class="flow-row">
-          <div class="flow-box gold">Document: "BERT uses masked..."</div>
-          <span class="flow-arrow">→</span>
-          <div class="flow-box gold">Doc Encoder</div>
-          <span class="flow-arrow">→</span>
-          <div class="flow-box" style="background:var(--gold-light);color:#6b4a0c;">d-vector</div>
-        </div>
-        <div class="flow-row" style="margin-top:12px;">
-          <div class="flow-box" style="background:#f3f4f6;">q-vector</div>
-          <span class="flow-arrow">⊕</span>
-          <div class="flow-box" style="background:#f3f4f6;">d-vector</div>
-          <span class="flow-arrow">→</span>
-          <div class="flow-box accent">Similarity Score (dot product / cosine)</div>
-          <span class="flow-arrow">→</span>
-          <div class="flow-box accent">Loss</div>
-        </div>
-      </div>
-
-      <section id="arch-variants">
-        <h3>Architecture Variants</h3>
-        <div class="arch-grid">
-          <div class="arch-card">
-            <div class="arch-card-name">SDE</div>
-            <div class="arch-layer arch-shared">Shared Encoder</div>
-            <div class="arch-layer arch-shared">Shared Projection</div>
-            <div class="arch-card-desc" style="margin-top:8px;">Siamese Dual Encoder — one model for both inputs</div>
-          </div>
-          <div class="arch-card">
-            <div class="arch-card-name">ADE</div>
-            <div style="display:flex;gap:6px;justify-content:center;margin-bottom:4px;">
-              <div class="arch-layer">Q Encoder</div>
-              <div class="arch-layer">A Encoder</div>
-            </div>
-            <div style="display:flex;gap:6px;justify-content:center;">
-              <div class="arch-layer">Q Proj</div>
-              <div class="arch-layer">A Proj</div>
-            </div>
-            <div class="arch-card-desc" style="margin-top:8px;">Asymmetric — fully separate encoders</div>
-          </div>
-          <div class="arch-card">
-            <div class="arch-card-name">ADE-STE</div>
-            <div class="arch-layer arch-shared">Shared Token Embedder</div>
-            <div style="display:flex;gap:6px;justify-content:center;margin-top:4px;">
-              <div class="arch-layer">Q Enc</div>
-              <div class="arch-layer">A Enc</div>
-            </div>
-            <div class="arch-card-desc" style="margin-top:8px;">Shared embedding layer, separate encoders</div>
-          </div>
-          <div class="arch-card">
-            <div class="arch-card-name">ADE-FTE</div>
-            <div class="arch-layer" style="background:#fee2e2;border-color:#fca5a5;color:#991b1b;">Frozen Token Embedder</div>
-            <div style="display:flex;gap:6px;justify-content:center;margin-top:4px;">
-              <div class="arch-layer">Q Enc</div>
-              <div class="arch-layer">A Enc</div>
-            </div>
-            <div class="arch-card-desc" style="margin-top:8px;">Frozen embedder, trainable encoders</div>
-          </div>
-          <div class="arch-card">
-            <div class="arch-card-name">ADE-SPL</div>
-            <div class="arch-layer arch-shared">Shared Projection</div>
-            <div style="display:flex;gap:6px;justify-content:center;margin-top:4px;">
-              <div class="arch-layer">Q Enc</div>
-              <div class="arch-layer">A Enc</div>
-            </div>
-            <div class="arch-card-desc" style="margin-top:8px;">Separate encoders, shared projection layer</div>
-          </div>
-        </div>
-      </section>
-    </section>
-
-    <section id="contrastive-loss">
-      <h2>Contrastive Loss</h2>
-      <p>The standard training objective for embedding models. Takes a tuple of <strong>&lt;input, positive target, [optional] negative targets&gt;</strong>.</p>
-
-      <div class="callout callout-key">
-        <div class="callout-title">🔑 What Contrastive Loss Does</div>
-        <p><strong>Pulls positive pairs together</strong> (a question and its correct answer) and <strong>pushes negative pairs apart</strong> (a question paired with wrong answers). Over many iterations, the vector space learns the geometry of semantic similarity.</p>
-      </div>
-
-      <div class="def-grid">
-        <div class="def-item">
-          <div class="def-term">Positive Pairs</div>
-          <div class="def-desc">Question + its correct answer / document. The model is rewarded for making these embeddings close.</div>
-        </div>
-        <div class="def-item">
-          <div class="def-term">Negative Pairs</div>
-          <div class="def-desc">Question + an incorrect or unrelated document. The model is penalized if these are close. Hard negatives (plausible but wrong) are especially valuable for training.</div>
-        </div>
-        <div class="def-item">
-          <div class="def-term">In-Batch Negatives</div>
-          <div class="def-desc">Efficient strategy: treat other items in the same training batch as negatives. Scales well and is used in SimCSE and many modern models.</div>
-        </div>
-        <div class="def-item">
-          <div class="def-term">Hard Negative Mining</div>
-          <div class="def-desc">Actively select the most difficult negatives (semantically similar but incorrect). Forces the model to learn finer distinctions.</div>
-        </div>
-      </div>
-    </section>
-
-    <section id="training-stages">
-      <h2>Training Stages</h2>
-      <p>Modern embedding models typically go through two stages, mirroring foundation model training:</p>
-
-      <section id="pretraining">
-        <h3>Stage 1 — Pre-training (Unsupervised)</h3>
-        <p>Learn general representations from large unlabeled corpora. In practice, most models today skip building from scratch and instead <strong>initialize from existing foundation models</strong> (BERT, T5, GPT, Gemini, CoCa) to leverage their pre-existing world knowledge.</p>
-
-        <div class="table-wrap">
-          <table>
-            <thead><tr><th>Foundation Model</th><th>Parameters</th><th>Key Characteristic</th></tr></thead>
-            <tbody>
-              <tr><td><strong>BERT</strong></td><td>110M–340M</td><td>Bidirectional, masked language modeling</td></tr>
-              <tr><td><strong>T5</strong></td><td>up to 11B</td><td>Text-to-text transfer transformer</td></tr>
-              <tr><td><strong>PaLM</strong></td><td>540B</td><td>Pathways-trained, multilingual</td></tr>
-              <tr><td><strong>Gemini</strong></td><td>Varies</td><td>Multimodal, powers Gecko embeddings</td></tr>
-              <tr><td><strong>GPT / Llama</strong></td><td>Varies</td><td>Decoder-only, generative architecture</td></tr>
-            </tbody>
-          </table>
-        </div>
-      </section>
-
-      <section id="finetuning">
-        <h3>Stage 2 — Fine-tuning (Supervised)</h3>
-        <p>Adapt the pre-trained model to the specific embedding task using labeled data. Can be single-phase or multi-phase.</p>
-
-        <div class="callout callout-info">
-          <div class="callout-title">📌 Fine-tuning Options</div>
-          <p><strong>Frozen encoder</strong>: freeze the pre-trained model, only train a new task head. Best when training data is small. <strong>Full fine-tuning</strong>: update all weights. More data-hungry but potentially higher quality. <strong>Adapter-based</strong>: insert small trainable layers, keep base model frozen.</p>
-        </div>
-
-        <p>To add downstream task capability (classification, NER), add task-specific layers (e.g., softmax classifier) on top of the embedding model output.</p>
-      </section>
-    </section>
-
-    <section id="training-data">
-      <h2>Training Data</h2>
-      <p>Training embedding models requires <strong>question–document pairs</strong> where the relevance is known. The right dataset depends heavily on the domain.</p>
 
       <div class="compare-grid">
         <div class="compare-card">
-          <div class="compare-card-title">Domain Specificity Matters</div>
-          <ul>
-            <li>Medical apps need medical QA data</li>
-            <li>Legal apps need legal document pairs</li>
-            <li>General benchmarks (NFCorpus, BEIR) provide a starting point</li>
-            <li>Domain shift from training → inference degrades quality</li>
+          <div class="compare-card-title" style="color:var(--accent3)">Positive Examples Attraction</div>
+          <p>Brings positive pairs (e.g., a question and its correct answer chunk) closer together in the vector space by maximizing their cosine similarity.</p>
+        </div>
+        <div class="compare-card">
+          <div class="compare-card-title" style="color:var(--accent4)">Negative Examples Repulsion</div>
+          <p>Pushes negative target examples (e.g., incorrect or unrelated text chunks) far apart, creating a distinct margin between semantically different objects.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- PRETRAINING & FINE-TUNING -->
+    <div class="content-section">
+      <span class="section-anchor" id="stages"></span>
+      <h2 class="section-h">2.3 Pre-training &amp; Fine-Tuning Stages</h2>
+      <p>Similar to foundation models, building state-of-the-art embedding models relies on a two-stage training loop:</p>
+
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">1</div>
+          <div class="step-body">
+            <div class="step-title">Stage 1: Pre-training (Unsupervised)</div>
+            <div class="step-desc">
+              The neural networks are trained from scratch on massive, raw, unlabeled corpora using self-supervised objectives (e.g., Masked Language Modeling) to learn general syntactical representation and language knowledge.
+            </div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">2</div>
+          <div class="step-body">
+            <div class="step-title">Stage 2: Fine-Tuning (Supervised)</div>
+            <div class="step-desc">
+              The pre-trained model is initialized and fine-tuned on labeled dataset configurations to optimize performance for specific downstream tasks.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="callout green">
+        <div class="callout-title">Leveraging Foundation Models</div>
+        Rather than executing costly pre-training from scratch, modern practitioners initialize embedding models directly from large pre-trained foundation model backbones (such as **BERT, T5, GPT, Gemini, or CoCa**). This leverages massive knowledge bases learned from billions of pre-training tokens.
+      </div>
+    </div>
+
+    <!-- DATASET CREATION -->
+    <div class="content-section">
+      <span class="section-anchor" id="datasets"></span>
+      <h2 class="section-h">2.4 Labeled Dataset Creation Strategies</h2>
+      <p>Fine-tuning embedding models requires rich datasets of positive and negative tuples. High-quality datasets are created using four primary methods:</p>
+      
+      <ul class="content-list">
+        <li><strong>Human Labeling:</strong> Experts manually annotate pairs (e.g., medical specialists matching patient queries to reference documents). This yields extremely high quality but is highly expensive and slow.</li>
+        <li><strong>Synthetic Dataset Generation:</strong> Utilizing powerful Large Language Models (LLMs) to automatically generate massive synthetic question-document pairs. (e.g., Google DeepMind's **Gecko** model leverages LLMs to compile vast, high-quality synthetic datasets).</li>
+        <li><strong>Model Distillation:</strong> Training a smaller, faster embedding model to mimic the vector representations and similarity outputs of a much larger, computationally intensive teacher model.</li>
+        <li><strong>Hard Negative Mining:</strong> Finding "hard negatives"—documents that look highly similar to the query on a surface/keyword level but are actually irrelevant—and explicitly training the model to push them far apart.</li>
+      </ul>
+    </div>
+
+    <!-- DOWNSTREAM CLASSIFIERS -->
+    <div class="content-section">
+      <span class="section-anchor" id="downstream"></span>
+      <h2 class="section-h">2.5 Downstream Classifiers &amp; Custom Models</h2>
+      <p>To use embedding representations for downstream tasks (like text classification, sentiment analysis, or named entity recognition), extra dense neural layers and a softmax output layer are placed directly on top of the embedding model's output vector.</p>
+
+      <h3 class="sub-h">Model Tuning Configurations</h3>
+      <div class="compare-grid">
+        <div class="compare-card">
+          <div class="compare-card-title">Frozen Embeddings</div>
+          <p style="font-size:12.5px;color:var(--muted);">The embedding model parameters are locked. Only the weights of the top classifier layers are updated during training.</p>
+          <ul style="font-size:12px; margin-top:8px;">
+            <li>Ideal when the training dataset is small</li>
+            <li>Prevents overfitting of base layers</li>
           </ul>
         </div>
         <div class="compare-card">
-          <div class="compare-card-title">Data Generation Methods</div>
-          <ul>
-            <li><strong>Human labeling</strong>: highest quality, very expensive</li>
-            <li><strong>LLM-generated synthetic data</strong>: scalable, increasingly high quality</li>
-            <li><strong>Model distillation</strong>: use a teacher model's outputs</li>
-            <li><strong>Hard negative mining</strong>: programmatic selection</li>
+          <div class="compare-card-title">End-to-End Fine-Tuning</div>
+          <p style="font-size:12.5px;color:var(--muted);">The embedding layers are left trainable. Both the base embedding weights and the classification heads are optimized together.</p>
+          <ul style="font-size:12px; margin-top:8px;">
+            <li>Best when training datasets are massive</li>
+            <li>Adapts the vector space to downstream tasks</li>
           </ul>
         </div>
       </div>
 
-      <section id="synthetic">
-        <h3>Synthetic Training Data with LLMs</h3>
-        <p>A major breakthrough: instead of paying human annotators, use an LLM to generate thousands of question–document pairs. This was central to how Google's Gecko model achieved state-of-the-art results.</p>
+      <h3 class="sub-h" style="margin-top:32px;">Keras Classifier with Trainable TF-Hub Layers</h3>
+      <p>This code example builds a custom classifier model using TensorFlow and Keras, loading a pre-trained trainable BERT encoder layer directly from TensorFlow Hub:</p>
 
-        <div class="callout callout-key">
-          <div class="callout-title">🔑 LLM-Generated Training Data Pipeline</div>
-          <p>1. Take a large document corpus. 2. Prompt an LLM to generate plausible questions for each document. 3. Use the generated (question, document) pairs for contrastive training. 4. Optionally use LLM judges to evaluate answer quality. This approach <strong>scales training data collection cost-effectively</strong>.</p>
-        </div>
-      </section>
+      <pre class="formula" style="font-family:'DM Mono', monospace; font-size:12px; color:#e2e8f0; line-height:1.5; text-align:left; overflow-x:auto; padding:20px; border-left:4px solid var(--accent3);">
+import tensorflow as tf
+import tensorflow_hub as hub
 
-      <section id="gecko">
-        <h3>Gecko — Google's State-of-the-Art Embedding Model</h3>
-        <p>Gecko, released on Google Vertex AI, uses the <strong>Gemini model backbone</strong> and achieves the best results on public benchmarks as of early 2025. Key innovations:</p>
+<span style="color:var(--muted)"># Load pre-trained BERT encoder from TensorFlow Hub</span>
+tfhub_link = "https://tfhub.dev/tensorflow/bert_en_uncased_L-12_H-768_A-12/4"
 
-        <div class="def-grid">
-          <div class="def-item">
-            <div class="def-term">LLM Backbone</div>
-            <div class="def-desc">Initialized from Gemini, giving it access to the world knowledge learned during Gemini's massive pre-training.</div>
-          </div>
-          <div class="def-item">
-            <div class="def-term">Synthetic Data</div>
-            <div class="def-desc">Used an LLM to generate a large set of (question, document) pairs for fine-tuning training. Detailed in the Gecko paper from Google DeepMind.</div>
-          </div>
-          <div class="def-item">
-            <div class="def-term">BEIR Score</div>
-            <div class="def-desc">Achieves 55.7 average on BEIR — compared to 10.6 for the original BERT models. Available via a simple Google Vertex API call.</div>
-          </div>
-          <div class="def-item">
-            <div class="def-term">Task Types</div>
-            <div class="def-desc">Supports: <code>RETRIEVAL_QUERY</code>, <code>RETRIEVAL_DOCUMENT</code>, <code>SEMANTIC_SIMILARITY</code>, <code>CLASSIFICATION</code>, <code>CLUSTERING</code>. Use the right task type for your use case.</div>
-          </div>
-        </div>
+class Classifier(tf.keras.Model):
+    def __init__(self, num_classes):
+        super(Classifier, self).__init__(name="prediction")
+        <span style="color:var(--muted)"># Wrap the TF-Hub layer in KerasLayer and mark as trainable</span>
+        self.encoder = hub.KerasLayer(tfhub_link, trainable=True)
+        self.dropout = tf.keras.layers.Dropout(0.1)
+        self.dense = tf.keras.layers.Dense(num_classes)
 
-        <pre><code><span class="cm"># Using Gecko via Vertex AI — task type matters!</span>
-<span class="ck">from</span> vertexai.language_models <span class="ck">import</span> TextEmbeddingInput, TextEmbeddingModel
+    def call(self, preprocessed_text):
+        <span style="color:var(--muted)"># 1. Forward pass through BERT encoder</span>
+        encoder_outputs = self.encoder(preprocessed_text)
+        <span style="color:var(--muted)"># 2. Extract pooled_output ([CLS] contextual vector)</span>
+        pooled_output = encoder_outputs["pooled_output"]
+        <span style="color:var(--muted)"># 3. Regularize and map to classification categories</span>
+        x = self.dropout(pooled_output)
+        return self.dense(x)
 
-model = TextEmbeddingModel.from_pretrained(<span class="cs">"text-embedding-005"</span>)
-
-<span class="cm"># Use RETRIEVAL_QUERY for questions/queries</span>
-query_input = TextEmbeddingInput(<span class="cs">"How does BERT work?"</span>, task_type=<span class="cs">"RETRIEVAL_QUERY"</span>)
-
-<span class="cm"># Use RETRIEVAL_DOCUMENT for documents/passages</span>
-doc_input = TextEmbeddingInput(<span class="cs">"BERT uses masked language modeling..."</span>, task_type=<span class="cs">"RETRIEVAL_DOCUMENT"</span>)
-
-<span class="cm"># Single model, but task type changes the projection head behavior</span>
-query_emb = model.get_embeddings([query_input])[<span class="cs">0</span>].values  <span class="cm"># 768-dim vector</span>
-doc_emb = model.get_embeddings([doc_input])[<span class="cs">0</span>].values    <span class="cm"># 768-dim vector</span></code></pre>
-
-        <div class="callout callout-warn">
-          <div class="callout-title">⚠️ Why Task Type Matters</div>
-          <p>Questions and answers are phrased differently. Using a single <code>SEMANTIC_SIMILARITY</code> model for both degrades retrieval quality. The <code>RETRIEVAL_QUERY</code> and <code>RETRIEVAL_DOCUMENT</code> task types activate different projection behaviors optimized for asymmetric retrieval.</p>
-        </div>
-      </section>
-    </section>
-
-    <section id="downstream">
-      <h2>Using Embeddings for Downstream Tasks</h2>
-      <p>After training, embeddings can be plugged into many downstream ML tasks by adding task-specific layers on top.</p>
-
-      <div class="table-wrap">
-        <table>
-          <thead><tr><th>Strategy</th><th>When to Use</th><th>Trade-off</th></tr></thead>
-          <tbody>
-            <tr><td><strong>Frozen encoder + classifier head</strong></td><td>Small labeled dataset</td><td>Fast, low risk of overfitting</td></tr>
-            <tr><td><strong>Full fine-tuning</strong></td><td>Large labeled dataset</td><td>Higher quality, more compute</td></tr>
-            <tr><td><strong>Feature extraction only</strong></td><td>No labeled data</td><td>Zero training cost, lower quality</td></tr>
-            <tr><td><strong>Adapter layers</strong></td><td>Limited compute/data</td><td>Parameter-efficient fine-tuning</td></tr>
-          </tbody>
-        </table>
-      </div>
-    </section>
-
-    <section id="code">
-      <h2>Key Code Examples</h2>
-
-      <h3>Doc2Vec Training on Custom Corpus</h3>
-      <pre><code><span class="ck">from</span> gensim.models.Doc2Vec <span class="ck">import</span> Doc2Vec, TaggedDocument
-
-<span class="cm"># Tag each document with a unique ID</span>
-documents = [TaggedDocument(doc, [i]) <span class="ck">for</span> i, doc <span class="ck">in</span> enumerate(your_corpus)]
-
-<span class="cm"># Train with 8-dim embeddings, window size 3</span>
-model = Doc2Vec(documents, vector_size=<span class="cs">8</span>, window=<span class="cs">3</span>, min_count=<span class="cs">1</span>, workers=<span class="cs">6</span>)
-
-<span class="cm"># Infer vector for a new document (not in training set)</span>
-model.infer_vector([<span class="cs">"human"</span>, <span class="cs">"interface"</span>])  <span class="cm"># Returns 8-dim vector</span></code></pre>
-
-      <h3>Keras Text Classifier with Embedding Layer</h3>
-      <pre><code><span class="cm"># Using a TF Hub embedding model as a trainable layer</span>
-<span class="ck">import</span> tensorflow_hub <span class="ck">as</span> hub
-
-embedding = <span class="cs">"https://tfhub.dev/google/sentence-t5/st5-base/1"</span>
-hub_layer = hub.KerasLayer(embedding, trainable=<span class="cs">True</span>)
-
+<span style="color:var(--muted)"># Compile and train custom classifier</span>
 model = tf.keras.Sequential([
-    hub_layer,                                 <span class="cm"># Pre-trained embedding</span>
-    tf.keras.layers.Dense(<span class="cs">16</span>, activation=<span class="cs">'relu'</span>),
-    tf.keras.layers.Dense(<span class="cs">1</span>)                  <span class="cm"># Binary classification</span>
+    Classifier(num_classes=1)
 ])
-model.compile(optimizer=<span class="cs">'adam'</span>, loss=<span class="cs">'binary_crossentropy'</span>, metrics=[<span class="cs">'accuracy'</span>])</code></pre>
-    </section>
+model.compile(
+    optimizer='adam',
+    loss=tf.keras.losses.BinaryCrossentropy(from_logits=True),
+    metrics=['accuracy']
+)
+history = model.fit(train_dataset.batch(8))</pre>
+    </div>
 
-  </article>
+    <div class="chapter-nav">
+      <a href="page-embeddings.html"><span class="nav-dir">← Previous</span><span class="nav-title">Ch.1 Representations &amp; Quality</span></a>
+      <a href="llm.html" style="border-color: rgba(247,200,106,0.45); background: linear-gradient(to right, rgba(20,20,28,0.4), rgba(247,200,106,0.06));"><span class="nav-dir" style="color: var(--accent2);">Start Next Book →</span><span class="nav-title" style="color: var(--accent2);">Foundational LLMs</span></a>
+    </div>
+
+  </main>
 </div>
 
-<footer>
-  <p>Study notes derived from <em>Embeddings & Vector Stores</em> — Google (Nawalgaria, Ren, Sugnet, Feb 2025)</p>
-  <p style="margin-top:6px;"><a href="index.html">Home</a> · <a href="page-embeddings.html">Embeddings</a> · <a href="page-vector-search.html">Vector Search</a> · <a href="page-vector-db.html">Databases</a> · <a href="page-applications.html">Applications</a></p>
-</footer>
-
+<script>
+  const sections = document.querySelectorAll('.section-anchor');
+  const links = document.querySelectorAll('.sidebar-nav a');
+  window.addEventListener('scroll', () => {
+    let cur = '';
+    sections.forEach(s => { if (window.scrollY >= s.offsetTop - 120) cur = s.id; });
+    links.forEach(l => { l.classList.remove('active'); if (l.getAttribute('href') === '#' + cur) l.classList.add('active'); });
+  });
+</script>
 </body>
 </html>

@@ -371,8 +371,11 @@
     <li><a href="chapter4.html">Models</a></li>
     <li><a href="chapter6.html">Ensemble</a></li>
     <li><a href="chapter9.html">Tuning</a></li>
-    <li><a href="llm.html" style="color: var(--accent2); font-weight: bold; border-bottom: 1px dashed rgba(247,200,106,0.3);">LLM Notes</a></li>
-    <li><a href="embeddings.html" style="color: var(--accent3); font-weight: bold; border-bottom: 1px dashed rgba(106,247,200,0.3);">Vector Notes</a></li>
+    <li><a href="llm.html" style="color: var(--accent2); font-weight: bold; border-bottom: 1px dashed rgba(247,200,106,0.3);">LLMs</a></li>
+    <li><a href="embeddings.html" style="color: var(--accent3); font-weight: bold; border-bottom: 1px dashed rgba(106,247,200,0.3);">Vectors</a></li>
+    <li><a href="prompt-engineering.html" style="color: #c77dff; font-weight: bold; border-bottom: 1px dashed rgba(199,125,255,0.3);">Prompts</a></li>
+    <li><a href="domain-specific-llms.html" style="color: #ef233c; font-weight: bold; border-bottom: 1px dashed rgba(239,35,60,0.3);">Vertical</a></li>
+    <li><a href="ai-agents.html" style="color: #00bbf9; font-weight: bold; border-bottom: 1px dashed rgba(0,187,249,0.3);">Agents</a></li>
   </ul>
 </nav>
 
@@ -608,7 +611,7 @@
     </a>
 
     <!-- EMBEDDINGS & VECTOR STORES COMPANION BOOK -->
-    <a href="embeddings.html" class="chapter-card" style="border-color: rgba(106,247,200,0.35); background: linear-gradient(135deg, rgba(20, 20, 28, 0.6), rgba(106,247,200,0.04)); grid-column: 1 / -1; display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 24px;">
+    <a href="embeddings.html" class="chapter-card" style="border-color: rgba(106,247,200,0.35); background: linear-gradient(135deg, rgba(20, 20, 28, 0.6), rgba(106,247,200,0.04)); grid-column: 1 / -1; display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 24px; margin-bottom: 12px;">
       <div>
         <div class="chapter-num" style="color: var(--accent3);">SPECIAL VOLUME &nbsp;<span class="chapter-tag" style="background: rgba(106,247,200,0.15); color: var(--accent3); border-radius: 2px;">COMPANION BOOK</span></div>
         <div class="chapter-title" style="color: var(--accent3); font-size: 24px; font-family: 'Fraunces', serif; font-style: italic;">Embeddings &amp; Vector Stores</div>
@@ -622,9 +625,74 @@
         </div>
       </div>
       <div style="text-align: right; display: flex; flex-direction: column; justify-content: center; align-items: flex-end; padding-left: 20px; border-left: 1px solid rgba(106,247,200,0.2); height: 100%;">
-        <span style="font-family: 'Syne', sans-serif; font-size: 32px; font-weight: 800; color: var(--accent3); line-height: 1;">02</span>
+        <span style="font-family: 'Syne', sans-serif; font-size: 32px; font-weight: 800; color: var(--accent3); line-height: 1;">03</span>
         <span style="font-size: 9px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-top: 4px; margin-bottom: 12px; white-space: nowrap;">Volumes</span>
         <span class="chapter-arrow" style="color: var(--accent3); font-size: 24px; transition: transform 0.2s;">→</span>
+      </div>
+    </a>
+
+    <!-- PROMPT & IN-CONTEXT ENGINEERING COMPANION BOOK -->
+    <a href="prompt-engineering.html" class="chapter-card" style="border-color: rgba(199,125,255,0.35); background: linear-gradient(135deg, rgba(20, 20, 28, 0.6), rgba(199,125,255,0.04)); grid-column: 1 / -1; display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 24px; margin-bottom: 12px;">
+      <div>
+        <div class="chapter-num" style="color: #c77dff;">SPECIAL VOLUME &nbsp;<span class="chapter-tag" style="background: rgba(199,125,255,0.15); color: #c77dff; border-radius: 2px;">COMPANION BOOK</span></div>
+        <div class="chapter-title" style="color: #c77dff; font-size: 24px; font-family: 'Fraunces', serif; font-style: italic;">Prompt &amp; In-Context Engineering</div>
+        <div class="chapter-desc" style="font-size: 14px; max-width: 800px;">A developer's study guide to Large Language Model configurations, mathematical next-token sampling distributions, zero/few-shot in-context learning, self-consistency, and software JSON schemas.</div>
+        <div class="chapter-topics">
+          <span class="topic-pill" style="border-color: rgba(199,125,255,0.3); color: #c77dff;">Output Sampling Controls</span>
+          <span class="topic-pill" style="border-color: rgba(199,125,255,0.3); color: #c77dff;">Temperature &amp; Softmax</span>
+          <span class="topic-pill" style="border-color: rgba(199,125,255,0.3); color: #c77dff;">Step-Back Prompting</span>
+          <span class="topic-pill" style="border-color: rgba(199,125,255,0.3); color: #c77dff;">Chain of Thought (CoT)</span>
+          <span class="topic-pill" style="border-color: rgba(199,125,255,0.3); color: #c77dff;">Tree of Thoughts (ToT)</span>
+          <span class="topic-pill" style="border-color: rgba(199,125,255,0.3); color: #c77dff;">JSON Input/Output Schemas</span>
+        </div>
+      </div>
+      <div style="text-align: right; display: flex; flex-direction: column; justify-content: center; align-items: flex-end; padding-left: 20px; border-left: 1px solid rgba(199,125,255,0.2); height: 100%;">
+        <span style="font-family: 'Syne', sans-serif; font-size: 32px; font-weight: 800; color: #c77dff; line-height: 1;">03</span>
+        <span style="font-size: 9px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-top: 4px; margin-bottom: 12px; white-space: nowrap;">Volumes</span>
+        <span class="chapter-arrow" style="color: #c77dff; font-size: 24px; transition: transform 0.2s;">→</span>
+      </div>
+    </a>
+
+    <!-- SOLVING DOMAIN-SPECIFIC PROBLEMS COMPANION BOOK -->
+    <a href="domain-specific-llms.html" class="chapter-card" style="border-color: rgba(239,35,60,0.35); background: linear-gradient(135deg, rgba(20, 20, 28, 0.6), rgba(239,35,60,0.04)); grid-column: 1 / -1; display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 24px; margin-bottom: 12px;">
+      <div>
+        <div class="chapter-num" style="color: #ef233c;">SPECIAL VOLUME &nbsp;<span class="chapter-tag" style="background: rgba(239,35,60,0.15); color: #ef233c; border-radius: 2px;">COMPANION BOOK</span></div>
+        <div class="chapter-title" style="color: #ef233c; font-size: 24px; font-family: 'Fraunces', serif; font-style: italic;">Solving Domain-Specific Problems using LLMs</div>
+        <div class="chapter-desc" style="font-size: 14px; max-width: 800px;">Master specialized vertical networks in high-stakes fields. Deep dive into least-privileges construction, SecLM cyberthreat operations, APT41 multi-step log queries, and MedLM clinician triages.</div>
+        <div class="chapter-topics">
+          <span class="topic-pill" style="border-color: rgba(239,35,60,0.3); color: #ef233c;">SecLM Cybersecurity</span>
+          <span class="topic-pill" style="border-color: rgba(239,35,60,0.3); color: #ef233c;">APT41 Threat Planning</span>
+          <span class="topic-pill" style="border-color: rgba(239,35,60,0.3); color: #ef233c;">PowerShell script De-obfuscation</span>
+          <span class="topic-pill" style="border-color: rgba(239,35,60,0.3); color: #ef233c;">MedLM Clinical Q&amp;A</span>
+          <span class="topic-pill" style="border-color: rgba(239,35,60,0.3); color: #ef233c;">Ensemble Refinement (ER)</span>
+        </div>
+      </div>
+      <div style="text-align: right; display: flex; flex-direction: column; justify-content: center; align-items: flex-end; padding-left: 20px; border-left: 1px solid rgba(239,35,60,0.2); height: 100%;">
+        <span style="font-family: 'Syne', sans-serif; font-size: 32px; font-weight: 800; color: #ef233c; line-height: 1;">02</span>
+        <span style="font-size: 9px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-top: 4px; margin-bottom: 12px; white-space: nowrap;">Volumes</span>
+        <span class="chapter-arrow" style="color: #ef233c; font-size: 24px; transition: transform 0.2s;">→</span>
+      </div>
+    </a>
+
+    <!-- AI AGENTS COMPANION BOOK -->
+    <a href="ai-agents.html" class="chapter-card" style="border-color: rgba(0,187,249,0.35); background: linear-gradient(135deg, rgba(20, 20, 28, 0.6), rgba(0,187,249,0.04)); grid-column: 1 / -1; display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 24px;">
+      <div>
+        <div class="chapter-num" style="color: var(--accent2);">SPECIAL VOLUME &nbsp;<span class="chapter-tag" style="background: rgba(0,187,249,0.15); color: var(--accent2); border-radius: 2px;">COMPANION BOOK</span></div>
+        <div class="chapter-title" style="color: var(--accent2); font-size: 24px; font-family: 'Fraunces', serif; font-style: italic;">AI Agents &amp; Multi-Agent Architectures</div>
+        <div class="chapter-desc" style="font-size: 14px; max-width: 800px;">The ultimate companion reference covering cognitive planning loops, dynamic extensions/functions registries, AgentOps observability tracing, collaborative multi-agent topologies, and automotive AI Edge patterns.</div>
+        <div class="chapter-topics">
+          <span class="topic-pill" style="border-color: rgba(0,187,249,0.3); color: var(--accent2);">Cognitive Orchestration Loops</span>
+          <span class="topic-pill" style="border-color: rgba(0,187,249,0.3); color: var(--accent2);">Function Calling &amp; Extensions</span>
+          <span class="topic-pill" style="border-color: rgba(0,187,249,0.3); color: var(--accent2);">AgentOps &amp; Trajectory Metrics</span>
+          <span class="topic-pill" style="border-color: rgba(0,187,249,0.3); color: var(--accent2);">Collaborative topologies</span>
+          <span class="topic-pill" style="border-color: rgba(0,187,249,0.3); color: var(--accent2);">Agentic RAG &amp; Contractors</span>
+          <span class="topic-pill" style="border-color: rgba(0,187,249,0.3); color: var(--accent2);">In-Vehicle specialized agents</span>
+        </div>
+      </div>
+      <div style="text-align: right; display: flex; flex-direction: column; justify-content: center; align-items: flex-end; padding-left: 20px; border-left: 1px solid rgba(0,187,249,0.2); height: 100%;">
+        <span style="font-family: 'Syne', sans-serif; font-size: 32px; font-weight: 800; color: var(--accent2); line-height: 1;">04</span>
+        <span style="font-size: 9px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-top: 4px; margin-bottom: 12px; white-space: nowrap;">Volumes</span>
+        <span class="chapter-arrow" style="color: var(--accent2); font-size: 24px; transition: transform 0.2s;">→</span>
       </div>
     </a>
 

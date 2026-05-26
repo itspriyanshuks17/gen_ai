@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vector Search &amp; Databases | Vector Notes</title>
+<link rel="stylesheet" href="shared.css">
+</head>
+<body>
+<nav>
+  <a href="embeddings.html" class="nav-logo">Vector<span>.</span>Stores</a>
+  <ul class="nav-links">
+    <li><a href="embeddings.html" class="nav-back">← Hub</a></li>
+    <li><a href="index.html">ML Notes</a></li>
+    <li><a href="page-training.html">Ch.2 Training</a></li>
+  </ul>
+</nav>
+
+<div class="page-hero">
+  <div class="page-hero-grid"></div>
+  <div class="page-hero-glow" style="background:radial-gradient(circle, rgba(106,247,200,0.15) 0%, transparent 70%)"></div>
+  <p class="page-eyebrow fade-up">Volume 03</p>
+  <h1 class="page-title fade-up d1">Vector Search &amp; <em>Databases</em></h1>
+  <p class="page-desc fade-up d2">Explore high-performance similarity search algorithms, approximate nearest neighbors (ANN), and vector database operations.</p>
+</div>
+
+<div class="page-layout">
+  <aside class="sidebar">
+    <div class="sidebar-section">
+      <p class="sidebar-label">This Volume</p>
+      <ul class="sidebar-nav">
+        <li><a href="#vectorsearch" class="active">3.1 Similarity Metrics</a></li>
+        <li><a href="#algorithms">3.2 ANN Algorithms</a></li>
+        <li><a href="#hnsw">3.2.1 HNSW Graph</a></li>
+        <li><a href="#scann">3.2.2 ScaNN Quantization</a></li>
+        <li><a href="#databases">3.3 Vector Databases</a></li>
+        <li><a href="#considerations">3.4 Operations &amp; Hybrid</a></li>
+        <li><a href="#applications">3.5 RAG Grounding</a></li>
+      </ul>
+    </div>
+    <div class="sidebar-section">
+      <p class="sidebar-label">Next Volume</p>
+      <ul class="sidebar-nav">
+        <li><a href="llm.html" style="color:var(--accent2); font-weight:bold;">Large Language Models →</a></li>
+      </ul>
+    </div>
+  </aside>
+
+  <main class="main-content">
+
+    <!-- SIMILARITY METRICS -->
+    <div class="content-section">
+      <span class="section-anchor" id="vectorsearch"></span>
+      <h2 class="section-h">3.1 Vector Similarity Metrics <span class="section-badge">Math</span></h2>
+      <p>Vector search shifts information retrieval from literal keyword matching to semantic meaning. Misspelled, differently phrased, or cross-modal inputs (like images and text) can be mapped and matched in real-time by computing distance in vector space.</p>
+      
+      <p>Given a query vector $\vec{q}$ and a document vector $\vec{d}$, three mathematical metrics are primarily used to compute similarity:</p>
+
+      <div style="text-align: center; margin: 24px 0;">
+        <!-- Inline SVG: Similarity Metrics Diagram -->
+        <svg viewBox="0 0 700 200" width="100%" height="auto" style="background:#111118; border:1px solid #2a2a3a; border-radius:4px;">
+          <!-- Euclidean Distance (L2) -->
+          <g transform="translate(50, 20)">
+            <line x1="20" y1="130" x2="150" y2="130" stroke="#2a2a3a" stroke-width="2"/>
+            <line x1="20" y1="130" x2="20" y2="20" stroke="#2a2a3a" stroke-width="2"/>
+            <circle cx="40" cy="100" r="4" fill="#00b4d8"/>
+            <circle cx="120" cy="40" r="4" fill="#6af7c8"/>
+            <line x1="40" y1="100" x2="120" y2="40" stroke="#f76a9a" stroke-dasharray="4" stroke-width="2"/>
+            <text x="80" y="65" fill="#f76a9a" font-size="10" font-family="monospace" text-anchor="middle">L2 dist</text>
+            <text x="85" y="160" fill="#ffffff" font-size="12" font-family="sans-serif" font-weight="bold" text-anchor="middle">Euclidean (L2)</text>
+          </g>
+          <!-- Cosine Similarity -->
+          <g transform="translate(270, 20)">
+            <line x1="20" y1="130" x2="150" y2="130" stroke="#2a2a3a" stroke-width="2"/>
+            <line x1="20" y1="130" x2="20" y2="20" stroke="#2a2a3a" stroke-width="2"/>
+            <draw-vector>
+              <line x1="20" y1="130" x2="100" y2="50" stroke="#00b4d8" stroke-width="2" marker-end="url(#arrow)"/>
+              <line x1="20" y1="130" x2="130" y2="100" stroke="#6af7c8" stroke-width="2" marker-end="url(#arrow)"/>
+            </draw-vector>
+            <!-- theta arc -->
+            <path d="M 50 120 A 30 30 0 0 0 45 105" fill="none" stroke="#f7c86a" stroke-width="1.5"/>
+            <text x="53" y="103" fill="#f7c86a" font-size="10" font-family="monospace">&theta;</text>
+            <text x="85" y="160" fill="#ffffff" font-size="12" font-family="sans-serif" font-weight="bold" text-anchor="middle">Cosine Angle (&theta;)</text>
+          </g>
+          <!-- Dot Product (Projection) -->
+          <g transform="translate(490, 20)">
+            <line x1="20" y1="130" x2="150" y2="130" stroke="#2a2a3a" stroke-width="2"/>
+            <line x1="20" y1="130" x2="20" y2="20" stroke="#2a2a3a" stroke-width="2"/>
+            <line x1="20" y1="130" x2="130" y2="50" stroke="#00b4d8" stroke-width="2.5"/>
+            <line x1="20" y1="130" x2="90" y2="130" stroke="#6af7c8" stroke-width="4"/>
+            <line x1="130" y1="50" x2="90" y2="130" stroke="#f76a9a" stroke-dasharray="3" stroke-width="1.5"/>
+            <text x="60" y="145" fill="#6af7c8" font-size="9" font-family="monospace">Projection</text>
+            <text x="85" y="160" fill="#ffffff" font-size="12" font-family="sans-serif" font-weight="bold" text-anchor="middle">Dot Product</text>
+          </g>
+          <defs>
+            <marker id="arrow" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+              <path d="M 0 0 L 10 5 L 0 10 z" fill="#ffffff"/>
+            </marker>
+          </defs>
+        </svg>
+      </div>
+
+      <div class="compare-grid">
+        <div class="compare-card">
+          <div class="compare-card-title">Euclidean Distance (L2)</div>
+          <p style="font-size:12.5px;color:var(--muted);margin-bottom:8px;">Calculates the physical geometric distance between two points in Cartesian space.</p>
+          <div class="formula" style="margin: 0; padding: 4px 8px; font-size:11px;">d(u,v) = &radic;&sum;(uᵢ - vᵢ)&sup2;</div>
+          <span style="font-size:11px;color:var(--accent4);">⚠️ Highly sensitive to magnitude; poor for high dimensions.</span>
+        </div>
+        <div class="compare-card">
+          <div class="compare-card-title">Cosine Similarity</div>
+          <p style="font-size:12.5px;color:var(--muted);margin-bottom:8px;">Measures the cosine of the angle between two vectors, completely ignoring their length magnitudes.</p>
+          <div class="formula" style="margin: 0; padding: 4px 8px; font-size:11px;">cos(&theta;) = (u &bull; v) / (||u|| ||v||)</div>
+          <span style="font-size:11px;color:var(--accent3);">✓ Excellent for high-dimensional document semantic matches.</span>
+        </div>
+        <div class="compare-card">
+          <div class="compare-card-title">Inner / Dot Product</div>
+          <p style="font-size:12.5px;color:var(--muted);margin-bottom:8px;">Calculates the algebraic projection of one vector onto another. Equivalent to cosine similarity when vectors are normalized to unit length.</p>
+          <div class="formula" style="margin: 0; padding: 4px 8px; font-size:11px;">u &bull; v = &sum; uᵢvᵢ</div>
+          <span style="font-size:11px;color:var(--accent2);">✓ Standard metric for scale-optimized models (ScaNN).</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ANN ALGORITHMS -->
+    <div class="content-section">
+      <span class="section-anchor" id="algorithms"></span>
+      <h2 class="section-h">3.2 Approximate Nearest Neighbor (ANN) Algorithms</h2>
+      <p>An exact brute-force search compares a query vector with every document inside the database. This scales as $\mathcal{O}(N)$, rendering it unacceptably slow for production datasets. **Approximate Nearest Neighbor (ANN)** search trades a tiny margin of accuracy for massive $\mathcal{O}(\log N)$ speedups.</p>
+
+      <h3 class="sub-h">Locality Sensitive Hashing (LSH) &amp; Decision Trees</h3>
+      <ul class="content-list">
+        <li><strong>Locality Sensitive Hashing (LSH):</strong> Maps similar vectors into the same hash bucket with high probability using random partition hyperplanes. Similarity search only requires hashing the query and searching linearly inside that specific bucket.</li>
+        <li><strong>KD-Trees:</strong> Partitions space along dimension medians, forming a binary decision search tree. Ineffective for high-dimensional vectors.</li>
+        <li><strong>Ball-Trees:</strong> Partitions space into nested spherical hyper-spheres, bypassing KD-Tree dimensional issues by structuring regions based on radial distance.</li>
+      </ul>
+
+      <pre class="formula" style="font-family:'DM Mono', monospace; font-size:12px; color:#e2e8f0; line-height:1.4; text-align:left; overflow-x:auto; padding:20px; border-left:4px solid var(--accent);">
+from sklearn.neighbors import NearestNeighbors
+from lshashing import LSHRandom
+
+# 1. Naive brute-force search
+nbrs_brute = NearestNeighbors(n_neighbors=2, algorithm='brute').fit(docs)
+brute_dist, brute_ind = nbrs_brute.kneighbors(query)
+
+# 2. Optimized Ball-Tree ANN search for high-dimensional space
+nbrs_ball = NearestNeighbors(n_neighbors=2, algorithm='ball_tree').fit(docs)
+ball_dist, ball_ind = nbrs_ball.kneighbors(query)
+
+# 3. LSH Hashing KNN search
+lsh = LSHRandom(docs, hash_size=4, parallel=True)
+lsh.knn_search(docs, query, k=2, parallel=True)</pre>
+    </div>
+
+    <!-- HNSW -->
+    <div class="content-section">
+      <span class="section-anchor" id="hnsw"></span>
+      <h2 class="section-h">3.2.1 Hierarchical Navigable Small Worlds (HNSW)</h2>
+      <p>HNSW represents a state-of-the-art graph-based ANN algorithm. It structures vector spaces into a multi-layered proximity graph where the graph links are spread hierarchically.</p>
+
+      <div style="text-align: center; margin: 24px 0;">
+        <!-- Inline SVG: HNSW Diagram -->
+        <svg viewBox="0 0 600 240" width="100%" height="auto" style="background:#111118; border:1px solid #2a2a3a; border-radius:4px;">
+          <!-- Layer 2 (Top) -->
+          <g transform="translate(0, 10)">
+            <text x="30" y="30" fill="#f76a9a" font-size="11" font-family="monospace">Layer 2 (Express Links)</text>
+            <circle cx="150" cy="40" r="6" fill="#f76a9a"/>
+            <circle cx="450" cy="40" r="6" fill="#f76a9a"/>
+            <line x1="156" y1="40" x2="444" y2="40" stroke="#f76a9a" stroke-width="2"/>
+            <path d="M 150 46 L 180 110" stroke="#555" stroke-dasharray="3" stroke-width="1"/>
+            <path d="M 450 46 L 400 110" stroke="#555" stroke-dasharray="3" stroke-width="1"/>
+          </g>
+          <!-- Layer 1 (Middle) -->
+          <g transform="translate(0, 80)">
+            <text x="30" y="30" fill="#f7c86a" font-size="11" font-family="monospace">Layer 1 (Medium Links)</text>
+            <circle cx="180" cy="40" r="5" fill="#f7c86a"/>
+            <circle cx="280" cy="40" r="5" fill="#f7c86a"/>
+            <circle cx="400" cy="40" r="5" fill="#f7c86a"/>
+            <line x1="185" y1="40" x2="275" y2="40" stroke="#f7c86a" stroke-width="1.5"/>
+            <line x1="285" y1="40" x2="395" y2="40" stroke="#f7c86a" stroke-width="1.5"/>
+            <path d="M 180 45 L 200 110" stroke="#555" stroke-dasharray="3" stroke-width="1"/>
+            <path d="M 280 45 L 290 110" stroke="#555" stroke-dasharray="3" stroke-width="1"/>
+            <path d="M 400 45 L 420 110" stroke="#555" stroke-dasharray="3" stroke-width="1"/>
+          </g>
+          <!-- Layer 0 (Dense Bottom) -->
+          <g transform="translate(0, 150)">
+            <text x="30" y="30" fill="#6af7c8" font-size="11" font-family="monospace">Layer 0 (All Vectors - Dense Graph)</text>
+            <circle cx="120" cy="40" r="4" fill="#6af7c8"/>
+            <circle cx="200" cy="40" r="4" fill="#6af7c8"/>
+            <circle cx="240" cy="35" r="4" fill="#6af7c8"/>
+            <circle cx="290" cy="40" r="4" fill="#6af7c8"/>
+            <circle cx="340" cy="45" r="4" fill="#6af7c8"/>
+            <circle cx="420" cy="40" r="4" fill="#6af7c8"/>
+            <circle cx="480" cy="35" r="4" fill="#6af7c8"/>
+            <line x1="124" y1="40" x2="196" y2="40" stroke="#6af7c8" stroke-width="1" opacity="0.6"/>
+            <line x1="204" y1="39" x2="236" y2="36" stroke="#6af7c8" stroke-width="1" opacity="0.6"/>
+            <line x1="244" y1="36" x2="286" y2="39" stroke="#6af7c8" stroke-width="1" opacity="0.6"/>
+            <line x1="294" y1="41" x2="336" y2="44" stroke="#6af7c8" stroke-width="1" opacity="0.6"/>
+            <line x1="344" y1="44" x2="416" y2="41" stroke="#6af7c8" stroke-width="1" opacity="0.6"/>
+            <line x1="424" y1="40" x2="476" y2="36" stroke="#6af7c8" stroke-width="1" opacity="0.6"/>
+          </g>
+        </svg>
+      </div>
+
+      <p>The top layers have the longest, sparsest links (acting as express lanes), while the lowest layer (Layer 0) holds all points linked with short, dense connections. The search zooms in chronologically:</p>
+      <div class="steps">
+        <div class="step"><div class="step-num">1</div><div class="step-body"><div class="step-title">Express Entry</div><div class="step-desc">Enter at the top layer and greedily traverse the long links to find the node most similar to the query.</div></div></div>
+        <div class="step"><div class="step-num">2</div><div class="step-body"><div class="step-title">Descend Layer</div><div class="step-desc">Once a local minimum is reached, drop down to the corresponding node in the layer below.</div></div></div>
+        <div class="step"><div class="step-num">3</div><div class="step-body"><div class="step-title">Granular Converge</div><div class="step-desc">Repeat the localized search on the dense bottom layer (Layer 0) to fetch the top $K$ nearest neighbors in sub-linear $\mathcal{O}(\log N)$ time.</div></div></div>
+      </div>
+
+      <pre class="formula" style="font-family:'DM Mono', monospace; font-size:12px; color:#e2e8f0; line-height:1.4; text-align:left; overflow-x:auto; padding:20px; border-left:4px solid var(--accent2);">
+import faiss
+
+M = 32     # Graph connections degree: higher M = better recall, slower indexing
+d = 768    # Vector dimensions
+
+# Build HNSW index with flat L2 distance
+index = faiss.IndexHNSWFlat(d, M)
+index.add(document_embeddings)
+
+# Execute HNSW Approximate Nearest Neighbors search
+scores, indices = index.search(query_embedding, k=2)</pre>
+    </div>
+
+    <!-- SCANN -->
+    <div class="content-section">
+      <span class="section-anchor" id="scann"></span>
+      <h2 class="section-h">3.2.2 ScaNN (Anisotropic Quantization)</h2>
+      <p>Developed by Google, ScaNN (Scalable Approximate Nearest Neighbor) is an industry-leading ANN library. It is integrated natively inside Google Vertex AI Vector Search, AlloyDB, Spanner, and Cloud SQL.</p>
+
+      <div style="text-align: center; margin: 24px 0;">
+        <!-- Inline SVG: ScaNN Diagram -->
+        <svg viewBox="0 0 600 200" width="100%" height="auto" style="background:#111118; border:1px solid #2a2a3a; border-radius:4px;">
+          <!-- Left: Partitioning -->
+          <g transform="translate(10, 10)">
+            <rect x="10" y="10" width="160" height="160" fill="#1c1c28" stroke="#2a2a3a"/>
+            <!-- clusters -->
+            <circle cx="50" cy="50" r="30" fill="rgba(0,180,216,0.15)" stroke="#00b4d8" stroke-dasharray="2"/>
+            <circle cx="130" cy="60" r="25" fill="rgba(106,247,200,0.15)" stroke="#6af7c8" stroke-dasharray="2"/>
+            <circle cx="90" cy="130" r="30" fill="rgba(247,106,154,0.15)" stroke="#f76a9a" stroke-dasharray="2"/>
+            <circle cx="50" cy="50" r="3" fill="#00b4d8"/>
+            <circle cx="130" cy="60" r="3" fill="#6af7c8"/>
+            <circle cx="90" cy="130" r="3" fill="#f76a9a"/>
+            <text x="90" y="185" fill="#ffffff" font-size="11" font-family="sans-serif" font-weight="bold" text-anchor="middle">1. Space Partitioning (leaves)</text>
+          </g>
+          <!-- Middle: Pruning -->
+          <g transform="translate(210, 10)">
+            <rect x="10" y="10" width="160" height="160" fill="#1c1c28" stroke="#2a2a3a"/>
+            <circle cx="50" cy="50" r="30" fill="rgba(0,180,216,0.15)" stroke="#00b4d8"/>
+            <circle cx="90" cy="130" r="30" fill="rgba(247,106,154,0.02)" stroke="#333"/>
+            <circle cx="130" cy="60" r="25" fill="rgba(106,247,200,0.02)" stroke="#333"/>
+            <path d="M 10 10 L 170 170" stroke="#f76a9a" stroke-width="2"/>
+            <text x="90" y="185" fill="#ffffff" font-size="11" font-family="sans-serif" font-weight="bold" text-anchor="middle">2. Search Pruning (ignore)</text>
+          </g>
+          <!-- Right: Quantization -->
+          <g transform="translate(410, 10)">
+            <rect x="10" y="10" width="160" height="160" fill="#1c1c28" stroke="#2a2a3a"/>
+            <line x1="20" y1="130" x2="150" y2="30" stroke="#555" stroke-width="1.5"/>
+            <!-- points -->
+            <circle cx="60" cy="99" r="4" fill="#00b4d8"/>
+            <circle cx="65" cy="95" r="3" fill="#f76a9a"/>
+            <line x1="60" y1="99" x2="65" y2="95" stroke="#f76a9a" stroke-width="1"/>
+            <text x="90" y="185" fill="#ffffff" font-size="11" font-family="sans-serif" font-weight="bold" text-anchor="middle">3. Anisotropic Quantization</text>
+          </g>
+        </svg>
+      </div>
+
+      <h3 class="sub-h">How ScaNN Works</h3>
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">1</div>
+          <div class="step-body">
+            <div class="step-title">Space Partitioning</div>
+            <div class="step-desc">
+              During training, it groups the vector space into $C$ distinct partitions/clusters.
+              <span style="display:block; font-size:11.5px; color:var(--muted); margin-top:4px;">*Rule of thumb:* set partitions count equal to the square root of total vectors count.</span>
+            </div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">2</div>
+          <div class="step-body">
+            <div class="step-title">Search Space Pruning</div>
+            <div class="step-desc">
+              At query time, ScaNN calculates similarity against partition centroids and selects only the top $P$ partitions, completely **pruning the rest of the database** and cutting search computations by orders of magnitude.
+            </div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">3</div>
+          <div class="step-body">
+            <div class="step-title">Anisotropic Vector Quantization</div>
+            <div class="step-desc">
+              To calculate distance quickly inside the remaining partitions, it compresses vectors into quantized codes. Unlike traditional product quantization, ScaNN's **anisotropic quantization** penalizes parallel quantization errors less than perpendicular errors, drastically improving recall.
+            </div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">4</div>
+          <div class="step-body">
+            <div class="step-title">Final Rescoring</div>
+            <div class="step-desc">
+              Optionally takes the top $K'$ candidates retrieved and recalculates their exact distances using full-precision weights to return an incredibly accurate final rank.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <pre class="formula" style="font-family:'DM Mono', monospace; font-size:12px; color:#e2e8f0; line-height:1.4; text-align:left; overflow-x:auto; padding:20px; border-left:4px solid var(--accent3);">
+import tensorflow_recommenders as tfrs
+
+# Initialize ScaNN search index layer
+scann = tfrs.layers.factorized_top_k.ScaNN(
+    distance_measure='dot_product',
+    num_leaves=2000,            # Total number of partitions
+    num_leaves_to_search=100    # Partitions to search (pruning ratio)
+)
+
+# Load dataset and build the index
+scann = scann.index_from_dataset(embedded_docs)
+scores, doc_ids = scann(embedded_query, k=2)</pre>
+    </div>
+
+    <!-- VECTOR DATABASES -->
+    <div class="content-section">
+      <span class="section-anchor" id="databases"></span>
+      <h2 class="section-h">3.3 Vector Databases &amp; Hybrid Search</h2>
+      <p>While ANN algorithms provide indexing functions, **Vector Databases** operationalize them for enterprise production workloads. They manage full CRUD lifecycles, real-time index updates, data consistency, horizontal scaling, backups, and security access controls.</p>
+
+      <div style="text-align: center; margin: 24px 0;">
+        <!-- Inline SVG: DB Flow -->
+        <svg viewBox="0 0 600 180" width="100%" height="auto" style="background:#111118; border:1px solid #2a2a3a; border-radius:4px;">
+          <!-- Nodes -->
+          <g transform="translate(10, 40)">
+            <rect x="10" y="20" width="110" height="50" rx="3" fill="#1c1c28" stroke="#00b4d8"/>
+            <text x="65" y="50" fill="#e2e8f0" font-size="10" font-family="sans-serif" text-anchor="middle">1. Raw Content</text>
+            
+            <rect x="160" y="20" width="110" height="50" rx="3" fill="#1c1c28" stroke="#f7c86a"/>
+            <text x="215" y="45" fill="#e2e8f0" font-size="10" font-family="sans-serif" text-anchor="middle">2. Embedder</text>
+            <text x="215" y="58" fill="#f7c86a" font-size="9" font-family="monospace">Gecko / 005</text>
+
+            <rect x="310" y="20" width="120" height="50" rx="3" fill="#1c1c28" stroke="#6af7c8"/>
+            <text x="370" y="45" fill="#e2e8f0" font-size="10" font-family="sans-serif" text-anchor="middle">3. Indexing</text>
+            <text x="370" y="58" fill="#6af7c8" font-size="9" font-family="monospace">ANN (HNSW/ScaNN)</text>
+
+            <rect x="470" y="10" width="110" height="70" rx="6" fill="#151d36" stroke="#f76a9a"/>
+            <text x="525" y="40" fill="#e2e8f0" font-size="11" font-family="sans-serif" font-weight="bold" text-anchor="middle">Vector DB</text>
+            <text x="525" y="55" fill="#f76a9a" font-size="9" font-family="monospace">Vector + Metadata</text>
+
+            <!-- Arrows -->
+            <path d="M 120 45 L 160 45" stroke="#fff" stroke-width="1.5" marker-end="url(#arrow)"/>
+            <path d="M 270 45 L 310 45" stroke="#fff" stroke-width="1.5" marker-end="url(#arrow)"/>
+            <path d="M 430 45 L 470 45" stroke="#fff" stroke-width="1.5" marker-end="url(#arrow)"/>
+          </g>
+        </svg>
+      </div>
+
+      <h3 class="sub-h">Hybrid Search: Combining Semantic &amp; Syntactic Matching</h3>
+      <p>Embeddings are great at capturing overall semantic meaning, but **fail on exact literal matches, product serial numbers, or domain-specific IDs** which might be out-of-vocabulary for the neural models. Production databases solve this via <strong>Hybrid Search</strong>:</p>
+      
+      <div class="compare-grid">
+        <div class="compare-card">
+          <div class="compare-card-title" style="color:var(--accent)">Semantic Search (Dense)</div>
+          <p style="font-size:12.5px;color:var(--muted);">Uses HNSW or ScaNN to query dense semantic vectors, capturing conceptual meanings.</p>
+        </div>
+        <div class="compare-card">
+          <div class="compare-card-title" style="color:var(--accent4)">Full-Text Search (Sparse)</div>
+          <p style="font-size:12.5px;color:var(--muted);">Uses inverted indexes (BM25) to search for exact keyword matching, strings, and code IDs.</p>
+        </div>
+      </div>
+
+      <div class="callout green">
+        <div class="callout-title">Hybrid Fusion &amp; Reranking</div>
+        The database executes both semantic dense search and traditional sparse search in parallel. The raw results are merged using **Reciprocal Rank Fusion (RRF)** and passed to a cross-encoder model for final reranking.
+      </div>
+    </div>
+
+    <!-- OPERATIONAL CONSIDERATIONS -->
+    <div class="content-section">
+      <span class="section-anchor" id="considerations"></span>
+      <h2 class="section-h">3.4 Operational Considerations inside Production</h2>
+      <p>Deploying vector databases at enterprise scale involves addressing four core operational challenges:</p>
+      
+      <ul class="content-list">
+        <li><strong>Vector Mutation &amp; Drift:</strong> As embedding models are updated (e.g., upgrading from `gecko@003` to `text-embedding-005`), **all stored vectors become obsolete and cannot be compared**. Re-embedding billions of historical items is extremely expensive. Production pipelines must balance upgrade cycles and leverage automated, background re-indexing queues.</li>
+        <li><strong>Pre-filtering vs. Post-filtering:</strong> 
+          <ul style="padding-left: 20px; margin-top: 4px;">
+            <li>*Post-filtering:* Runs ANN search first, then filters out items that don't match metadata tags. ⚠️ Risks returning fewer than $K$ results if matches are filtered out.</li>
+            <li>*Pre-filtering:* Filters the metadata index first, then executes the ANN search on only that subset. ✓ Preferred method, natively optimized inside modern databases.</li>
+          </ul>
+        </li>
+        <li><strong>OLTP vs. OLAP Database Split:</strong>
+          <ul style="padding-left: 20px; margin-top: 4px;">
+            <li>*Operational (OLTP):* For real-time updates and transaction guarantees, run vector plugins inside core operational engines like **AlloyDB, Spanner (pgvector), or Cloud SQL Postgres**.</li>
+            <li>*Analytical (OLAP):* For massive batch calculations and large-scale data queries, run vector search directly inside **Google BigQuery**.</li>
+          </ul>
+        </li>
+      </ul>
+    </div>
+
+    <!-- RAG GROUNDING -->
+    <div class="content-section">
+      <span class="section-anchor" id="applications"></span>
+      <h2 class="section-h">3.5 RAG Grounding &amp; Latency Reduction</h2>
+      <p>Retrieval-Augmented Generation (RAG) is the primary application for embeddings, designed to mitigate LLM hallucinations and bypass costly retraining by feeding fresh context in the prompt:</p>
+
+      <div class="steps">
+        <div class="step"><div class="step-num">1</div><div class="step-body"><div class="step-title">Source Grounding</div><div class="step-desc">Retrieves relevant context chunks from the vector database. If the database returns no semantic matches, the system gracefully prints a refusal (e.g., "I do not know") rather than letting the LLM hallucinate.</div></div></div>
+        <div class="step"><div class="step-num">2</div><div class="step-body"><div class="step-title">Source Attribution</div><div class="step-desc">Always returning the exact source IDs along with the final text, allowing users or automated LLM auto-evaluators to crosscheck and verify the grounded claims.</div></div></div>
+      </div>
+
+      <h3 class="sub-h" style="margin-top: 32px;">Production RAG Pipeline with LangChain &amp; Vertex AI Vector Search</h3>
+      <p>This implementation sets up a scalable HNSW tree index endpoint, streams text documents to the GCS bucket, and connects a `gemini-pro` QA chain to perform grounded retrieval:</p>
+
+      <pre class="formula" style="font-family:'DM Mono', monospace; font-size:12px; color:#e2e8f0; line-height:1.4; text-align:left; overflow-x:auto; padding:20px; border-left:4px solid var(--accent3);">
+from google.cloud import aiplatform
+from langchain_google_vertexai import VertexAIEmbeddings, VectorSearchVectorStore, VertexAI
+from langchain.chains import RetrievalQA
+from langchain.prompts.chat import ChatPromptTemplate, SystemMessagePromptTemplate, HumanMessagePromptTemplate
+
+# 1. Initialize Vertex AI
+aiplatform.init(project=PROJECT_ID, location=REGION, staging_bucket=BUCKET_URI)
+embedding_model = VertexAIEmbeddings(model_name="text-embedding-005")
+
+# 2. Deploy Google Matching Engine ANN tree index (HNSW graph)
+my_index = aiplatform.MatchingEngineIndex.create_tree_ah_index(
+    display_name="hnsw_index",
+    dimensions=768,
+    approximate_neighbors_count=150,
+    distance_measure_type="DOT_PRODUCT_DISTANCE",
+    index_update_method="STREAM_UPDATE"
+)
+
+# 3. Create public index endpoint and deploy HNSW graph
+my_endpoint = aiplatform.MatchingEngineIndexEndpoint.create(display_name="endpoint", public_endpoint_enabled=True)
+my_endpoint = my_endpoint.deploy_index(index=my_index, deployed_index_id="deployed_01")
+
+# 4. Initialize Vector Store and add text content
+vector_store = VectorSearchVectorStore.from_components(
+    project_id=PROJECT_ID, region=REGION, gcs_bucket_name=BUCKET,
+    index_id=my_index.name, endpoint_id=my_endpoint.name,
+    embedding=embedding_model, stream_update=True
+)
+vector_store.add_texts(texts=["The sun sets in the west.", "Mat is on the floor."])
+
+# 5. Connect Vector Store to Gemini-Pro QA chain
+retriever = vector_store.as_retriever(search_kwargs={'k': 1})
+qa_chain = RetrievalQA.from_chain_type(
+    llm=VertexAI(model_name="gemini-pro"), 
+    chain_type="stuff", 
+    retriever=retriever, 
+    return_source_documents=True
+)
+
+# 6. Execute RAG grounded QA
+result = qa_chain("Where does the sun set?")
+print(result['result'])
+<span style="color:var(--accent3)"># "The sun sets in the west." [Source: "The sun sets in the west."]</span></pre>
+    </div>
+
+    <div class="chapter-nav">
+      <a href="page-training.html"><span class="nav-dir">← Previous</span><span class="nav-title">Ch.2 Training &amp; Tuning</span></a>
+      <a href="llm.html" style="border-color: rgba(247,200,106,0.45); background: linear-gradient(to right, rgba(20,20,28,0.4), rgba(247,200,106,0.06));"><span class="nav-dir" style="color: var(--accent2);">Start Next Book →</span><span class="nav-title" style="color: var(--accent2);">Foundational LLMs</span></a>
+    </div>
+
+  </main>
+</div>
+
+<script>
+  const sections = document.querySelectorAll('.section-anchor');
+  const links = document.querySelectorAll('.sidebar-nav a');
+  window.addEventListener('scroll', () => {
+    let cur = '';
+    sections.forEach(s => { if (window.scrollY >= s.offsetTop - 120) cur = s.id; });
+    links.forEach(l => { l.classList.remove('active'); if (l.getAttribute('href') === '#' + cur) l.classList.add('active'); });
+  });
+</script>
+</body>
+</html>

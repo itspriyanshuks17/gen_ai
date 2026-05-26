@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Software &amp; Schema Integration | Prompt Notes</title>
+<link rel="stylesheet" href="shared.css">
+<style>
+  :root {
+    --accent: #9d4edd;
+    --accent2: #c77dff;
+    --accent3: #e0aaff;
+    --accent4: #f76a9a;
+  }
+  
+  /* Mobile Menu Hamburger */
+  .mobile-menu-btn {
+    display: none;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--white);
+    padding: 8px 16px;
+    font-family: 'Syne', sans-serif;
+    font-size: 12px;
+    font-weight: bold;
+    cursor: pointer;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.2s;
+  }
+  .mobile-menu-btn:hover {
+    border-color: var(--accent);
+    color: var(--accent2);
+  }
+
+  @media (max-width: 900px) {
+    .mobile-menu-btn {
+      display: inline-flex;
+    }
+    .sidebar {
+      position: fixed;
+      top: 65px;
+      left: -260px;
+      width: 240px;
+      height: calc(100vh - 65px);
+      background: var(--surface);
+      z-index: 90;
+      transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      display: block !important;
+      padding: 24px 0;
+      box-shadow: 10px 0 30px rgba(0,0,0,0.5);
+    }
+    .sidebar.active {
+      left: 0;
+    }
+    .sidebar-overlay {
+      display: none;
+      position: fixed;
+      inset: 65px 0 0 0;
+      background: rgba(0,0,0,0.6);
+      backdrop-filter: blur(4px);
+      z-index: 80;
+    }
+    .sidebar-overlay.active {
+      display: block;
+    }
+  }
+</style>
+</head>
+<body>
+<nav>
+  <a href="prompt-engineering.html" class="nav-logo">Prompt<span>.</span>Eng</a>
+  <ul class="nav-links">
+    <li><a href="prompt-engineering.html" class="nav-back">← Hub</a></li>
+    <li><a href="index.html">ML Notes</a></li>
+    <li><a href="page-pe-sampling.html">Ch.1 Sampling</a></li>
+    <li><a href="page-pe-techniques.html">Ch.2 Techniques</a></li>
+    <li><button class="mobile-menu-btn" id="menu-toggle">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+      Chapters
+    </button></li>
+  </ul>
+</nav>
+
+<div class="sidebar-overlay" id="sidebar-overlay"></div>
+
+<div class="page-hero" style="background: linear-gradient(135deg, #09090e, #1a0f30);">
+  <div class="page-hero-grid"></div>
+  <div class="page-hero-glow" style="background:radial-gradient(circle, rgba(157,78,221,0.15) 0%, transparent 70%)"></div>
+  <p class="page-eyebrow fade-up">Volume 04</p>
+  <h1 class="page-title fade-up d1">Software &amp; <em>Schema</em> Integration</h1>
+  <p class="page-desc fade-up d2">Explore how to bridge unstructured models with structured software: covering code-generation, JSON serialization, truncation self-repairs, and JSON Schemas.</p>
+</div>
+
+<div class="page-layout">
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-section">
+      <p class="sidebar-label">This Volume</p>
+      <ul class="sidebar-nav">
+        <li><a href="#codegenerating" class="active">3.1 Code Generation</a></li>
+        <li><a href="#jsonoutput">3.2 Structured JSON Output</a></li>
+        <li><a href="#jsonrepair">3.3 Truncation &amp; JSON Repair</a></li>
+        <li><a href="#schemas">3.4 Input &amp; Output Schemas</a></li>
+      </ul>
+    </div>
+    <div class="sidebar-section">
+      <p class="sidebar-label">Next Volume</p>
+      <ul class="sidebar-nav">
+        <li><a href="domain-specific-llms.html" style="color:var(--accent2); font-weight:bold;">Ch.4 Domain LLMs →</a></li>
+      </ul>
+    </div>
+  </aside>
+
+  <main class="main-content">
+
+    <!-- CODE GENERATION -->
+    <div class="content-section">
+      <span class="section-anchor" id="codegenerating"></span>
+      <h2 class="section-h">3.1 Coding-Aware Prompting <span class="section-badge">Coding</span></h2>
+      <p>Language models have spent a significant portion of their pretraining phases absorbing code repositories, making them exceptionally skilled at writing, translating, explaining, documenting, and debugging software scripts.</p>
+      <p>When engineering code prompts, it is crucial to use **Chain of Thought** reasoning. Force the model to "explain its algorithm and structural choices in comments" before outputting a single line of functional code. This prevents the model from generating obsolete dependencies or syntax slips in highly nested code constructs.</p>
+    </div>
+
+    <!-- STRUCTURED JSON OUTPUT -->
+    <div class="content-section">
+      <span class="section-anchor" id="jsonoutput"></span>
+      <h2 class="section-h">3.2 Structured JSON Output Advantages <span class="section-badge">Structure</span></h2>
+      <p>For non-creative developer tasks (like extracting data, ranking, categorizing, sorting, or translating fields), conversational text outputs are difficult to parse in backend databases. Modern prompts should force models to return structured **JSON** or **XML** representations.</p>
+
+      <div class="pros-cons">
+        <div class="pros">
+          <div class="pros-title">JSON Benefits</div>
+          <ul>
+            <li>Consistent styling: Matches database tables perfectly.</li>
+            <li>Reduces hallucinations: Forcing a structural key reduces the chance of random filler sentences.</li>
+            <li>Data types: Returns parsed integers, floats, booleans, and arrays natively.</li>
+            <li>Relationship aware: Nested structures represent data hierarchy perfectly.</li>
+            <li>Sortable: Datetime values can be pre-sorted by the model.</li>
+          </ul>
+        </div>
+        <div class="cons">
+          <div class="cons-title">JSON Drawbacks</div>
+          <ul>
+            <li>High token overhead: Verbose syntax tags utilize significantly more tokens than plain text.</li>
+            <li>Higher API costs and latency.</li>
+            <li>⚠️ Truncation risk: Hitting max token boundaries mid-generation breaks closing brackets.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- JSON REPAIR -->
+    <div class="content-section">
+      <span class="section-anchor" id="jsonrepair"></span>
+      <h2 class="section-h">3.3 Truncation Safety &amp; JSON Repair <span class="section-badge">Safety</span></h2>
+      <p>In high-volume operational environments, a model's generation is frequently cut off due to prompt window token limits. A truncated JSON object lacks trailing brackets, making it completely invalid to standard JSON parsers (`json.loads` in Python or `JSON.parse` in JS) and causing core application crashes.</p>
+
+      <div class="callout green">
+        <div class="callout-title">The `json-repair` Solution</div>
+        Instead of throwing away truncated outputs or running expensive, high-latency retry prompts, integrate the lightweight **`json-repair`** package (available on PyPI). This library parses incomplete or malformed JSON strings and programmatically closes empty quotes, arrays, and braces, salvaging structural data cleanly.
+      </div>
+    </div>
+
+    <!-- WORKING WITH SCHEMAS -->
+    <div class="content-section">
+      <span class="section-anchor" id="schemas"></span>
+      <h2 class="section-h">3.4 Input &amp; Output Schemas <span class="section-badge">Schemas</span></h2>
+      <p>JSON is not only excellent for outputs; it is incredibly powerful for **structuring inputs**. By providing a **JSON Schema**, you establish a strict operational blueprint for the LLM. It defines expected attributes, data formats, and structural relationships, keeping model attention focused on relevant tokens.</p>
+
+      <h3 class="sub-h">1. Output Schema Blueprint</h3>
+      <p>Define a structured catalog description format using a standard schema:</p>
+      <pre class="formula" style="font-family:'DM Mono', monospace; font-size:12px; color:#e2e8f0; line-height:1.4; text-align:left; overflow-x:auto; padding:20px; border-left:4px solid var(--accent2);">
+{
+  "type": "object",
+  "properties": {
+    "name": { "type": "string", "description": "Product name" },
+    "category": { "type": "string", "description": "Product category" },
+    "price": { "type": "number", "format": "float", "description": "Product price" },
+    "features": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Key features of the product"
+    },
+    "release_date": { "type": "string", "format": "date", "description": "Product release date" }
+  }
+}</pre>
+
+      <h3 class="sub-h">2. Structured Input/Output Payload</h3>
+      <p>By feeding this schema as a constraint, the model outputs clean, schema-conforming items:</p>
+      <pre class="formula" style="font-family:'DM Mono', monospace; font-size:12px; color:#6af7c8; line-height:1.4; text-align:left; overflow-x:auto; padding:20px; border-left:4px solid #6af7c8;">
+{
+  "name": "Wireless Headphones",
+  "category": "Electronics",
+  "price": 99.99,
+  "features": ["Noise cancellation", "Bluetooth 5.0", "20-hour battery life"],
+  "release_date": "2023-10-27"
+}</pre>
+    </div>
+
+    <div class="chapter-nav">
+      <a href="page-pe-techniques.html"><span class="nav-dir">← Previous</span><span class="nav-title">Ch.2 Advanced Prompting Techniques</span></a>
+      <a href="domain-specific-llms.html" style="border-color: rgba(199,125,255,0.45); background: linear-gradient(to right, rgba(16,16,23,0.4), rgba(199,125,255,0.06));"><span class="nav-dir" style="color: var(--accent2);">Start Next Book →</span><span class="nav-title" style="color: var(--accent2);">Domain-Specific LLMs Handbook</span></a>
+    </div>
+
+  </main>
+</div>
+
+<script>
+  // Mobile drawer trigger
+  const menuToggle = document.getElementById('menu-toggle');
+  const sidebar = document.getElementById('sidebar');
+  const overlay = document.getElementById('sidebar-overlay');
+  
+  function toggleSidebar() {
+    sidebar.classList.toggle('active');
+    overlay.classList.toggle('active');
+  }
+  
+  menuToggle.addEventListener('click', toggleSidebar);
+  overlay.addEventListener('click', toggleSidebar);
+
+  // Active link highlighting on scroll
+  const sections = document.querySelectorAll('.section-anchor');
+  const links = document.querySelectorAll('.sidebar-nav a');
+  window.addEventListener('scroll', () => {
+    let cur = '';
+    sections.forEach(s => { if (window.scrollY >= s.offsetTop - 120) cur = s.id; });
+    links.forEach(l => { 
+      l.classList.remove('active'); 
+      if (l.getAttribute('href') === '#' + cur) l.classList.add('active'); 
+    });
+  });
+</script>
+</body>
+</html>

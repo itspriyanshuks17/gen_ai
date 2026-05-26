@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MedLM &amp; Clinical Health Tech | Domain Notes</title>
+<link rel="stylesheet" href="shared.css">
+<style>
+  :root {
+    --bg: #0b0c10;
+    --surface: #121620;
+    --surface2: #1c2230;
+    --border: #2c354a;
+    --accent: #ff3b30;
+    --accent2: #ef233c;
+    --accent3: #ff6b6b;
+    --accent4: #6af7c8;
+    --text: #edf2f7;
+    --muted: #718096;
+    --white: #ffffff;
+  }
+  
+  /* Mobile Menu Hamburger */
+  .mobile-menu-btn {
+    display: none;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--white);
+    padding: 8px 16px;
+    font-family: 'Syne', sans-serif;
+    font-size: 12px;
+    font-weight: bold;
+    cursor: pointer;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.2s;
+  }
+  .mobile-menu-btn:hover {
+    border-color: var(--accent);
+    color: var(--accent3);
+  }
+
+  @media (max-width: 900px) {
+    .mobile-menu-btn {
+      display: inline-flex;
+    }
+    .sidebar {
+      position: fixed;
+      top: 65px;
+      left: -260px;
+      width: 240px;
+      height: calc(100vh - 65px);
+      background: var(--surface);
+      z-index: 90;
+      transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      display: block !important;
+      padding: 24px 0;
+      box-shadow: 10px 0 30px rgba(0,0,0,0.5);
+    }
+    .sidebar.active {
+      left: 0;
+    }
+    .sidebar-overlay {
+      display: none;
+      position: fixed;
+      inset: 65px 0 0 0;
+      background: rgba(0,0,0,0.6);
+      backdrop-filter: blur(4px);
+      z-index: 80;
+    }
+    .sidebar-overlay.active {
+      display: block;
+    }
+  }
+</style>
+</head>
+<body>
+<nav>
+  <a href="domain-specific-llms.html" class="nav-logo">Domain<span>.</span>LLMs</a>
+  <ul class="nav-links">
+    <li><a href="domain-specific-llms.html" class="nav-back">← Hub</a></li>
+    <li><a href="index.html">ML Notes</a></li>
+    <li><a href="page-ds-cybersecurity.html">Ch.1 Cybersecurity</a></li>
+    <li><button class="mobile-menu-btn" id="menu-toggle">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+      Chapters
+    </button></li>
+  </ul>
+</nav>
+
+<div class="sidebar-overlay" id="sidebar-overlay"></div>
+
+<div class="page-hero" style="background: linear-gradient(135deg, #0b0c10, #2a0c0c);">
+  <div class="page-hero-grid"></div>
+  <div class="page-hero-glow" style="background:radial-gradient(circle, rgba(255,59,48,0.15) 0%, transparent 70%)"></div>
+  <p class="page-eyebrow fade-up">Volume 05</p>
+  <h1 class="page-title fade-up d1">MedLM &amp; <em>Clinical</em> Health Tech</h1>
+  <p class="page-desc fade-up d2">Explore conversational AI systems in medicine, MultiMedQA benchmarks, clinical trials validation phases, and Med-PaLM 2 ensemble refinements.</p>
+</div>
+
+<div class="page-layout">
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-section">
+      <p class="sidebar-label">This Volume</p>
+      <ul class="sidebar-nav">
+        <li><a href="#intro" class="active">2.1 Medical Question Answering</a></li>
+        <li><a href="#opportunities">2.2 Healthcare Opportunities</a></li>
+        <li><a href="#workflow">2.3 Clinical Trial Phases</a></li>
+        <li><a href="#taskvsdomain">2.4 Task vs. Domain Models</a></li>
+        <li><a href="#medpalm2">2.5 Med-PaLM 2 Strategies</a></li>
+        <li><a href="#ensemble">2.6 Ensemble Refinement (ER)</a></li>
+      </ul>
+    </div>
+    <div class="sidebar-section">
+      <p class="sidebar-label">Next Volume</p>
+      <ul class="sidebar-nav">
+        <li><a href="ai-agents.html" style="color:var(--accent3); font-weight:bold;">Ch.3 AI Agents Hub →</a></li>
+      </ul>
+    </div>
+  </aside>
+
+  <main class="main-content">
+
+    <!-- INTRODUCTION -->
+    <div class="content-section">
+      <span class="section-anchor" id="intro"></span>
+      <h2 class="section-h">2.1 Medical Question Answering <span class="section-badge">Foundations</span></h2>
+      <p>Medical question-answering (QA) represents a grand historical challenge in artificial intelligence due to the massive, constantly evolving volume of medical literature and the zero-tolerance threshold for reasoning errors.</p>
+      <p>Unlike previous medical NLP tools that generated static "yes" or "no" classifications, foundation models like Google's **Med-PaLM** represent human-centric, conversational systems capable of assisting clinicians with detailed explanations, empathy, and patient context.</p>
+    </div>
+
+    <!-- HEALTHCARE OPPORTUNITIES -->
+    <div class="content-section">
+      <span class="section-anchor" id="opportunities"></span>
+      <h2 class="section-h">2.2 Opportunities in Health Tech <span class="section-badge">Use Cases</span></h2>
+      <p>Generative AI transforms the clinical environment across multiple diagnostic and non-diagnostic dimensions:</p>
+      
+      <ul class="content-list">
+        <li><strong>Triaging Inbox Messages:</strong> Analyzes incoming patient messages, evaluates patient records, and flags urgent concerns for prioritized clinician reviews.</li>
+        <li><strong>Dynamic Patient Intake:</strong> Replaces rigid web forms with conversational, responsive intakes, synthesizing complex history summaries for clinical staff.</li>
+        <li><strong>Curbside Clinician Consults:</strong> Serves as an on-demand medical reference colleague for unfamiliar diagnoses or rare disease traits.</li>
+        <li><strong>Scientific Gene Discovery:</strong> Identifies genetic traits and maps related trait-to-gene associations for biomedical research at scale.</li>
+      </ul>
+    </div>
+
+    <!-- WORKFLOWS -->
+    <div class="content-section">
+      <span class="section-anchor" id="workflow"></span>
+      <h2 class="section-h">2.3 Clinical Trial Validation Phases <span class="section-badge">Safety</span></h2>
+      <p>Due to the critical nature of patient safety, medical AI cannot be deployed directly without strict validation. Adhering to three formal scientific phases is necessary:</p>
+      
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">1</div>
+          <div class="step-body">
+            <div class="step-title">Retrospective Evaluation</div>
+            <div class="step-desc">Evaluate the system against historical, fully de-identified clinical datasets.</div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">2</div>
+          <div class="step-body">
+            <div class="step-title">Prospective Observational (Non-Interventional)</div>
+            <div class="step-desc">Feed live, active clinical inputs into the model, but hide model outputs from clinicians. Board-certified experts evaluate the outputs in isolation so patient care is unaffected.</div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">3</div>
+          <div class="step-body">
+            <div class="step-title">Prospective Interventional</div>
+            <div class="step-desc">Deploy the system directly in live clinical workflows with consented patients, measuring impact on actual health outcomes. Requires strict IRB protocols and real-time safety fallback options.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TASK VS DOMAIN -->
+    <div class="content-section">
+      <span class="section-anchor" id="taskvsdomain"></span>
+      <h2 class="section-h">2.4 Task- vs. Domain-Specific Models <span class="section-badge">Validation</span></h2>
+      <p>Excelling at general medical knowledge does not automatically guarantee safety in specialized sub-disciplines. For instance, a model performing at expert levels on general medical licensing exams must still be independently validated and adapted prior to running sensitive psychiatric mental health evaluations.</p>
+      <p>Moreover, modern healthcare operations are inherently **multimodal**, requiring parallel reasoning across text, radiological images, wear sensors, and genomic sequences, which are currently being integrated into clinical research.</p>
+    </div>
+
+    <!-- MEDPALM 2 -->
+    <div class="content-section">
+      <span class="section-anchor" id="medpalm2"></span>
+      <h2 class="section-h">2.5 Med-PaLM 2 Training Strategies <span class="section-badge">Training</span></h2>
+      <p>Google's **Med-PaLM 2** was the first AI system to achieve expert-level performance (**86.5%**) on USMLE-style licensing questions (MedQA):</p>
+
+      <ul class="content-list">
+        <li><strong>Instruction Fine-Tuning:</strong> Built on top of the base PaLM 2 model and fine-tuned using **MultiMedQA** datasets (including MedQA, HealthSearchQA, and LiveQA).</li>
+        <li><strong>Evaluation Metrics Rubric:</strong> Long-form answers are rated blindly against board-certified physicians across axes like alignment with clinical consensus, factuality, reading comprehension, reasoning steps, omission risks, and health equity bias.</li>
+      </ul>
+    </div>
+
+    <!-- ENSEMBLE REFINEMENT -->
+    <div class="content-section">
+      <span class="section-anchor" id="ensemble"></span>
+      <h2 class="section-h">2.6 Ensemble Refinement (ER) <span class="section-badge">Logic</span></h2>
+      <p>To improve reasoning, Med-PaLM 2 introduces **Ensemble Refinement (ER)**. Instead of taking a single generated reasoning chain or performing simple majority voting on multiple choice options, it refines the answer in two sequential stages:</p>
+
+      <div style="text-align: center; margin: 28px 0;">
+        <!-- Inline SVG: Ensemble Refinement -->
+        <svg viewBox="0 0 700 220" width="100%" height="auto" style="background:#121620; border:1px solid #2c354a; border-radius:4px;">
+          <!-- Stage 1 -->
+          <g transform="translate(10, 20)">
+            <rect x="10" y="50" width="120" height="50" rx="3" fill="#1c2230" stroke="#718096"/>
+            <text x="70" y="75" fill="#edf2f7" font-size="11" font-family="sans-serif" text-anchor="middle" font-weight="bold">Original Prompt</text>
+            <text x="70" y="88" fill="#718096" font-size="9" font-family="monospace">Clinical Question</text>
+            
+            <path d="M 130 75 L 180 75" stroke="#fff" stroke-width="1.5" marker-end="url(#arrow)"/>
+            
+            <!-- Stochastic paths -->
+            <rect x="180" y="10" width="130" height="40" rx="3" fill="#1c2230" stroke="#ef233c"/>
+            <text x="245" y="30" fill="#edf2f7" font-size="10" font-family="sans-serif" text-anchor="middle">Path A (Stochastic)</text>
+            <text x="245" y="42" fill="#ef233c" font-size="8" font-family="monospace">T = 0.7 sample</text>
+            
+            <rect x="180" y="60" width="130" height="40" rx="3" fill="#1c2230" stroke="#ef233c"/>
+            <text x="245" y="80" fill="#edf2f7" font-size="10" font-family="sans-serif" text-anchor="middle">Path B (Stochastic)</text>
+            <text x="245" y="92" fill="#ef233c" font-size="8" font-family="monospace">T = 0.7 sample</text>
+            
+            <rect x="180" y="110" width="130" height="40" rx="3" fill="#1c2230" stroke="#ef233c"/>
+            <text x="245" y="130" fill="#edf2f7" font-size="10" font-family="sans-serif" text-anchor="middle">Path C (Stochastic)</text>
+            <text x="245" y="142" fill="#ef233c" font-size="8" font-family="monospace">T = 0.7 sample</text>
+            
+            <path d="M 310 30 L 360 65" stroke="#555" stroke-width="1"/>
+            <path d="M 310 80 L 360 80" stroke="#555" stroke-width="1"/>
+            <path d="M 310 130 L 360 95" stroke="#555" stroke-width="1"/>
+          </g>
+          
+          <!-- Stage 2 -->
+          <g transform="translate(370, 20)">
+            <rect x="10" y="50" width="140" height="50" rx="3" fill="#1c2230" stroke="#ff3b30"/>
+            <text x="80" y="70" fill="#edf2f7" font-size="10" font-family="sans-serif" text-anchor="middle" font-weight="bold">Refinement Step</text>
+            <text x="80" y="82" fill="#ff3b30" font-size="9" font-family="monospace">Conditioned on prompt</text>
+            <text x="80" y="93" fill="#ff6b6b" font-size="8" font-family="monospace">+ Paths A, B, C</text>
+            
+            <path d="M 150 75 L 200 75" stroke="#fff" stroke-width="1.5" marker-end="url(#arrow)"/>
+            
+            <rect x="200" y="45" width="100" height="60" rx="6" fill="#251212" stroke="#44f7a6"/>
+            <text x="250" y="75" fill="#44f7a6" font-size="11" font-family="sans-serif" text-anchor="middle" font-weight="bold">Final Answer</text>
+            <text x="250" y="90" fill="#edf2f7" font-size="8" font-family="monospace">Refined result</text>
+          </g>
+        </svg>
+      </div>
+
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">1</div>
+          <div class="step-body">
+            <div class="step-title">Stage 1: Stochastic Generation</div>
+            <div class="step-desc">The model is queried with a high temperature ($T = 0.7$) multiple times in parallel to stochastically generate a diverse set of reasoning pathways.</div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">2</div>
+          <div class="step-body">
+            <div class="step-title">Stage 2: Aggregated Refinement</div>
+            <div class="step-desc">The model is queried a final time, conditioned on the **original prompt, the clinical question, and the entire set of stochastically generated reasoning paths from Stage 1**. This forces the model to synthesize, aggregate, and refine the diverse arguments into a single highly reliable, correct answer.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="chapter-nav">
+      <a href="page-ds-cybersecurity.html"><span class="nav-dir">← Previous</span><span class="nav-title">Ch.1 Cybersecurity &amp; SecLM</span></a>
+      <a href="ai-agents.html" style="border-color: rgba(239,35,60,0.45); background: linear-gradient(to right, rgba(18,22,32,0.4), rgba(239,35,60,0.06));"><span class="nav-dir" style="color: var(--accent2);">Start Next Book →</span><span class="nav-title" style="color: var(--accent2);">AI Agents Handbook</span></a>
+    </div>
+
+  </main>
+</div>
+
+<script>
+  // Mobile drawer trigger
+  const menuToggle = document.getElementById('menu-toggle');
+  const sidebar = document.getElementById('sidebar');
+  const overlay = document.getElementById('sidebar-overlay');
+  
+  function toggleSidebar() {
+    sidebar.classList.toggle('active');
+    overlay.classList.toggle('active');
+  }
+  
+  menuToggle.addEventListener('click', toggleSidebar);
+  overlay.addEventListener('click', toggleSidebar);
+
+  // Active link highlighting on scroll
+  const sections = document.querySelectorAll('.section-anchor');
+  const links = document.querySelectorAll('.sidebar-nav a');
+  window.addEventListener('scroll', () => {
+    let cur = '';
+    sections.forEach(s => { if (window.scrollY >= s.offsetTop - 120) cur = s.id; });
+    links.forEach(l => { 
+      l.classList.remove('active'); 
+      if (l.getAttribute('href') === '#' + cur) l.classList.add('active'); 
+    });
+  });
+</script>
+</body>
+</html>

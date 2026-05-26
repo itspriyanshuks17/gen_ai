@@ -3,20 +3,20 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Embeddings &amp; Vector Stores Handbook | Study Notes</title>
+<title>Solving Domain-Specific Problems Using LLMs | Study Notes</title>
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:ital,wght@0,300;0,400;1,300&family=Fraunces:ital,wght@0,300;0,600;1,300&display=swap" rel="stylesheet">
 <style>
   :root {
-    --bg: #070a13;
-    --surface: #0e1324;
-    --surface2: #151d36;
-    --border: #212c4e;
-    --accent: #00b4d8;
-    --accent2: #90e0ef;
-    --accent3: #6af7c8;
-    --accent4: #f76a9a;
-    --text: #e2e8f0;
-    --muted: #64748b;
+    --bg: #0b0c10;
+    --surface: #121620;
+    --surface2: #1c2230;
+    --border: #2c354a;
+    --accent: #ff3b30;
+    --accent2: #ef233c;
+    --accent3: #ff6b6b;
+    --accent4: #6af7c8;
+    --text: #edf2f7;
+    --muted: #718096;
     --white: #ffffff;
   }
   * { margin:0; padding:0; box-sizing:border-box; }
@@ -35,7 +35,7 @@
     position: fixed; top:0; left:0; right:0; z-index:100;
     display: flex; align-items: center; justify-content: space-between;
     padding: 16px 48px;
-    background: rgba(7,10,19,0.85);
+    background: rgba(11,12,16,0.85);
     backdrop-filter: blur(12px);
     border-bottom: 1px solid var(--border);
   }
@@ -70,15 +70,15 @@
   .hero-grid {
     position: absolute; inset: 0;
     background-image:
-      linear-gradient(rgba(0,180,216,0.05) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(0,180,216,0.05) 1px, transparent 1px);
+      linear-gradient(rgba(239,35,60,0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(239,35,60,0.04) 1px, transparent 1px);
     background-size: 48px 48px;
   }
   .hero-glow {
     position: absolute;
     width: 600px; height: 600px;
     border-radius: 50%;
-    background: radial-gradient(circle, rgba(0,180,216,0.12) 0%, transparent 70%);
+    background: radial-gradient(circle, rgba(239,35,60,0.1) 0%, transparent 70%);
     top: -100px; right: -100px;
     pointer-events: none;
   }
@@ -86,7 +86,7 @@
     position: absolute;
     width: 400px; height: 400px;
     border-radius: 50%;
-    background: radial-gradient(circle, rgba(106,247,200,0.06) 0%, transparent 70%);
+    background: radial-gradient(circle, rgba(106,247,200,0.04) 0%, transparent 70%);
     bottom: -50px; left: 100px;
     pointer-events: none;
   }
@@ -136,7 +136,7 @@
     display: inline-flex; align-items: center; gap: 10px;
     padding: 14px 28px;
     background: var(--accent);
-    color: #070a13;
+    color: #ffffff;
     text-decoration: none;
     font-family: 'Syne', sans-serif;
     font-weight: 700;
@@ -219,12 +219,12 @@
     content: '';
     position: absolute;
     inset: 0;
-    background: linear-gradient(135deg, transparent, rgba(0,180,216,0.05));
+    background: linear-gradient(135deg, transparent, rgba(239,35,60,0.05));
     opacity: 0;
     transition: opacity 0.3s;
   }
   .chapter-card:hover::before { opacity: 1; }
-  .chapter-card:hover { border-color: var(--accent); transform: translateY(-3px); box-shadow: 0 8px 32px rgba(0,180,216,0.08); }
+  .chapter-card:hover { border-color: var(--accent); transform: translateY(-3px); box-shadow: 0 8px 32px rgba(239,35,60,0.08); }
   .chapter-card:hover .chapter-arrow { transform: translateX(6px); }
 
   .chapter-num {
@@ -242,7 +242,7 @@
     border-radius: 2px;
     font-family: 'DM Mono', monospace;
     font-weight: bold;
-    background: rgba(0,180,216,0.15); color: var(--accent2);
+    background: rgba(239,35,60,0.15); color: var(--accent3);
   }
 
   .chapter-title {
@@ -329,16 +329,12 @@
 <body>
 
 <nav>
-  <a href="embeddings.html" class="nav-logo">Vector<span>.</span>Stores</a>
+  <a href="domain-specific-llms.html" class="nav-logo">Domain<span>.</span>LLMs</a>
   <ul class="nav-links">
     <li><a href="index.html" style="color: var(--accent3);">← ML Notes</a></li>
-    <li><a href="llm.html" style="color: var(--accent2);">LLMs</a></li>
-    <li><a href="prompt-engineering.html" style="color: #c77dff;">Prompts</a></li>
-    <li><a href="domain-specific-llms.html" style="color: #ef233c;">Vertical</a></li>
-    <li><a href="ai-agents.html" style="color: #00bbf9;">Agents</a></li>
-    <li><a href="page-embeddings.html">Embeddings</a></li>
-    <li><a href="page-training.html">Training</a></li>
-    <li><a href="page-vector-search.html">Search &amp; DBs</a></li>
+    <li><a href="llm.html" style="color: var(--accent2);">LLM Book</a></li>
+    <li><a href="page-ds-cybersecurity.html">Cybersecurity</a></li>
+    <li><a href="page-ds-healthcare.html">Healthcare</a></li>
   </ul>
 </nav>
 
@@ -348,30 +344,30 @@
   <div class="hero-glow2"></div>
 
   <p class="hero-eyebrow">Google Tech Whitepaper</p>
-  <h1>Embeddings<br>&amp; <em>Vector Stores</em><br>Handbook</h1>
-  <p class="hero-sub">A comprehensive, mathematical and architectural developer study guide covering unimodal and multimodal joint embeddings, evaluation metrics, training, and low-latency similarity vector searches.</p>
+  <h1>Solving<br>Domain-Specific<br><em>with LLMs</em></h1>
+  <p class="hero-sub">Explore specialized neural network architectures designed to tackle the high-stakes, highly technical requirements of Cybersecurity (SecLM) and Healthcare (MedLM / Med-PaLM 2).</p>
 
   <div class="hero-actions">
-    <a href="page-embeddings.html" class="btn-primary">Learn Embeddings →</a>
-    <a href="page-training.html" class="btn-secondary">Training Architectures →</a>
+    <a href="page-ds-cybersecurity.html" class="btn-primary">Cybersecurity SecLM →</a>
+    <a href="page-ds-healthcare.html" class="btn-secondary">Healthcare MedLM →</a>
   </div>
 
   <div class="hero-stat-row">
     <div class="hero-stat">
-      <span class="hero-stat-num">03</span>
+      <span class="hero-stat-num">02</span>
       <span class="hero-stat-label">Core Volumes</span>
     </div>
     <div class="hero-stat">
-      <span class="hero-stat-num">64</span>
+      <span class="hero-stat-num">37</span>
       <span class="hero-stat-label">Pages</span>
     </div>
     <div class="hero-stat">
-      <span class="hero-stat-num">5+</span>
-      <span class="hero-stat-label">Modalities</span>
+      <span class="hero-stat-num">86.5%</span>
+      <span class="hero-stat-label">MedQA Accuracy</span>
     </div>
     <div class="hero-stat">
       <span class="hero-stat-num">3</span>
-      <span class="hero-stat-label">Vector Search Algos</span>
+      <span class="hero-stat-label">Clinical Trial Phases</span>
     </div>
   </div>
 </section>
@@ -384,19 +380,19 @@
 
   <div class="chapters-grid">
 
-    <!-- CHAPTER 1: REPRESENTATION -->
-    <a href="page-embeddings.html" class="chapter-card">
+    <!-- CHAPTER 2.1: CYBERSECURITY -->
+    <a href="page-ds-cybersecurity.html" class="chapter-card">
       <div>
-        <div class="chapter-num">VOLUME 01 &nbsp;<span class="chapter-tag">REPRESENTATION</span></div>
-        <div class="chapter-title">Embedding Representations &amp; Quality</div>
-        <div class="chapter-desc">Understand how high-dimensional text, images, graphs, and structured tables are compressed into low-dimensional semantic vectors. Learn how to evaluate them quantitatively using precision, recall, and nDCG.</div>
+        <div class="chapter-num">VOLUME 01 &nbsp;<span class="chapter-tag">CYBERSECURITY</span></div>
+        <div class="chapter-title">SecLM &amp; Cybersecurity Operations</div>
+        <div class="chapter-desc">Explore specialized cybersecurity models. Master fuzz-testing locations, access policies aligning to least privileges, the specialized SecLM training pipeline (SFT, continued pretraining, PET adapters), and multi-step threat intelligence reasoning (APT41 threat analysis).</div>
         <div class="chapter-topics">
-          <span class="topic-pill">Vector Manifolds</span>
-          <span class="topic-pill">Word2Vec &amp; GloVe</span>
-          <span class="topic-pill">BERT &amp; Gemini</span>
-          <span class="topic-pill">Precision@K &amp; Recall@K</span>
-          <span class="topic-pill">nDCG Score</span>
-          <span class="topic-pill">Multimodal (CLIP/ColPali)</span>
+          <span class="topic-pill">Fuzz-Testing</span>
+          <span class="topic-pill">Least Privileges</span>
+          <span class="topic-pill">SecLM Core API</span>
+          <span class="topic-pill">PET Adapters</span>
+          <span class="topic-pill">APT41 Reasoning</span>
+          <span class="topic-pill">Script Obfuscation</span>
         </div>
       </div>
       <div class="chapter-footer">
@@ -405,43 +401,23 @@
       </div>
     </a>
 
-    <!-- CHAPTER 2: TRAINING -->
-    <a href="page-training.html" class="chapter-card" style="border-color: rgba(106,247,200,0.3); background: linear-gradient(135deg, var(--surface), rgba(106,247,200,0.02));">
+    <!-- CHAPTER 2.2: HEALTHCARE -->
+    <a href="page-ds-healthcare.html" class="chapter-card" style="border-color: rgba(239,35,60,0.3); background: linear-gradient(135deg, var(--surface), rgba(239,35,60,0.02));">
       <div>
-        <div class="chapter-num" style="color: var(--accent3);">VOLUME 02 &nbsp;<span class="chapter-tag" style="background: rgba(106,247,200,0.15); color: var(--accent3);">TRAINING</span></div>
-        <div class="chapter-title" style="color: var(--accent3);">Training &amp; Fine-Tuning Embeddings</div>
-        <div class="chapter-desc">Learn how to build, pretrain, and fine-tune embedding models using Dual Encoder (Two-Tower) architectures, contrastive losses, and Keras models on top of trainable foundation models.</div>
+        <div class="chapter-num" style="color: var(--accent2);">VOLUME 02 &nbsp;<span class="chapter-tag" style="background: rgba(239,35,60,0.15); color: var(--accent2);">HEALTHCARE</span></div>
+        <div class="chapter-title" style="color: var(--accent2);">MedLM &amp; Clinical Health Tech</div>
+        <div class="chapter-desc">Examine medical question-answering advancements. Study triage prioritizers, patient intake summarizers, curbside clinician consulting, three-phase clinical workflow evaluations (retrospective, prospective non-interventional, prospective interventional), and Med-PaLM 2 ensemble refinements.</div>
         <div class="chapter-topics">
-          <span class="topic-pill" style="border-color: rgba(106,247,200,0.3); color: var(--accent3);">Dual Encoders</span>
-          <span class="topic-pill" style="border-color: rgba(106,247,200,0.3); color: var(--accent3);">Contrastive Loss</span>
-          <span class="topic-pill" style="border-color: rgba(106,247,200,0.3); color: var(--accent3);">BERT/T5 Fine-Tuning</span>
-          <span class="topic-pill" style="border-color: rgba(106,247,200,0.3); color: var(--accent3);">Keras Classifier</span>
-          <span class="topic-pill" style="border-color: rgba(106,247,200,0.3); color: var(--accent3);">Vertex AI SDK</span>
+          <span class="topic-pill" style="border-color: rgba(239,35,60,0.3); color: var(--accent2);">Patient Intake</span>
+          <span class="topic-pill" style="border-color: rgba(239,35,60,0.3); color: var(--accent2);">Clinician Triage</span>
+          <span class="topic-pill" style="border-color: rgba(239,35,60,0.3); color: var(--accent2);">Clinical Trials</span>
+          <span class="topic-pill" style="border-color: rgba(239,35,60,0.3); color: var(--accent2);">MultiMedQA Exam</span>
+          <span class="topic-pill" style="border-color: rgba(239,35,60,0.3); color: var(--accent2);">Ensemble Refinement</span>
         </div>
       </div>
-      <div class="chapter-footer" style="border-top-color: rgba(106,247,200,0.2);">
-        <span class="chapter-count" style="color: var(--accent3);">5 sections</span>
-        <span class="chapter-arrow" style="color: var(--accent3);">→</span>
-      </div>
-    </a>
-
-    <!-- CHAPTER 3: SEARCH & DATABASES -->
-    <a href="page-vector-search.html" class="chapter-card" style="border-color: rgba(247,106,154,0.3); background: linear-gradient(135deg, var(--surface), rgba(247,106,154,0.02));">
-      <div>
-        <div class="chapter-num" style="color: var(--accent4);">VOLUME 03 &nbsp;<span class="chapter-tag" style="background: rgba(247,106,154,0.15); color: var(--accent4);">SEARCH &amp; DATABASES</span></div>
-        <div class="chapter-title" style="color: var(--accent4);">Vector Search, Databases &amp; RAG</div>
-        <div class="chapter-desc">Explore similarity search algorithms (LSH, HNSW, ScaNN) and how vector databases operate in production to ground LLM systems and prevent hallucinations.</div>
-        <div class="chapter-topics">
-          <span class="topic-pill" style="border-color: rgba(247,106,154,0.3); color: var(--accent4);">Cosine/L2 similarity</span>
-          <span class="topic-pill" style="border-color: rgba(247,106,154,0.3); color: var(--accent4);">HNSW Proximity Graph</span>
-          <span class="topic-pill" style="border-color: rgba(247,106,154,0.3); color: var(--accent4);">ScaNN Anisotropic Quantization</span>
-          <span class="topic-pill" style="border-color: rgba(247,106,154,0.3); color: var(--accent4);">Hybrid Indexing</span>
-          <span class="topic-pill" style="border-color: rgba(247,106,154,0.3); color: var(--accent4);">LangChain RAG Grounding</span>
-        </div>
-      </div>
-      <div class="chapter-footer" style="border-top-color: rgba(247,106,154,0.2);">
-        <span class="chapter-count">6 sections</span>
-        <span class="chapter-arrow" style="color: var(--accent4);">→</span>
+      <div class="chapter-footer" style="border-top-color: rgba(239,35,60,0.2);">
+        <span class="chapter-count" style="color: var(--accent2);">5 sections</span>
+        <span class="chapter-arrow" style="color: var(--accent2);">→</span>
       </div>
     </a>
 
@@ -452,21 +428,21 @@
 
 <section class="section" style="max-width: 900px; margin: 0 auto;">
   <p class="section-label">Architectural Overview</p>
-  <h2 class="section-title" style="margin-bottom: 24px;">Semantic Search &amp; RAG Pipelines</h2>
-  <p style="color: var(--muted); margin-bottom: 24px;">Modern information retrieval uses **Asymmetric Dual Encoders** to map queries and documents into a shared latent space. In a production **Retrieval-Augmented Generation (RAG)** pipeline, this happens in two distinct phases:</p>
+  <h2 class="section-title" style="margin-bottom: 24px;">Verticalization: Specialized Domains</h2>
+  <p style="color: var(--muted); margin-bottom: 24px;">General-purpose language models struggle in high-stakes domains due to a lack of deep, proprietary vertical data and an inability to deal with complex domain-specific tasks safely. Verticalization solves this by combining specialized models with rigid validation and operational workflows:</p>
   
   <div class="intro-callout">
-    <strong>1. Background Indexing:</strong> Large document collections are parsed, divided into chunks, converted into dense document vectors using the <code>RETRIEVAL_DOCUMENT</code> model tower, and indexed inside a low-latency Vector Database (like Faiss, HNSW, or ScaNN).
+    <strong>1. Core Model Fine-Tuning:</strong> Take a highly capable general model, apply continued pre-training on vertical publications, and execute supervised fine-tuning (SFT) using curated task pairs designed by industry domain experts (clinicians and security analysts).
   </div>
   
-  <div class="intro-callout" style="border-left-color: var(--accent3);">
-    <strong>2. Real-Time Querying:</strong> When a user enters a query, it is compressed into a query vector using the <code>RETRIEVAL_QUERY</code> model tower. The Vector Database retrieves the nearest neighbors in milliseconds. These chunks are stuffed into an LLM's context window to generate a grounded, factual answer.
+  <div class="intro-callout" style="border-left-color: var(--accent2);">
+    <strong>2. Grounding &amp; Planning Frameworks:</strong> Protect vertical applications from logical drift by sandwiching the domain model between authoritative intelligence datastores (RAG grounding) and API orchestration tools.
   </div>
 </section>
 
 <footer>
-  <div class="footer-logo">Vector<span>.</span>Stores</div>
-  <div class="footer-note">Embeddings &amp; Vector Stores Study Guide — Based on Anant Nawalgaria et al. (Google, 2025)</div>
+  <div class="footer-logo">Domain<span>.</span>LLMs</div>
+  <div class="footer-note">Solving Domain-Specific Problems Using LLMs — Google study notes (2025)</div>
 </footer>
 
 </body>

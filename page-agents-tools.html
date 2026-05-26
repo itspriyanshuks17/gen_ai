@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>External Tools &amp; API Integration | Agent Notes</title>
+<link rel="stylesheet" href="shared.css">
+<style>
+  :root {
+    --bg: #07090e;
+    --surface: #0e121b;
+    --surface2: #161c2b;
+    --border: #232c42;
+    --accent: #00f5d4;
+    --accent2: #00bbf9;
+    --accent3: #70d6ff;
+    --accent4: #f76a9a;
+  }
+  
+  /* Mobile Menu Hamburger */
+  .mobile-menu-btn {
+    display: none;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--white);
+    padding: 8px 16px;
+    font-family: 'Syne', sans-serif;
+    font-size: 12px;
+    font-weight: bold;
+    cursor: pointer;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.2s;
+  }
+  .mobile-menu-btn:hover {
+    border-color: var(--accent);
+    color: var(--accent2);
+  }
+
+  @media (max-width: 900px) {
+    .mobile-menu-btn {
+      display: inline-flex;
+    }
+    .sidebar {
+      position: fixed;
+      top: 65px;
+      left: -260px;
+      width: 240px;
+      height: calc(100vh - 65px);
+      background: var(--surface);
+      z-index: 90;
+      transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      display: block !important;
+      padding: 24px 0;
+      box-shadow: 10px 0 30px rgba(0,0,0,0.5);
+    }
+    .sidebar.active {
+      left: 0;
+    }
+    .sidebar-overlay {
+      display: none;
+      position: fixed;
+      inset: 65px 0 0 0;
+      background: rgba(0,0,0,0.6);
+      backdrop-filter: blur(4px);
+      z-index: 80;
+    }
+    .sidebar-overlay.active {
+      display: block;
+    }
+  }
+</style>
+</head>
+<body>
+<nav>
+  <a href="ai-agents.html" class="nav-logo">Agent<span>.</span>Mesh</a>
+  <ul class="nav-links">
+    <li><a href="ai-agents.html" class="nav-back">← Hub</a></li>
+    <li><a href="index.html">ML Notes</a></li>
+    <li><a href="page-agents-foundations.html">Ch.1 Foundations</a></li>
+    <li><a href="page-agents-evaluation.html">Ch.3 Evaluation</a></li>
+    <li><a href="page-agents-advanced.html">Ch.4 Multi-Agent</a></li>
+    <li><button class="mobile-menu-btn" id="menu-toggle">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+      Chapters
+    </button></li>
+  </ul>
+</nav>
+
+<div class="sidebar-overlay" id="sidebar-overlay"></div>
+
+<div class="page-hero" style="background: linear-gradient(135deg, #07090e, #0e1e2d);">
+  <div class="page-hero-grid"></div>
+  <div class="page-hero-glow" style="background:radial-gradient(circle, rgba(0,245,212,0.15) 0%, transparent 70%)"></div>
+  <p class="page-eyebrow fade-up">Volume 06</p>
+  <h1 class="page-title fade-up d1">External Tools &amp; <em>API</em> Integration</h1>
+  <p class="page-desc fade-up d2">Deep dive into the mechanics of bridging foundation models with the outside world using Extensions, Function Calling, and vector Data Stores.</p>
+</div>
+
+<div class="page-layout">
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-section">
+      <p class="sidebar-label">This Volume</p>
+      <ul class="sidebar-nav">
+        <li><a href="#intro" class="active">2.1 The Need for Tools</a></li>
+        <li><a href="#extensions">2.2 Extensions (Agent-Side)</a></li>
+        <li><a href="#functions">2.3 Function Calling (Client-Side)</a></li>
+        <li><a href="#lifecycle">2.4 Function Life &amp; Code</a></li>
+        <li><a href="#datastores">2.5 Data Stores (Vector RAG)</a></li>
+        <li><a href="#recap">2.6 Tools Recap &amp; Guide</a></li>
+      </ul>
+    </div>
+    <div class="sidebar-section">
+      <p class="sidebar-label">Next Volume</p>
+      <ul class="sidebar-nav">
+        <li><a href="page-agents-evaluation.html" style="color:var(--accent2); font-weight:bold;">Ch.3 Observability &amp; Eval →</a></li>
+      </ul>
+    </div>
+  </aside>
+
+  <main class="main-content">
+
+    <!-- INTRODUCTION -->
+    <div class="content-section">
+      <span class="section-anchor" id="intro"></span>
+      <h2 class="section-h">2.1 The Critical Need for Tools <span class="section-badge">Pillars</span></h2>
+      <p>Generative models are frozen in time, holding only the knowledge captured in their training data. Tools bridge this gap, serving as an interactive bridge that connects language models with external systems, databases, real-time facts, and actions.</p>
+      <p>By equipping an agent with tools, you unlock capabilities like adjusting smart home settings, querying transactional databases, booking airline flights, or scraping local weather forecasts to enrich prompt contexts.</p>
+    </div>
+
+    <!-- EXTENSIONS -->
+    <div class="content-section">
+      <span class="section-anchor" id="extensions"></span>
+      <h2 class="section-h">2.2 Extensions (Agent-Side API execution) <span class="section-badge">Extensions</span></h2>
+      <p>An **Extension** bridges the gap between an agent and a live HTTP API endpoint in a standardized way. The agent handles both the parameter generation and the actual API call **directly on the agent hosting environment**.</p>
+      <p>This is highly resilient compared to custom code parsing: if a user says "book a flight to Zurich" but omits the departure city, custom scripts fail. Extensions teach the model what parameters are required and how to ask clarifying queries to extract missing entities before calling the API.</p>
+
+      <h3 class="sub-h">Code Interpreter: Run Python stochastically</h3>
+      <p>Google offers native extensions like Code Interpreter, letting the agent write and run Python scripts in a sandboxed runtime to solve mathematical or logical requests:</p>
+      
+      <pre class="formula" style="font-family:'DM Mono', monospace; font-size:12px; color:#e2e8f0; line-height:1.4; text-align:left; overflow-x:auto; padding:20px; border-left:4px solid var(--accent3);">
+from vertexai.preview.extensions import Extension
+
+# 1. Load native Code Interpreter extension from the Hub
+code_interpreter = Extension.from_hub("code_interpreter")
+
+# 2. Execute natural query requesting code execution
+query = "Write a python method to invert a binary tree in O(n) time."
+response = code_interpreter.execute(
+    operation_id="generate_and_execute",
+    operation_params={"query": query}
+)
+
+print(response['generated_code'])</pre>
+    </div>
+
+    <!-- FUNCTION CALLING -->
+    <div class="content-section">
+      <span class="section-anchor" id="functions"></span>
+      <h2 class="section-h">2.3 Function Calling (Client-Side API execution) <span class="section-badge">Functions</span></h2>
+      <p>**Function Calling** decouples API execution from the agent. The language model analyzes a set of developer-provided function descriptions, decides which function to trigger, and outputs a structured **JSON payload containing the required arguments**, but **does not make the actual API call**.</p>
+      <p>The client application parses the JSON payload, executes the API locally, and optionally returns the observation string to the agent. This is preferred in multiple enterprise scenarios:</p>
+      
+      <ul class="content-list">
+        <li><strong>Security Boundaries:</strong> The target API lives behind an isolated corporate fire-wall, inaccessible by the agent infrastructure.</li>
+        <li><strong> Granular Control:</strong> The developer wants to transform or filter the API payload before letting the model read it.</li>
+        <li><strong>Authentication:</strong> Avoids uploading high-clearance OAuth credentials to the agent hosting environment.</li>
+        <li><strong>Asynchronous Batching:</strong> Operations take minutes, necessitating a human-in-the-loop validation layer before execution.</li>
+      </ul>
+    </div>
+
+    <!-- LIFECYCLE & CODE -->
+    <div class="content-section">
+      <span class="section-anchor" id="lifecycle"></span>
+      <h2 class="section-h">2.4 Function Calling Lifecycle &amp; Python Code <span class="section-badge">Code</span></h2>
+      <p>Consider a travel concierge agent. If a user asks "I'd like to take a ski trip with my family," standard prompts return an unstructured conversational list of cities. With Function Calling, we define a structured schema payload:</p>
+      
+      <pre class="formula" style="font-family:'DM Mono', monospace; font-size:12.5px; color:#edf2f7; line-height:1.4; padding:16px; border-left:4px solid var(--accent4);">
+# Model-generated Function Call payload:
+function_call {
+  name: "display_cities"
+  args: {
+    "cities": ["Aspen", "Park City", "Whistler"],
+    "preferences": "skiing"
+  }
+}</pre>
+
+      <h3 class="sub-h">Python Implementation with Gemini 2.0 Flash</h3>
+      <p>Here is how to register a local Python function and capture the model's structured argument predictions:</p>
+      
+      <pre class="formula" style="font-family:'DM Mono', monospace; font-size:12px; color:#e2e8f0; line-height:1.4; text-align:left; overflow-x:auto; padding:20px; border-left:4px solid var(--accent2);">
+from google.genai import Client, types
+from typing import Optional
+
+# 1. Define local target method and docstrings (Google uses docstrings for schema learning)
+def display_cities(cities: list[str], preferences: Optional[str] = None):
+    """Provides a list of cities recommended based on preferences.
+    Args:
+        preferences: User preferences (e.g. skiing, beach, bbq).
+        cities: Recommended target cities list.
+    """
+    return cities
+
+# 2. Instantiate Gemini client
+client = Client(vertexai=True, project="PROJECT_ID", location="us-central1")
+
+# 3. Query model, enforcing tool selections
+response = client.models.generate_content(
+    model="gemini-2.0-flash-001",
+    contents="I'd like to take a family ski trip but I'm not sure where to go?",
+    config=types.GenerateContentConfig(
+        tools=[display_cities],
+        automatic_function_calling=types.AutomaticFunctionCallingConfig(disable=True),
+        tool_config=types.ToolConfig(
+            function_calling_config=types.FunctionCallingConfig(mode='ANY')
+        )
+    )
+)
+
+# 4. Extract generated arguments
+call = response.candidates[0].content.parts[0].function_call
+print(f"Function: {call.name}")
+print(f"Arguments: {call.args}")
+# Output -> Function: display_cities, Arguments: {'preferences': 'skiing', 'cities': ['Aspen', 'Park City', 'Whistler']}</pre>
+    </div>
+
+    <!-- DATA STORES -->
+    <div class="content-section">
+      <span class="section-anchor" id="datastores"></span>
+      <h2 class="section-h">2.5 Data Stores (Vector RAG Pipelines) <span class="section-badge">Data</span></h2>
+      <p>**Data Stores** act as search-engine attachments. They store dynamic documents (PDFs, spreadsheets, website URLs, unstructured text) in a **Vector Database** as high-dimensional mathematical embeddings.</p>
+      <p>Instead of manual code integration, the agent query is embedded, matched against document chunks via fast algorithms (such as ScaNN), and the semantic text snippets are injected directly into the orchestration loop to ground the model, eliminating expensive retraining cycles.</p>
+    </div>
+
+    <!-- RECAP TABLE -->
+    <div class="content-section">
+      <span class="section-anchor" id="recap"></span>
+      <h2 class="section-h">2.6 Tools Comparison &amp; Selection Guide <span class="section-badge">Guide</span></h2>
+      <p>Select the optimal tool type based on your architectural dependencies:</p>
+      
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Feature</th>
+            <th>Extensions</th>
+            <th>Function Calling</th>
+            <th>Data Stores</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Execution Location</strong></td>
+            <td>Agent-Side (Hosted Cloud)</td>
+            <td>Client-Side (Local Server)</td>
+            <td>Agent-Side (Vector Database)</td>
+          </tr>
+          <tr>
+            <td><strong>Granular Data Control</strong></td>
+            <td>Low (Direct API bindings)</td>
+            <td>Maximum (Developer-managed)</td>
+            <td>High (Semantic vector chunks)</td>
+          </tr>
+          <tr>
+            <td><strong>Typical Use Case</strong></td>
+            <td>Native integrations like Code Interpreter or standard open APIs.</td>
+            <td>Interactions with internal DBs, batch operations, or authenticated loops.</td>
+            <td>Retrieval-Augmented Generation (RAG) over PDFs, logs, or websites.</td>
+          </tr>
+          <tr>
+            <td><strong>API Exposure Requirement</strong></td>
+            <td>Requires public internet endpoint.</td>
+            <td>Can reside behind secure firewalls.</td>
+            <td>Requires pre-indexed document collections.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="chapter-nav">
+      <a href="page-agents-foundations.html"><span class="nav-dir">← Previous</span><span class="nav-title">Ch.1 Agent Foundations &amp; Cog</span></a>
+      <a href="page-agents-evaluation.html" style="border-color: rgba(0,245,212,0.45); background: linear-gradient(to right, rgba(7,9,14,0.4), rgba(0,245,212,0.06));"><span class="nav-dir" style="color: var(--accent2);">Start Next Chapter →</span><span class="nav-title" style="color: var(--accent2);">Observability, AgentOps &amp; Eval</span></a>
+    </div>
+
+  </main>
+</div>
+
+<script>
+  // Mobile drawer trigger
+  const menuToggle = document.getElementById('menu-toggle');
+  const sidebar = document.getElementById('sidebar');
+  const overlay = document.getElementById('sidebar-overlay');
+  
+  function toggleSidebar() {
+    sidebar.classList.toggle('active');
+    overlay.classList.toggle('active');
+  }
+  
+  menuToggle.addEventListener('click', toggleSidebar);
+  overlay.addEventListener('click', toggleSidebar);
+
+  // Active link highlighting on scroll
+  const sections = document.querySelectorAll('.section-anchor');
+  const links = document.querySelectorAll('.sidebar-nav a');
+  window.addEventListener('scroll', () => {
+    let cur = '';
+    sections.forEach(s => { if (window.scrollY >= s.offsetTop - 120) cur = s.id; });
+    links.forEach(l => { 
+      l.classList.remove('active'); 
+      if (l.getAttribute('href') === '#' + cur) l.classList.add('active'); 
+    });
+  });
+</script>
+</body>
+</html>

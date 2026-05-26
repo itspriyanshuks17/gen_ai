@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LLM Output &amp; Sampling Controls | Prompt Notes</title>
+<link rel="stylesheet" href="shared.css">
+<style>
+  :root {
+    --accent: #9d4edd;
+    --accent2: #c77dff;
+    --accent3: #e0aaff;
+    --accent4: #f76a9a;
+  }
+  
+  /* Mobile Menu Hamburger */
+  .mobile-menu-btn {
+    display: none;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--white);
+    padding: 8px 16px;
+    font-family: 'Syne', sans-serif;
+    font-size: 12px;
+    font-weight: bold;
+    cursor: pointer;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.2s;
+  }
+  .mobile-menu-btn:hover {
+    border-color: var(--accent);
+    color: var(--accent2);
+  }
+
+  @media (max-width: 900px) {
+    .mobile-menu-btn {
+      display: inline-flex;
+    }
+    .sidebar {
+      position: fixed;
+      top: 65px;
+      left: -260px;
+      width: 240px;
+      height: calc(100vh - 65px);
+      background: var(--surface);
+      z-index: 90;
+      transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      display: block !important;
+      padding: 24px 0;
+      box-shadow: 10px 0 30px rgba(0,0,0,0.5);
+    }
+    .sidebar.active {
+      left: 0;
+    }
+    .sidebar-overlay {
+      display: none;
+      position: fixed;
+      inset: 65px 0 0 0;
+      background: rgba(0,0,0,0.6);
+      backdrop-filter: blur(4px);
+      z-index: 80;
+    }
+    .sidebar-overlay.active {
+      display: block;
+    }
+  }
+</style>
+</head>
+<body>
+<nav>
+  <a href="prompt-engineering.html" class="nav-logo">Prompt<span>.</span>Eng</a>
+  <ul class="nav-links">
+    <li><a href="prompt-engineering.html" class="nav-back">← Hub</a></li>
+    <li><a href="index.html">ML Notes</a></li>
+    <li><a href="page-pe-techniques.html">Ch.2 Techniques</a></li>
+    <li><button class="mobile-menu-btn" id="menu-toggle">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+      Chapters
+    </button></li>
+  </ul>
+</nav>
+
+<div class="sidebar-overlay" id="sidebar-overlay"></div>
+
+<div class="page-hero" style="background: linear-gradient(135deg, #09090e, #1a0f30);">
+  <div class="page-hero-grid"></div>
+  <div class="page-hero-glow" style="background:radial-gradient(circle, rgba(157,78,221,0.15) 0%, transparent 70%)"></div>
+  <p class="page-eyebrow fade-up">Volume 04</p>
+  <h1 class="page-title fade-up d1">LLM Output &amp; <em>Sampling</em> Controls</h1>
+  <p class="page-desc fade-up d2">Delve into how Large Language Models generate stochastically and how to manage the boundary limits of greedy decoding, softmax, top-K, and top-P.</p>
+</div>
+
+<div class="page-layout">
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-section">
+      <p class="sidebar-label">This Volume</p>
+      <ul class="sidebar-nav">
+        <li><a href="#intro" class="active">1.1 Model Selection &amp; Config</a></li>
+        <li><a href="#length">1.2 Output Length Limits</a></li>
+        <li><a href="#temperature">1.3 Temperature &amp; Softmax</a></li>
+        <li><a href="#tokp">1.4 Top-K &amp; Top-P (Nucleus)</a></li>
+        <li><a href="#combo">1.5 Configurations Together</a></li>
+        <li><a href="#failures">1.6 Repetition Loop Failure</a></li>
+      </ul>
+    </div>
+    <div class="sidebar-section">
+      <p class="sidebar-label">Next Volume</p>
+      <ul class="sidebar-nav">
+        <li><a href="page-pe-techniques.html" style="color:var(--accent2); font-weight:bold;">Ch.2 Advanced Prompting →</a></li>
+      </ul>
+    </div>
+  </aside>
+
+  <main class="main-content">
+    
+    <!-- INTRODUCTION -->
+    <div class="content-section">
+      <span class="section-anchor" id="intro"></span>
+      <h2 class="section-h">1.1 Model Selection &amp; Configuration <span class="section-badge">Setup</span></h2>
+      <p>Prompt engineering is the design methodology of tailoring instructions to achieve optimal language task execution. Regardless of whether you use high-performance commercial models like <strong>Gemini 2.0 Flash in Vertex AI</strong>, <strong>GPT</strong>, <strong>Claude</strong>, or state-of-the-art open-source parameters like <strong>Gemma 2</strong> or <strong>LLaMA 3</strong>, the raw prompt is only half of the story.</p>
+      <p>Every language model is governed by several core hyperparameters. Configuring these controls correctly is critical. If left at non-optimal defaults, you risk wasting compute budget, experiencing severe API latency spikes, or receiving structurally broken responses.</p>
+    </div>
+
+    <!-- OUTPUT LENGTH -->
+    <div class="content-section">
+      <span class="section-anchor" id="length"></span>
+      <h2 class="section-h">1.2 Output Length Limits <span class="section-badge">Latency</span></h2>
+      <p>An important configuration setting is the number of tokens to generate in a response. This behaves as a hard physical termination limit for token predictors:</p>
+      
+      <div class="callout yellow">
+        <div class="callout-title">⚠️ Token Constraints &amp; Formatting</div>
+        Reducing the max output length of the LLM **does not cause the model to write more succinctly**. Instead, the model simply stops predicting mid-sentence once the limit is hit, resulting in truncated, corrupted, and invalid structural formats (like broken JSON braces). To write succinctly, you must **actively instruct** the model to keep its reasoning short in the prompt text.
+      </div>
+      
+      <p>Generating more tokens requires more computation from the LLM, leading to higher energy consumption, slower response times (due to Time-To-First-Token and Inter-Token Latencies), and higher API pricing costs. This constraint is critical in multi-step loops like **ReAct**, where the model could enter redundant loops, generating unnecessary filler words.</p>
+    </div>
+
+    <!-- TEMPERATURE & SOFTMAX -->
+    <div class="content-section">
+      <span class="section-anchor" id="temperature"></span>
+      <h2 class="section-h">1.3 Temperature &amp; Softmax Probability Math <span class="section-badge">Math</span></h2>
+      <p>Under the hood, Large Language Models do not return a single word. Instead, for each step in a vocabulary $\mathcal{V}$, the neural network calculates raw logits, which are converted into a probability distribution over the next token candidate using the **Softmax Function**.</p>
+      <p>The **Temperature ($T$)** parameter scales these logits prior to the softmax calculation, altering the contrast of the probability distribution:</p>
+      
+      <div class="formula">
+        P(x_i) = \frac{\exp(z_i / T)}{\sum_{j} \exp(z_j / T)}
+        <div class="formula-label">Softmax Temperature scaling</div>
+      </div>
+
+      <div style="text-align: center; margin: 24px 0;">
+        <!-- Inline SVG: Softmax Temperature Curves -->
+        <svg viewBox="0 0 700 220" width="100%" height="auto" style="background:#101017; border:1px solid #28283a; border-radius:4px;">
+          <!-- Axes -->
+          <line x1="50" y1="180" x2="650" y2="180" stroke="#28283a" stroke-width="2"/>
+          <line x1="50" y1="180" x2="50" y2="20" stroke="#28283a" stroke-width="2"/>
+          
+          <!-- Y Axis Label -->
+          <text x="35" y="100" fill="#6b6b88" font-size="10" transform="rotate(-90 35 100)" text-anchor="middle" font-family="monospace">Probability P(x)</text>
+          <!-- X Axis Label -->
+          <text x="350" y="205" fill="#6b6b88" font-size="10" text-anchor="middle" font-family="monospace">Vocabulary Tokens (sorted by likelihood)</text>
+          
+          <!-- Low Temperature (High Contrast) Curve -->
+          <path d="M 50 178 Q 80 175 110 160 T 150 25 T 190 175 T 220 178 Q 300 180 650 180" fill="none" stroke="#9d4edd" stroke-width="3"/>
+          <text x="175" y="45" fill="#9d4edd" font-size="10" font-family="sans-serif" font-weight="bold">Low Temp (T = 0.2)</text>
+          
+          <!-- High Temperature (Low Contrast) Curve -->
+          <path d="M 50 150 C 100 135 130 110 150 100 C 170 90 220 120 250 135 C 350 150 500 160 650 165" fill="none" stroke="#f7c86a" stroke-width="2" stroke-dasharray="3"/>
+          <text x="240" y="110" fill="#f7c86a" font-size="10" font-family="sans-serif" font-weight="bold">High Temp (T = 0.9)</text>
+          
+          <!-- Tokens ticks -->
+          <circle cx="150" cy="25" r="4" fill="#9d4edd"/>
+          <text x="150" y="15" fill="#ffffff" font-size="9" font-family="monospace" text-anchor="middle">Token A</text>
+          
+          <circle cx="150" cy="100" r="4" fill="#f7c86a"/>
+        </svg>
+      </div>
+
+      <div class="compare-grid">
+        <div class="compare-card">
+          <div class="compare-card-title" style="color:var(--accent2)">Low Temp (T &rarr; 0)</div>
+          <p style="font-size:12.5px;color:var(--muted);margin-bottom:8px;">Amplifies the differences between token logits. The most probable token stands out with maximum certainty.</p>
+          <ul class="content-list" style="margin:0;">
+            <li style="font-size:11px;color:var(--text);padding:2px 0 2px 12px;">Deterministic output</li>
+            <li style="font-size:11px;color:var(--text);padding:2px 0 2px 12px;">T = 0 represents **greedy decoding** (picks highest logit)</li>
+          </ul>
+        </div>
+        <div class="compare-card">
+          <div class="compare-card-title" style="color:var(--accent4)">High Temp (T &rarr; 1+)</div>
+          <p style="font-size:12.5px;color:var(--muted);margin-bottom:8px;">Flattens the logits difference, making all tokens closer in likelihood. Encourages diverse, random, or creative phrasing.</p>
+          <ul class="content-list" style="margin:0;">
+            <li style="font-size:11px;color:var(--text);padding:2px 0 2px 12px;">Diverse, unexpected outputs</li>
+            <li style="font-size:11px;color:var(--text);padding:2px 0 2px 12px;">⚠️ High risk of hallucinations and logic slips</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- TOKP AND TOKP -->
+    <div class="content-section">
+      <span class="section-anchor" id="tokp"></span>
+      <h2 class="section-h">1.4 Top-K &amp; Top-P (Nucleus) Sampling <span class="section-badge">Math</span></h2>
+      <p>To prevent the model from picking extremely low-likelihood, non-sensical words at higher temperatures, models implement **Top-K** and **Top-P** sampling boundaries:</p>
+
+      <ul class="content-list">
+        <li><strong>Top-K Sampling:</strong> Restricts the choice to the top $K$ most probable next tokens. A Top-K of 1 is equivalent to greedy decoding. Higher Top-K values give more creative output, while lower ones keep it strictly factual.</li>
+        <li><strong>Top-P (Nucleus) Sampling:</strong> Selects from the smallest set of most likely tokens whose **cumulative probability** sums up to a threshold $P$ (ranging from 0 to 1). This is adaptive: if the model is confident in a few words, the pool of candidates remains extremely small. If the model is uncertain, the pool dynamically widens.</li>
+      </ul>
+      
+      <div class="callout green">
+        <div class="callout-title">The Math Behind Nucleus Selection</div>
+        For a threshold $P$, we sort all tokens $x_i$ descending by probability and select the top subset $J$ such that:
+        <div style="font-family:monospace; font-size:12px; margin-top:8px; color:var(--accent3);">
+          &sum;_{i &isin; J} P(x_i) &ge; P
+        </div>
+        All tokens not in $J$ are set to 0 probability before temperature sampling.
+      </div>
+    </div>
+
+    <!-- CONFIG COMBINATIONS -->
+    <div class="content-section">
+      <span class="section-anchor" id="combo"></span>
+      <h2 class="section-h">1.5 Putting Configurations Together <span class="section-badge">Logic</span></h2>
+      <p>If all three sampling configurations (Temperature, Top-K, and Top-P) are enabled, they are executed sequentially to choose the next predicted token:</p>
+      
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">1</div>
+          <div class="step-body">
+            <div class="step-title">Top-K Filter</div>
+            <div class="step-desc">The model sorts all vocabulary tokens by likelihood and retains only the top $K$ candidates.</div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">2</div>
+          <div class="step-body">
+            <div class="step-title">Top-P Filter</div>
+            <div class="step-desc">Among the remaining candidates, it keeps the top subset whose cumulative probability reaches $P$, pruning out the rest.</div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">3</div>
+          <div class="step-body">
+            <div class="step-title">Temperature &amp; Sample</div>
+            <div class="step-desc">Finally, temperature scaling is applied to this highly restricted, valid candidate pool, and a token is stochastically sampled.</div>
+          </div>
+        </div>
+      </div>
+
+      <h3 class="sub-h">Boundary Behaviors &amp; Irrelevance Rules</h3>
+      <p>At extreme configuration settings, parameters cancel each other out:</p>
+      <ul class="content-list">
+        <li><strong>If Temperature = 0:</strong> Top-K and Top-P become completely irrelevant. The model will always perform greedy decoding, choosing the highest probability token.</li>
+        <li><strong>If Top-K = 1:</strong> Temperature and Top-P are overridden. Only a single token survives, behaving as greedy decoding.</li>
+        <li><strong>If Top-P &rarr; 0:</strong> Only the single most probable token satisfies the threshold, rendering Temperature and Top-K irrelevant.</li>
+      </ul>
+
+      <h3 class="sub-h">Recommended Baseline Parameters</h3>
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Objective</th>
+            <th>Temperature</th>
+            <th>Top-P</th>
+            <th>Top-K</th>
+            <th>Behavior Result</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Strictly Factual / Math</strong></td>
+            <td>0.0</td>
+            <td>N/A</td>
+            <td>N/A</td>
+            <td>Greedy, completely repeatable code/logic.</td>
+          </tr>
+          <tr>
+            <td><strong>Standard / Coherent</strong></td>
+            <td>0.2</td>
+            <td>0.95</td>
+            <td>30</td>
+            <td>Coherent, highly accurate, low hallucination risk.</td>
+          </tr>
+          <tr>
+            <td><strong>Highly Creative / Brainstorm</strong></td>
+            <td>0.9</td>
+            <td>0.99</td>
+            <td>40</td>
+            <td>Extremely diverse text phrasing and creative variations.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- REPETITION LOOP -->
+    <div class="content-section">
+      <span class="section-anchor" id="failures"></span>
+      <h2 class="section-h">1.6 Repetition Loop Failure Mode <span class="section-badge">Bugs</span></h2>
+      <p>A classic failure mode in Large Language Models is the **repetition loop bug** (also known as the filler words loop). This is a common issue where the model gets stuck in a cycle, repeatedly generating the same phrase, filler words, or empty sentences.</p>
+      <p>This is often caused by setting the Temperature too low (but non-zero) or restricted Top-K boundaries on long sequence contexts, forcing the model to re-evaluate its own highly repetitive self-attention parameters. To resolve this, increase the Temperature slightly or add **frequency/presence penalties** in the model parameters.</p>
+    </div>
+
+    <div class="chapter-nav">
+      <a href="prompt-engineering.html"><span class="nav-dir">← Previous</span><span class="nav-title">Hub Overview</span></a>
+      <a href="page-pe-techniques.html" style="border-color: rgba(199,125,255,0.45); background: linear-gradient(to right, rgba(16,16,23,0.4), rgba(199,125,255,0.06));"><span class="nav-dir" style="color: var(--accent2);">Start Next Chapter →</span><span class="nav-title" style="color: var(--accent2);">Advanced Prompting Techniques</span></a>
+    </div>
+
+  </main>
+</div>
+
+<script>
+  // Mobile drawer trigger
+  const menuToggle = document.getElementById('menu-toggle');
+  const sidebar = document.getElementById('sidebar');
+  const overlay = document.getElementById('sidebar-overlay');
+  
+  function toggleSidebar() {
+    sidebar.classList.toggle('active');
+    overlay.classList.toggle('active');
+  }
+  
+  menuToggle.addEventListener('click', toggleSidebar);
+  overlay.addEventListener('click', toggleSidebar);
+
+  // Active link highlighting on scroll
+  const sections = document.querySelectorAll('.section-anchor');
+  const links = document.querySelectorAll('.sidebar-nav a');
+  window.addEventListener('scroll', () => {
+    let cur = '';
+    sections.forEach(s => { if (window.scrollY >= s.offsetTop - 120) cur = s.id; });
+    links.forEach(l => { 
+      l.classList.remove('active'); 
+      if (l.getAttribute('href') === '#' + cur) l.classList.add('active'); 
+    });
+  });
+</script>
+</body>
+</html>

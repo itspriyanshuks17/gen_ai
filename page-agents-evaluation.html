@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AgentOps, Tracing &amp; Evaluation | Agent Notes</title>
+<link rel="stylesheet" href="shared.css">
+<style>
+  :root {
+    --bg: #07090e;
+    --surface: #0e121b;
+    --surface2: #161c2b;
+    --border: #232c42;
+    --accent: #00f5d4;
+    --accent2: #00bbf9;
+    --accent3: #70d6ff;
+    --accent4: #f76a9a;
+  }
+  
+  /* Mobile Menu Hamburger */
+  .mobile-menu-btn {
+    display: none;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--white);
+    padding: 8px 16px;
+    font-family: 'Syne', sans-serif;
+    font-size: 12px;
+    font-weight: bold;
+    cursor: pointer;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.2s;
+  }
+  .mobile-menu-btn:hover {
+    border-color: var(--accent);
+    color: var(--accent2);
+  }
+
+  @media (max-width: 900px) {
+    .mobile-menu-btn {
+      display: inline-flex;
+    }
+    .sidebar {
+      position: fixed;
+      top: 65px;
+      left: -260px;
+      width: 240px;
+      height: calc(100vh - 65px);
+      background: var(--surface);
+      z-index: 90;
+      transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      display: block !important;
+      padding: 24px 0;
+      box-shadow: 10px 0 30px rgba(0,0,0,0.5);
+    }
+    .sidebar.active {
+      left: 0;
+    }
+    .sidebar-overlay {
+      display: none;
+      position: fixed;
+      inset: 65px 0 0 0;
+      background: rgba(0,0,0,0.6);
+      backdrop-filter: blur(4px);
+      z-index: 80;
+    }
+    .sidebar-overlay.active {
+      display: block;
+    }
+  }
+</style>
+</head>
+<body>
+<nav>
+  <a href="ai-agents.html" class="nav-logo">Agent<span>.</span>Mesh</a>
+  <ul class="nav-links">
+    <li><a href="ai-agents.html" class="nav-back">← Hub</a></li>
+    <li><a href="index.html">ML Notes</a></li>
+    <li><a href="page-agents-foundations.html">Ch.1 Foundations</a></li>
+    <li><a href="page-agents-tools.html">Ch.2 Tools</a></li>
+    <li><a href="page-agents-advanced.html">Ch.4 Multi-Agent</a></li>
+    <li><button class="mobile-menu-btn" id="menu-toggle">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+      Chapters
+    </button></li>
+  </ul>
+</nav>
+
+<div class="sidebar-overlay" id="sidebar-overlay"></div>
+
+<div class="page-hero" style="background: linear-gradient(135deg, #07090e, #0e1e2d);">
+  <div class="page-hero-grid"></div>
+  <div class="page-hero-glow" style="background:radial-gradient(circle, rgba(0,245,212,0.15) 0%, transparent 70%)"></div>
+  <p class="page-eyebrow fade-up">Volume 06</p>
+  <h1 class="page-title fade-up d1">AgentOps, Tracing &amp; <em>Evaluation</em></h1>
+  <p class="page-desc fade-up d2">Delve into enterprise lifecycle operationalization (AgentOps), OpenTelemetry observability tracing, trajectory paths analyses, and autorater evaluation rubrics.</p>
+</div>
+
+<div class="page-layout">
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-section">
+      <p class="sidebar-label">This Volume</p>
+      <ul class="sidebar-nav">
+        <li><a href="#ops" class="active">3.1 DevOps to AgentOps</a></li>
+        <li><a href="#metrics">3.2 Agent Success Metrics</a></li>
+        <li><a href="#capabilities">3.3 Assessing Capabilities</a></li>
+        <li><a href="#trajectory">3.4 Trajectory Evaluation</a></li>
+        <li><a href="#response">3.5 Final Response &amp; Judges</a></li>
+        <li><a href="#methods">3.6 Comparative Methods</a></li>
+      </ul>
+    </div>
+    <div class="sidebar-section">
+      <p class="sidebar-label">Next Volume</p>
+      <ul class="sidebar-nav">
+        <li><a href="page-agents-advanced.html" style="color:var(--accent2); font-weight:bold;">Ch.4 Multi-Agent &amp; RAG →</a></li>
+      </ul>
+    </div>
+  </aside>
+
+  <main class="main-content">
+
+    <!-- DEVOPS TO AGENTOPS -->
+    <div class="content-section">
+      <span class="section-anchor" id="ops"></span>
+      <h2 class="section-h">3.1 The Operational Evolution: DevOps to AgentOps <span class="section-badge">Lifecycle</span></h2>
+      <p>Moving generative prototypes into production requires establishing structured operational processes. In the transition from deterministic code to highly non-deterministic agentic architectures, each operational methodology builds upon the previous:</p>
+
+      <ul class="content-list">
+        <li><strong>DevOps:</strong> The foundational baseline. Focuses on version control, automated deployments (CI/CD), and server monitoring.</li>
+        <li><strong>MLOps:</strong> Introduces non-deterministic model tracking, data drifts, and validation loops (data training dependencies).</li>
+        <li><strong>FMOps:</strong> Extends MLOps to large foundational models, managing prompt context configurations and adapter training.</li>
+        <li><strong>PromptOps:</strong> Manages prompt templates, templates registries, lineage tracking, and score metrics.</li>
+        <li><strong>RAGOps:</strong> Manages offline document ingestion, semantic chunk splits, vector indexing, and retrieval.</li>
+        <li><strong>AgentOps:</strong> The peak operational layer. Manages tool mappings, agent brain configurations (goals, instruction sets), durable multi-turn state variables, short/long-term memory reflections, and cognitive task routing.</li>
+      </ul>
+    </div>
+
+    <!-- SUCCESS METRICS -->
+    <div class="content-section">
+      <span class="section-anchor" id="metrics"></span>
+      <h2 class="section-h">3.2 Key Agent Success Metrics <span class="section-badge">Metrics</span></h2>
+      <p>Observing agents in production requires parallel tracking across three distinct metric tiers:</p>
+      
+      <div class="compare-grid">
+        <div class="compare-card">
+          <div class="compare-card-title" style="color:var(--accent);">1. Business KPIs</div>
+          <p style="font-size:12.5px;color:var(--muted);">The North Star. Covers ROI, conversion rates, user engagement totals, and sales volumes.</p>
+        </div>
+        <div class="compare-card">
+          <div class="compare-card-title" style="color:var(--accent2);">2. Goal &amp; Task Completion</div>
+          <p style="font-size:12.5px;color:var(--muted);">Tracks goal completion rates, critical task success averages, and thumbs-up/down user feedback.</p>
+        </div>
+        <div class="compare-card">
+          <div class="compare-card-title" style="color:var(--accent4);">3. Telemetry &amp; Latency</div>
+          <p style="font-size:12.5px;color:var(--muted);">System performance: Time-To-First-Token (TTFT), error rates, API timeouts, and token usage footprints.</p>
+        </div>
+      </div>
+
+      <h3 class="sub-h">OpenTelemetry Trace Observability</h3>
+      <p>Because agents execute multiple hidden actions before returning an answer, standard logs are insufficient. AgentOps utilizes **OpenTelemetry spans** to trace and visualize every step in the thought-action loop, mapping exact latency and tool call sequences in nested flame graphs.</p>
+    </div>
+
+    <!-- CAPABILITIES -->
+    <div class="content-section">
+      <span class="section-anchor" id="capabilities"></span>
+      <h2 class="section-h">3.3 Assessing Core Agent Capabilities <span class="section-badge">Benchmarks</span></h2>
+      <p>Prior to deploying an agent, developers utilize public benchmarks to validate baseline capabilities:</p>
+      <ul class="content-list">
+        <li><strong>Berkeley Function-Calling Leaderboard (BFCL):</strong> The industry standard for evaluating tool calling accuracy, parameter mappings, and handling multi-argument constraints.</li>
+        <li><strong>PlanBench:</strong> Assesses a model's high-level planning and logical reasoning consistency.</li>
+        <li><strong>AgentBench:</strong> Evaluates holistic, end-to-end performance across a variety of complex multi-step virtual sandbox scenarios.</li>
+      </ul>
+    </div>
+
+    <!-- TRAJECTORY -->
+    <div class="content-section">
+      <span class="section-anchor" id="trajectory"></span>
+      <h2 class="section-h">3.4 Trajectory &amp; Tool-Use Evaluation <span class="section-badge">Reasoning</span></h2>
+      <p>An agent's **trajectory** is the sequence of intermediate actions it executes to solve a query. Comparing this actual trajectory against a validated **ground-truth reference path** is the most effective debugging method for developers. Six metrics are primarily utilized:</p>
+      
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">1</div>
+          <div class="step-body">
+            <div class="step-title">Exact Match</div>
+            <div class="step-desc">The actual trajectory perfectly mirrors the reference path. Rigid, allowing zero deviation.</div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">2</div>
+          <div class="step-body">
+            <div class="step-title">In-Order Match</div>
+            <div class="step-desc">The agent completes all core reference steps in the correct order, but is allowed to execute extra, unpenalized actions.</div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">3</div>
+          <div class="step-body">
+            <div class="step-title">Any-Order Match</div>
+            <div class="step-desc">Disregards order completely. Checks if the agent executed all required core steps, allowing for extra intermediate actions.</div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">4</div>
+          <div class="step-body">
+            <div class="step-title">Precision</div>
+            <div class="step-desc">Calculates what percentage of the agent's executed tool calls are actually relevant according to the reference trajectory.</div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">5</div>
+          <div class="step-body">
+            <div class="step-title">Recall</div>
+            <div class="step-desc">Measures what percentage of the required reference tool calls were successfully captured by the agent.</div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">6</div>
+          <div class="step-body">
+            <div class="step-title">Single-Tool Use</div>
+            <div class="step-desc">Validates if a specific critical tool was triggered at least once inside the trajectory.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- RESPONSE & JUDGES -->
+    <div class="content-section">
+      <span class="section-anchor" id="response"></span>
+      <h2 class="section-h">3.5 Final Response &amp; LLM-as-a-Judge <span class="section-badge">Judges</span></h2>
+      <p>While trajectory evaluation verifies the execution steps, final response evaluation measures goal achievement. In the absence of a simple ground-truth string, developers implement **LLM-as-a-Judge** (autoraters):</p>
+      
+      <div class="callout green">
+        <div class="callout-title">The Autorater Mechanics</div>
+        An independent, highly capable LLM (such as Gemini 1.5 Pro) is configured with a **strict scoring rubric**. It receives the user prompt, the agent's final text response, and optionally retrieved document chunks. It rates the response on a Likert scale (e.g., 1-5) across dimensions like factuality, conciseness, formatting consistency, health/safety guidelines, and overall helpfulness.
+      </div>
+    </div>
+
+    <!-- METHODS -->
+    <div class="content-section">
+      <span class="section-anchor" id="methods"></span>
+      <h2 class="section-h">3.6 Comparative Evaluation Methods <span class="section-badge">Summary</span></h2>
+      <p>Every evaluation methodology has core operational trade-offs:</p>
+      
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Methodology</th>
+            <th>Core Strengths</th>
+            <th>Core Weaknesses</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Human Evaluation</strong></td>
+            <td>Captures subjective nuances, common sense, and edge alignment. Calibrates autoraters.</td>
+            <td>Extremely expensive, slow, non-scalable, and subjective.</td>
+          </tr>
+          <tr>
+            <td><strong>LLM-as-a-Judge</strong></td>
+            <td>Highly scalable, repeatable, fast, and automated.</td>
+            <td>Might overlook intermediate logical slips; limited by evaluator model's reasoning capabilities.</td>
+          </tr>
+          <tr>
+            <td><strong>Automated Metrics</strong></td>
+            <td>Objective, instantly calculated, and fully standardized.</td>
+            <td>Susceptible to semantic shortcuts; unable to evaluate high-level contextual drift.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="chapter-nav">
+      <a href="page-agents-tools.html"><span class="nav-dir">← Previous</span><span class="nav-title">Ch.2 Tools &amp; API Integration</span></a>
+      <a href="page-agents-advanced.html" style="border-color: rgba(0,245,212,0.45); background: linear-gradient(to right, rgba(7,9,14,0.4), rgba(0,245,212,0.06));"><span class="nav-dir" style="color: var(--accent2);">Start Next Chapter →</span><span class="nav-title" style="color: var(--accent2);">Multi-Agent Systems &amp; RAG</span></a>
+    </div>
+
+  </main>
+</div>
+
+<script>
+  // Mobile drawer trigger
+  const menuToggle = document.getElementById('menu-toggle');
+  const sidebar = document.getElementById('sidebar');
+  const overlay = document.getElementById('sidebar-overlay');
+  
+  function toggleSidebar() {
+    sidebar.classList.toggle('active');
+    overlay.classList.toggle('active');
+  }
+  
+  menuToggle.addEventListener('click', toggleSidebar);
+  overlay.addEventListener('click', toggleSidebar);
+
+  // Active link highlighting on scroll
+  const sections = document.querySelectorAll('.section-anchor');
+  const links = document.querySelectorAll('.sidebar-nav a');
+  window.addEventListener('scroll', () => {
+    let cur = '';
+    sections.forEach(s => { if (window.scrollY >= s.offsetTop - 120) cur = s.id; });
+    links.forEach(l => { 
+      l.classList.remove('active'); 
+      if (l.getAttribute('href') === '#' + cur) l.classList.add('active'); 
+    });
+  });
+</script>
+</body>
+</html>

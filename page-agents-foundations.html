@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Agent Foundations &amp; Cognitive Architecture | Agent Notes</title>
+<link rel="stylesheet" href="shared.css">
+<style>
+  :root {
+    --bg: #07090e;
+    --surface: #0e121b;
+    --surface2: #161c2b;
+    --border: #232c42;
+    --accent: #00f5d4;
+    --accent2: #00bbf9;
+    --accent3: #70d6ff;
+    --accent4: #f76a9a;
+  }
+  
+  /* Mobile Menu Hamburger */
+  .mobile-menu-btn {
+    display: none;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--white);
+    padding: 8px 16px;
+    font-family: 'Syne', sans-serif;
+    font-size: 12px;
+    font-weight: bold;
+    cursor: pointer;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.2s;
+  }
+  .mobile-menu-btn:hover {
+    border-color: var(--accent);
+    color: var(--accent2);
+  }
+
+  @media (max-width: 900px) {
+    .mobile-menu-btn {
+      display: inline-flex;
+    }
+    .sidebar {
+      position: fixed;
+      top: 65px;
+      left: -260px;
+      width: 240px;
+      height: calc(100vh - 65px);
+      background: var(--surface);
+      z-index: 90;
+      transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      display: block !important;
+      padding: 24px 0;
+      box-shadow: 10px 0 30px rgba(0,0,0,0.5);
+    }
+    .sidebar.active {
+      left: 0;
+    }
+    .sidebar-overlay {
+      display: none;
+      position: fixed;
+      inset: 65px 0 0 0;
+      background: rgba(0,0,0,0.6);
+      backdrop-filter: blur(4px);
+      z-index: 80;
+    }
+    .sidebar-overlay.active {
+      display: block;
+    }
+  }
+</style>
+</head>
+<body>
+<nav>
+  <a href="ai-agents.html" class="nav-logo">Agent<span>.</span>Mesh</a>
+  <ul class="nav-links">
+    <li><a href="ai-agents.html" class="nav-back">← Hub</a></li>
+    <li><a href="index.html">ML Notes</a></li>
+    <li><a href="page-agents-tools.html">Ch.2 Tools</a></li>
+    <li><a href="page-agents-evaluation.html">Ch.3 Evaluation</a></li>
+    <li><a href="page-agents-advanced.html">Ch.4 Multi-Agent</a></li>
+    <li><button class="mobile-menu-btn" id="menu-toggle">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+      Chapters
+    </button></li>
+  </ul>
+</nav>
+
+<div class="sidebar-overlay" id="sidebar-overlay"></div>
+
+<div class="page-hero" style="background: linear-gradient(135deg, #07090e, #0e1e2d);">
+  <div class="page-hero-grid"></div>
+  <div class="page-hero-glow" style="background:radial-gradient(circle, rgba(0,245,212,0.15) 0%, transparent 70%)"></div>
+  <p class="page-eyebrow fade-up">Volume 06</p>
+  <h1 class="page-title fade-up d1">Agent Foundations &amp; <em>Cognitive</em> Architecture</h1>
+  <p class="page-desc fade-up d2">Understand the conceptual shift from passive language prediction models to goal-directed, autonomous agentic cognitive loops.</p>
+</div>
+
+<div class="page-layout">
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-section">
+      <p class="sidebar-label">This Volume</p>
+      <ul class="sidebar-nav">
+        <li><a href="#definition" class="active">3.1 Defining an Agent</a></li>
+        <li><a href="#components">3.2 Three Essential Elements</a></li>
+        <li><a href="#vs">3.3 Models vs. Agents</a></li>
+        <li><a href="#cognitive">3.4 Cognitive Architectures</a></li>
+        <li><a href="#react">3.5 ReAct Reasoning Loop</a></li>
+        <li><a href="#langgraph">3.6 LangGraph Quickstart</a></li>
+      </ul>
+    </div>
+    <div class="sidebar-section">
+      <p class="sidebar-label">Next Volume</p>
+      <ul class="sidebar-nav">
+        <li><a href="page-agents-tools.html" style="color:var(--accent2); font-weight:bold;">Ch.2 External Tools →</a></li>
+      </ul>
+    </div>
+  </aside>
+
+  <main class="main-content">
+
+    <!-- DEFINITION -->
+    <div class="content-section">
+      <span class="section-anchor" id="definition"></span>
+      <h2 class="section-h">3.1 What is an Agent? <span class="section-badge">Concepts</span></h2>
+      <p>In its most fundamental form, a **Generative AI Agent** is defined as an application engineered to achieve specific objectives by perceiving its environment and strategically acting upon it using the tools at its disposal.</p>
+      <p>Unlike standalone language models that wait for prompt inputs, agents operate autonomously. Provided with a clear goal, an agent can reason about what it should do next, formulate a plan of actions, evaluate intermediate observations, and adjust its execution path proactive of human interventions.</p>
+    </div>
+
+    <!-- COMPONENTS -->
+    <div class="content-section">
+      <span class="section-anchor" id="components"></span>
+      <h2 class="section-h">3.2 Three Essential Architectural Elements <span class="section-badge">Structure</span></h2>
+      <p>The combination of components that drive an agent's behavior, actions, and decisions is termed its **Cognitive Architecture**. There are three essential elements in every agent:</p>
+
+      <div style="text-align: center; margin: 24px 0;">
+        <!-- Inline SVG: Agent Cognitive Loop Diagram -->
+        <svg viewBox="0 0 700 220" width="100%" height="auto" style="background:#0e121b; border:1px solid #232c42; border-radius:4px;">
+          <!-- Node boxes -->
+          <g transform="translate(10, 10)">
+            <!-- Sensors/Inputs -->
+            <rect x="20" y="70" width="100" height="50" rx="3" fill="#161c2b" stroke="#70d6ff"/>
+            <text x="70" y="95" fill="#edf2f7" font-size="10" font-family="sans-serif" text-anchor="middle">Sensors / User</text>
+            <text x="70" y="108" fill="#70d6ff" font-size="9" font-family="monospace">Input Event</text>
+
+            <!-- Brain/Model -->
+            <rect x="195" y="65" width="130" height="60" rx="6" fill="#1b2536" stroke="#00f5d4" stroke-width="2"/>
+            <text x="260" y="90" fill="#edf2f7" font-size="12" font-family="sans-serif" text-anchor="middle" font-weight="bold">Model (Brain)</text>
+            <text x="260" y="105" fill="#00f5d4" font-size="9" font-family="monospace">LLM Reasoner</text>
+
+            <!-- Memory -->
+            <rect x="195" y="150" width="130" height="45" rx="3" fill="#161c2b" stroke="#00bbf9"/>
+            <text x="260" y="170" fill="#edf2f7" font-size="10" font-family="sans-serif" text-anchor="middle">Memory / State</text>
+            <text x="260" y="182" fill="#00bbf9" font-size="8" font-family="monospace">Session history</text>
+
+            <!-- Actuators/Tools -->
+            <rect x="420" y="70" width="110" height="50" rx="3" fill="#161c2b" stroke="#f76a9a"/>
+            <text x="475" y="95" fill="#edf2f7" font-size="10" font-family="sans-serif" text-anchor="middle">Actuations / Tools</text>
+            <text x="475" y="108" fill="#f76a9a" font-size="9" font-family="monospace">API / Databases</text>
+
+            <!-- Arrows -->
+            <path d="M 120 95 L 195 95" stroke="#fff" stroke-width="1.5" marker-end="url(#arrow)"/>
+            <path d="M 325 95 L 420 95" stroke="#fff" stroke-width="1.5" marker-end="url(#arrow)"/>
+            
+            <!-- Bidirectional memory flow -->
+            <path d="M 245 125 L 245 150" stroke="#00bbf9" stroke-width="1.5" marker-end="url(#arrow)"/>
+            <path d="M 275 150 L 275 125" stroke="#00bbf9" stroke-width="1.5" marker-end="url(#arrow)"/>
+            
+            <!-- Loop back -->
+            <path d="M 475 70 C 475 30, 260 30, 260 65" fill="none" stroke="#fff" stroke-width="1.2" stroke-dasharray="3" marker-end="url(#arrow)"/>
+          </g>
+          <defs>
+            <marker id="arrow" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+              <path d="M 0 0 L 10 5 L 0 10 z" fill="#fff"/>
+            </marker>
+          </defs>
+        </svg>
+      </div>
+
+      <ul class="content-list">
+        <li><strong>The Model (Brain):</strong> The centralized decision-making unit (a language model) capable of instruction-based reasoning and parsing structured schemas.</li>
+        <li><strong>The Tools:</strong> Bridge the gap with the outside world, enabling the model to retrieve real-time facts and actuate actions over external services (APIs).</li>
+        <li><strong>The Orchestration Layer:</strong> The cyclic scheduling wrapper managing memory variables, state, tool routing registries, and logical planning transitions.</li>
+      </ul>
+    </div>
+
+    <!-- MODELS VS AGENTS -->
+    <div class="content-section">
+      <span class="section-anchor" id="vs"></span>
+      <h2 class="section-h">3.3 Models vs. Agents Comparison <span class="section-badge">System</span></h2>
+      <p>To grasp the engineering difference between core neural networks and agent systems, analyze this comparison:</p>
+      
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Characteristic</th>
+            <th>Generative Models</th>
+            <th>Generative Agents</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Knowledge Bounds</strong></td>
+            <td>Strictly limited to pretraining data (static library).</td>
+            <td>Extended dynamically via real-time tool connections.</td>
+          </tr>
+          <tr>
+            <td><strong>Context Lifecycle</strong></td>
+            <td>Single inference pass. No native session state tracking.</td>
+            <td>Managed session and long-term memory registries.</td>
+          </tr>
+          <tr>
+            <td><strong>Tool Capabilities</strong></td>
+            <td>No native tool integrations.</td>
+            <td>Natively designed to invoke external tools (APIs).</td>
+          </tr>
+          <tr>
+            <td><strong>Logic Operations</strong></td>
+            <td>Requires structural prompts for single logic blocks.</td>
+            <td>Implements cyclic reasoning loops (ReAct, ToT, etc.).</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- COGNITIVE ARCHITECTURES -->
+    <div class="content-section">
+      <span class="section-anchor" id="cognitive"></span>
+      <h2 class="section-h">3.4 Cognitive Architectures &amp; The Chef Analogy <span class="section-badge">Logic</span></h2>
+      <p>Cognitive architectures map how an agent iteratively reasons about a target. Google's handbook uses a **Chef in a busy kitchen** analogy to illustrate this loop:</p>
+      
+      <div class="callout green">
+        <div class="callout-title">The Chef Cognitive Loop</div>
+        1. <strong>Intake:</strong> The chef gathers info, checking the diner's ticket and looking inside the pantry for active ingredients. (Sensors &amp; Data Stores).<br>
+        2. <strong>Reasoning:</strong> The chef decides what dishes and flavors to build given these specific limits. (The Brain/Model).<br>
+        3. <strong>Actuation:</strong> The chef chops vegetables, blends spices, and sears meat. (External Tool Actions).<br>
+        4. <strong>Adjustment:</strong> The chef tastes the sauce, updates the plan if ingredients run out, and responds to immediate customer feedback. (The Orchestration/Memory).
+      </div>
+    </div>
+
+    <!-- REACT REASONING LOOP -->
+    <div class="content-section">
+      <span class="section-anchor" id="react"></span>
+      <h2 class="section-h">3.5 The ReAct Planning Mechanism <span class="section-badge">Orchestration</span></h2>
+      <p>A classic orchestration pattern is **ReAct (Reason + Act)**. It coordinates a structured thought-action sequence:</p>
+      
+      <div class="steps">
+        <div class="step"><div class="step-num">1</div><div class="step-body"><div class="step-title">Question</div><div class="step-desc">The original natural language query entered by the user.</div></div></div>
+        <div class="step"><div class="step-num">2</div><div class="step-body"><div class="step-title">Thought</div><div class="step-desc">The model reasons about what it should do next to achieve the target.</div></div></div>
+        <div class="step"><div class="step-num">3</div><div class="step-body"><div class="step-title">Action</div><div class="step-desc">The model makes a tool decision (e.g., selecting from `[Flights, Search, Code, None]`).</div></div></div>
+        <div class="step"><div class="step-num">4</div><div class="step-body"><div class="step-title">Action Input</div><div class="step-desc">The specific arguments generated by the model to call the tool API.</div></div></div>
+        <div class="step"><div class="step-num">5</div><div class="step-body"><div class="step-title">Observation</div><div class="step-desc">The raw return string from the tool API execution, fed back to the model context.</div></div></div>
+        <div class="step"><div class="step-num">6</div><div class="step-body"><div class="step-title">Final Answer</div><div class="step-desc">Once the target is solved, the model summarizes the aggregated facts back to the user.</div></div></div>
+      </div>
+    </div>
+
+    <!-- LANGGRAPH QUICKSTART -->
+    <div class="content-section">
+      <span class="section-anchor" id="langgraph"></span>
+      <h2 class="section-h">3.6 LangChain &amp; LangGraph Quickstart <span class="section-badge">Code</span></h2>
+      <p>To implement a live ReAct planning loop, use `langgraph` and `langchain` with a `gemini-2.0-flash-001` model tower to query search engines and location databases:</p>
+      
+      <pre class="formula" style="font-family:'DM Mono', monospace; font-size:12px; color:#e2e8f0; line-height:1.4; text-align:left; overflow-x:auto; padding:20px; border-left:4px solid var(--accent3);">
+from langgraph.prebuilt import create_react_agent
+from langchain_core.tools import tool
+from langchain_community.utilities import SerpAPIWrapper
+from langchain_community.tools import GooglePlacesTool
+import os
+
+# 1. Configure external API keys
+os.environ["SERPAPI_API_KEY"] = "YOUR_SERPAPI_KEY"
+os.environ["GPLACES_API_KEY"] = "YOUR_GOOGLE_PLACES_KEY"
+
+# 2. Define custom tool wrapper methods
+@tool
+def search(query: str):
+    """Use the SerpAPI to run a Google Search."""
+    search_wrapper = SerpAPIWrapper()
+    return search_wrapper.run(query)
+
+@tool
+def places(query: str):
+    """Use the Google Places API to run a Google Places Query."""
+    places_wrapper = GooglePlacesTool()
+    return places_wrapper.run(query)
+
+# 3. Instantiate model and bind tools
+model = ChatVertexAI(model="gemini-2.0-flash-001")
+tools = [search, places]
+
+# 4. Construct the autonomous ReAct agent loop
+agent = create_react_agent(model, tools)
+
+# 5. Stream execute a multi-stage request
+query = "Who did the Texas Longhorns play in football last week? What is the address of their stadium?"
+input_state = {"messages": [("human", query)]}
+
+for state in agent.stream(input_state, stream_mode="values"):
+    message = state["messages"][-1]
+    message.pretty_print()</pre>
+    </div>
+
+    <div class="chapter-nav">
+      <a href="ai-agents.html"><span class="nav-dir">← Previous</span><span class="nav-title">Hub Overview</span></a>
+      <a href="page-agents-tools.html" style="border-color: rgba(0,245,212,0.45); background: linear-gradient(to right, rgba(7,9,14,0.4), rgba(0,245,212,0.06));"><span class="nav-dir" style="color: var(--accent2);">Start Next Chapter →</span><span class="nav-title" style="color: var(--accent2);">Tools &amp; API Integration</span></a>
+    </div>
+
+  </main>
+</div>
+
+<script>
+  // Mobile drawer trigger
+  const menuToggle = document.getElementById('menu-toggle');
+  const sidebar = document.getElementById('sidebar');
+  const overlay = document.getElementById('sidebar-overlay');
+  
+  function toggleSidebar() {
+    sidebar.classList.toggle('active');
+    overlay.classList.toggle('active');
+  }
+  
+  menuToggle.addEventListener('click', toggleSidebar);
+  overlay.addEventListener('click', toggleSidebar);
+
+  // Active link highlighting on scroll
+  const sections = document.querySelectorAll('.section-anchor');
+  const links = document.querySelectorAll('.sidebar-nav a');
+  window.addEventListener('scroll', () => {
+    let cur = '';
+    sections.forEach(s => { if (window.scrollY >= s.offsetTop - 120) cur = s.id; });
+    links.forEach(l => { 
+      l.classList.remove('active'); 
+      if (l.getAttribute('href') === '#' + cur) l.classList.add('active'); 
+    });
+  });
+</script>
+</body>
+</html>

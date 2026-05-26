@@ -19,6 +19,8 @@
 }
 
 * { margin:0; padding:0; box-sizing:border-box; }
+*::before,
+*::after { box-sizing: border-box; }
 html { scroll-behavior: smooth; }
 body {
   background: var(--bg);
@@ -90,6 +92,7 @@ nav {
   font-size: clamp(36px, 5vw, 64px);
   font-weight: 600; line-height: 1.1; letter-spacing: -1.5px;
   color: var(--white); position: relative; max-width: 800px;
+  overflow-wrap: anywhere;
 }
 .page-title em { font-style: italic; color: var(--accent2); }
 .page-desc {
@@ -160,6 +163,7 @@ nav {
 .main-content {
   padding: 48px 64px 80px 64px;
   max-width: min(860px, 100%);
+  min-width: 0;
   width: 100%;
   margin: 0 auto;
   box-sizing: border-box;
@@ -177,8 +181,12 @@ pre, code, .formula {
   overflow-x: auto !important;
   white-space: pre-wrap !important;
   word-wrap: break-word !important;
+  overflow-wrap: anywhere !important;
+  word-break: break-word;
 }
-p, h1, h2, h3, h4, h5, h6, li, span, a, td, th {
+p, h1, h2, h3, h4, h5, h6, li, span, a, td, th,
+.compare-card, .step, .step-body, .callout, .chapter-nav a {
+  min-width: 0;
   overflow-wrap: break-word;
   word-wrap: break-word;
 }
@@ -186,19 +194,21 @@ p, h1, h2, h3, h4, h5, h6, li, span, a, td, th {
 table {
   width: 100%;
   max-width: 100%;
+  table-layout: fixed;
 }
 .data-table-wrap {
   width: 100%;
+  min-width: 0;
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
   margin: 24px 0;
 }
 @media (max-width: 600px) {
   .data-table {
-    display: block;
+    display: table;
+    table-layout: fixed;
     width: 100%;
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
+    overflow-x: visible;
   }
 }
 
@@ -269,6 +279,9 @@ code {
   color: var(--accent3);
   padding: 2px 6px;
   border: 1px solid var(--border);
+  white-space: normal !important;
+  overflow-wrap: anywhere !important;
+  word-break: break-word;
 }
 
 /* FORMULA BOX */
@@ -282,6 +295,7 @@ code {
   color: var(--accent2);
   position: relative;
   overflow-x: auto;
+  min-width: 0;
 }
 .formula-label {
   position: absolute; top: 8px; right: 12px;
@@ -315,8 +329,9 @@ li strong { color: var(--accent2); }
 /* COMPARISON CARDS */
 .compare-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(220px, 100%), 1fr));
   gap: 16px; margin: 24px 0;
+  min-width: 0;
 }
 .compare-card {
   background: var(--surface);
@@ -340,6 +355,7 @@ li strong { color: var(--accent2); }
 /* PROS/CONS */
 .pros-cons {
   display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 24px 0;
+  min-width: 0;
 }
 .pros { border: 1px solid rgba(106,247,200,0.25); padding: 20px; background: rgba(106,247,200,0.04); }
 .cons { border: 1px solid rgba(247,106,154,0.25); padding: 20px; background: rgba(247,106,154,0.04); }
@@ -366,13 +382,14 @@ li strong { color: var(--accent2); }
   border: 1px solid var(--border);
   border-left: 3px solid var(--accent);
   transition: border-left-color 0.2s;
+  min-width: 0;
 }
 .step:hover { border-left-color: var(--accent2); }
 .step-num {
   font-family: 'Syne', sans-serif; font-size: 20px; font-weight: 800;
   color: var(--accent); min-width: 32px; line-height: 1.4;
 }
-.step-body {}
+.step-body { min-width: 0; }
 .step-title { font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 700; color: var(--white); margin-bottom: 4px; }
 .step-desc { font-size: 13px; color: var(--muted); }
 
@@ -565,10 +582,22 @@ li strong { color: var(--accent2); }
     grid-template-columns: 1fr;
   }
   .table-section, .data-table, table {
-    display: block;
     width: 100%;
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
+    overflow-x: visible;
+  }
+  .data-table-wrap {
+    overflow-x: visible;
+  }
+  .data-table {
+    display: table;
+    table-layout: fixed;
+    font-size: 11.5px;
+  }
+  .data-table th,
+  .data-table td {
+    padding: 10px 8px;
+    overflow-wrap: anywhere;
+    word-break: break-word;
   }
 }
 

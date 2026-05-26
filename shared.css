@@ -439,6 +439,9 @@ li strong { color: var(--accent2); }
 }
 
 @media (max-width: 900px) {
+  .sidebar {
+    top: 80px;
+  }
   .note-sidebar-toggle {
     padding: 12px 24px;
   }
@@ -447,8 +450,25 @@ li strong { color: var(--accent2); }
     gap: 24px;
     padding: 24px;
   }
-  nav { padding: 16px 24px; }
-  .nav-links { display: none; }
+  nav {
+    padding: 12px 24px;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  .nav-links {
+    display: flex;
+    width: 100%;
+    overflow-x: auto;
+    white-space: nowrap;
+    gap: 16px;
+    padding: 4px 0;
+    list-style: none;
+    -webkit-overflow-scrolling: touch;
+  }
+  .nav-links::-webkit-scrollbar {
+    display: none;
+  }
   .page-hero { padding: 100px 24px 48px; }
   .main-content { padding: 32px 24px 64px; }
   .pros-cons { grid-template-columns: 1fr; }

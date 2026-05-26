@@ -44,6 +44,7 @@ nav {
   color: var(--white); text-decoration: none; letter-spacing: -0.5px;
 }
 .nav-logo span { color: var(--accent); }
+.nav-toggle { display: none; }
 .nav-links { display:flex; gap:24px; list-style:none; align-items: center; }
 .nav-links a {
   color: var(--muted); text-decoration: none;
@@ -440,7 +441,7 @@ li strong { color: var(--accent2); }
 
 @media (max-width: 900px) {
   .sidebar {
-    top: 80px;
+    top: 55px; /* Sits right under the standard header height when collapsed */
   }
   .note-sidebar-toggle {
     padding: 12px 24px;
@@ -451,27 +452,61 @@ li strong { color: var(--accent2); }
     padding: 24px;
   }
   nav {
-    padding: 12px 24px;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 12px;
+    padding: 16px 24px;
+    flex-wrap: wrap; /* Allows the hamburger list to span full width below logo */
+  }
+  .nav-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    border: none;
+    color: var(--muted);
+    cursor: pointer;
+    padding: 8px;
+    transition: color 0.2s;
+  }
+  .nav-toggle:hover {
+    color: var(--white);
+  }
+  .nav-toggle svg {
+    width: 20px;
+    height: 20px;
+    stroke: currentColor;
+    stroke-width: 2;
+    stroke-linecap: round;
   }
   .nav-links {
-    display: flex;
-    width: 100%;
-    overflow-x: auto;
-    white-space: nowrap;
-    gap: 16px;
-    padding: 4px 0;
-    list-style: none;
-    -webkit-overflow-scrolling: touch;
-  }
-  .nav-links::-webkit-scrollbar {
     display: none;
+    width: 100%;
+    flex-direction: column;
+    gap: 12px;
+    padding: 16px 0 8px 0;
+    list-style: none;
+    border-top: 1px solid var(--border);
+    margin-top: 12px;
+  }
+  .nav-links.active {
+    display: flex;
+    animation: navSlideDown 0.2s ease-out;
+  }
+  .nav-links li a {
+    display: block;
+    font-size: 13px;
+    padding: 8px 0;
+    color: var(--text);
+  }
+  .nav-links li a:hover {
+    color: var(--accent);
   }
   .page-hero { padding: 100px 24px 48px; }
   .main-content { padding: 32px 24px 64px; }
   .pros-cons { grid-template-columns: 1fr; }
+}
+
+@keyframes navSlideDown {
+  from { opacity: 0; transform: translateY(-8px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 @keyframes sidebarSlideDown {

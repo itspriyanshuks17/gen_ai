@@ -9,7 +9,14 @@
 <body>
 <nav>
   <a href="index.html" class="nav-logo">ML<span>.</span>Notes</a>
-  <ul class="nav-links">
+  <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation" aria-expanded="false" aria-controls="siteNav">
+      <svg viewBox="0 0 18 18" aria-hidden="true">
+        <line x1="1" y1="4" x2="17" y2="4"></line>
+        <line x1="1" y1="9" x2="17" y2="9"></line>
+        <line x1="1" y1="14" x2="17" y2="14"></line>
+      </svg>
+    </button>
+  <ul class="nav-links" id="siteNav">
     <li><a href="index.html" class="nav-back">← Home</a></li>
     <li><a href="chapter8.html">Ch.8 PCA</a></li>
     <li><a href="chapter10.html">Ch.10 Metrics</a></li>
@@ -181,7 +188,7 @@
 </div>
 
 <script>
-  // Active link highlighting on scroll
+// Active link highlighting on scroll
   const sections = document.querySelectorAll('.section-anchor');
   const links = document.querySelectorAll('.sidebar-nav a');
   window.addEventListener('scroll', () => {
@@ -237,6 +244,16 @@
   if (activeBookId) {
     const activeBookLink = document.getElementById(activeBookId);
     if (activeBookLink) activeBookLink.classList.add('active-book');
+  }
+// Fixed top header navbar mobile toggle
+  const navToggle = document.getElementById('navToggle');
+  const siteNav = document.getElementById('siteNav');
+  if (navToggle && siteNav) {
+    navToggle.addEventListener('click', () => {
+      const expanded = navToggle.getAttribute('aria-expanded') === 'true';
+      navToggle.setAttribute('aria-expanded', !expanded);
+      siteNav.classList.toggle('active');
+    });
   }
 </script>
 </body>

@@ -316,29 +316,64 @@
     color: var(--text);
   }
 
+  .nav-toggle {
+    display: none;
+  }
+
   @media (max-width: 768px) {
     nav {
-      padding: 12px 24px;
-      flex-direction: column;
-      align-items: flex-start;
-      gap: 12px;
+      padding: 16px 24px;
+      flex-wrap: wrap;
+    }
+    .nav-toggle {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: transparent;
+      border: none;
+      color: var(--muted);
+      cursor: pointer;
+      padding: 8px;
+    }
+    .nav-toggle svg {
+      width: 20px;
+      height: 20px;
+      stroke: currentColor;
+      stroke-width: 2;
+      stroke-linecap: round;
     }
     .nav-links {
-      display: flex;
-      width: 100%;
-      overflow-x: auto;
-      white-space: nowrap;
-      gap: 16px;
-      padding: 4px 0;
-      -webkit-overflow-scrolling: touch;
-    }
-    .nav-links::-webkit-scrollbar {
       display: none;
+      width: 100%;
+      flex-direction: column;
+      gap: 12px;
+      padding: 16px 0 8px 0;
+      border-top: 1px solid var(--border);
+      margin-top: 12px;
+      list-style: none;
+    }
+    .nav-links.active {
+      display: flex;
+      animation: navSlideDown 0.2s ease-out;
+    }
+    .nav-links li a {
+      display: block;
+      font-size: 13px;
+      padding: 6px 0;
+      color: var(--text);
+    }
+    .nav-links li a:hover {
+      color: var(--accent);
     }
     .hero { padding: 100px 24px 60px; }
     .section { padding: 60px 24px; }
     .hero-stat-row { gap: 24px; flex-wrap: wrap; }
     footer { padding: 32px 24px; flex-direction: column; gap: 16px; }
+  }
+
+  @keyframes navSlideDown {
+    from { opacity: 0; transform: translateY(-8px); }
+    to { opacity: 1; transform: translateY(0); }
   }
 </style>
 </head>
@@ -346,7 +381,14 @@
 
 <nav>
   <a href="domain-specific-llms.html" class="nav-logo">Domain<span>.</span>LLMs</a>
-  <ul class="nav-links">
+  <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation" aria-expanded="false" aria-controls="siteNav">
+      <svg viewBox="0 0 18 18" aria-hidden="true">
+        <line x1="1" y1="4" x2="17" y2="4"></line>
+        <line x1="1" y1="9" x2="17" y2="9"></line>
+        <line x1="1" y1="14" x2="17" y2="14"></line>
+      </svg>
+    </button>
+  <ul class="nav-links" id="siteNav">
     <li><a href="index.html" style="color: var(--accent3);">← ML Notes</a></li>
     <li><a href="llm.html" style="color: var(--accent2);">LLM Book</a></li>
     <li><a href="page-ds-cybersecurity.html">Cybersecurity</a></li>

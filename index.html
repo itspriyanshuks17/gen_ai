@@ -197,7 +197,7 @@
 
   .chapters-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
     gap: 2px;
   }
   .chapter-card {
@@ -285,7 +285,8 @@
   .table-section {
     background: var(--surface);
     border: 1px solid var(--border);
-    overflow: hidden;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
   }
   .table-header {
     padding: 24px 32px;
@@ -357,8 +358,11 @@
 
   @media (max-width: 768px) {
     nav {
-      padding: 16px 24px;
-      flex-wrap: wrap;
+      padding: 12px 24px;
+      height: 55px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
     }
     .nav-toggle {
       display: flex;
@@ -369,6 +373,10 @@
       color: var(--muted);
       cursor: pointer;
       padding: 8px;
+      transition: color 0.2s;
+    }
+    .nav-toggle:hover {
+      color: var(--white);
     }
     .nav-toggle svg {
       width: 20px;
@@ -379,31 +387,77 @@
     }
     .nav-links {
       display: none;
-      width: 100%;
+      position: fixed;
+      top: 55px;
+      left: 0;
+      width: 100vw;
+      height: calc(100vh - 55px);
+      background: rgba(10, 10, 15, 0.98);
+      backdrop-filter: blur(20px);
+      padding: 32px 24px;
       flex-direction: column;
-      gap: 12px;
-      padding: 16px 0 8px 0;
+      gap: 20px;
+      z-index: 999;
       border-top: 1px solid var(--border);
-      margin-top: 12px;
+      margin-top: 0;
+      overflow-y: auto;
       list-style: none;
     }
     .nav-links.active {
       display: flex;
-      animation: navSlideDown 0.2s ease-out;
+      animation: navSlideDown 0.25s cubic-bezier(0.16, 1, 0.3, 1) both;
+    }
+    .nav-links li {
+      width: 100%;
+      text-align: center;
     }
     .nav-links li a {
       display: block;
-      font-size: 13px;
-      padding: 6px 0;
+      font-size: 16px;
+      padding: 12px 0;
       color: var(--text);
+      border-bottom: 1px solid rgba(42, 42, 58, 0.3);
     }
     .nav-links li a:hover {
       color: var(--accent);
     }
-    .hero { padding: 100px 24px 60px; }
-    .section { padding: 60px 24px; }
-    .hero-stat-row { gap: 24px; flex-wrap: wrap; }
+    .hero { padding: 80px 24px 48px; }
+    .section { padding: 48px 24px; }
+    .hero-stat-row { gap: 16px; flex-wrap: wrap; }
     footer { padding: 32px 24px; flex-direction: column; gap: 16px; }
+  }
+
+  @media (max-width: 600px) {
+    h1 {
+      font-size: 36px !important;
+      letter-spacing: -1px !important;
+    }
+    .hero-sub {
+      font-size: 13px !important;
+      margin-top: 20px !important;
+    }
+    .hero-actions {
+      margin-top: 32px !important;
+      flex-direction: column !important;
+      align-items: stretch !important;
+      width: 100% !important;
+    }
+    .hero-actions a {
+      margin-left: 0 !important;
+      text-align: center !important;
+      justify-content: center !important;
+      width: 100% !important;
+    }
+    .hero-stat-row {
+      margin-top: 48px !important;
+      gap: 16px !important;
+    }
+    .table-section, table {
+      display: block !important;
+      width: 100% !important;
+      overflow-x: auto !important;
+      -webkit-overflow-scrolling: touch !important;
+    }
   }
 
   @keyframes navSlideDown {
@@ -507,20 +561,34 @@
     transition: all 0.2s;
   }
   .roadmap-btn:hover {
-    background: rgba(124,106,247,0.05);
-    border-color: var(--accent);
-    transform: translateX(2px);
-  }
+      margin-top: 24px;
+      padding: 10px;
+      background: transparent;
+      border: 1px dashed var(--border);
+      color: var(--muted);
+      font-family: 'DM Mono', monospace;
+      font-size: 11px;
+      cursor: pointer;
+      transition: all 0.2s;
+      border-radius: 4px;
+      text-align: center;
+    }
+    .reset-tracker-btn:hover {
+      border-color: var(--accent4);
+      color: var(--accent4);
+      background: rgba(247,106,154,0.02);
+    }
 
-  @media (max-width: 768px) {
-    .roadmap-step {
-      gap: 16px;
+    @media (max-width: 768px) {
+      .workflow-grid {
+        grid-template-columns: 1fr;
+        gap: 32px;
+      }
+      .tracker-box {
+        padding: 24px;
+      }
     }
-    .roadmap-line {
-      left: 17px;
-    }
-  }
-</style>
+  </style>
 </head>
 <body>
 
@@ -947,6 +1015,178 @@
 
 <div class="divider"></div>
 
+  <section class="section" id="learning-workflow" style="padding-top: 60px;">
+    <p class="section-label" style="color: var(--accent2);">Mastery Guide</p>
+    <h2 class="section-title" style="margin-bottom: 24px;">How to Learn &amp; Master These Notes</h2>
+    <p style="color: var(--muted); max-width: 600px; margin-bottom: 48px; font-size: 14px;">
+      Learning machine learning requires a deliberate strategy. Use our interactive planner and completion tracker to customize your study path, follow the active learning loop, and log your progress.
+    </p>
+
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 40px; align-items: start;" class="workflow-grid">
+      
+      <!-- Left Column: Study Paths & Steps -->
+      <div style="display: flex; flex-direction: column; gap: 32px;">
+        <!-- Tab Control Box -->
+        <div style="background: var(--surface); border: 1px solid var(--border); padding: 8px; display: flex; gap: 8px;" class="tab-box">
+          <button class="workflow-tab active" onclick="switchWorkflowTab('pathways')">1. Choose Path</button>
+          <button class="workflow-tab" onclick="switchWorkflowTab('loop')">2. Study Loop</button>
+        </div>
+
+        <!-- Tab Content: Pathways -->
+        <div id="tab-content-pathways" class="workflow-tab-content active">
+          <h3 style="font-family: 'Syne', sans-serif; font-size: 18px; color: var(--white); margin-bottom: 16px; display: flex; align-items: center; gap: 8px;">
+            <span style="color: var(--accent2);">✦</span> Tailored Study Pathways
+          </h3>
+          
+          <div class="pathway-card selected" onclick="selectPathway('sequential')">
+            <div class="pathway-header">
+              <span class="pathway-dot active"></span>
+              <span class="pathway-title">The Academic (Sequential Path)</span>
+            </div>
+            <p class="pathway-desc">Best for beginners. Walk step-by-step from fundamental data engineering, errors, and models, through neural networks and LLMs, to AI agents.</p>
+          </div>
+
+          <div class="pathway-card" onclick="selectPathway('fasttrack')">
+            <div class="pathway-header">
+              <span class="pathway-dot"></span>
+              <span class="pathway-title">The Practitioner (LLMs &amp; Agents Fast-Track)</span>
+            </div>
+            <p class="pathway-desc">Best for developers building AI software. Jump straight into LLMs, Vector Retrieval, and AI Agents, and backfill mathematical foundations as needed.</p>
+          </div>
+
+          <div class="pathway-card" onclick="selectPathway('specialist')">
+            <div class="pathway-header">
+              <span class="pathway-dot"></span>
+              <span class="pathway-title">The Architect (Vector &amp; Enterprise Verticals)</span>
+            </div>
+            <p class="pathway-desc">Best for scaling enterprise models. Prioritize semantic vector embeddings, low-latency HNSW databases, and domain verticals like CyberSec &amp; Healthcare.</p>
+          </div>
+        </div>
+
+        <!-- Tab Content: Study Loop -->
+        <div id="tab-content-loop" class="workflow-tab-content">
+          <h3 style="font-family: 'Syne', sans-serif; font-size: 18px; color: var(--white); margin-bottom: 16px; display: flex; align-items: center; gap: 8px;">
+            <span style="color: var(--accent3);">✦</span> The 4-Step Active Mastery Loop
+          </h3>
+          <p style="color: var(--muted); font-size: 13px; margin-bottom: 24px;">Do not just passively read these notes. For every chapter, follow this workflow to build absolute mastery:</p>
+          
+          <div class="loop-step">
+            <div class="loop-step-num">01</div>
+            <div>
+              <h4 class="loop-step-title">Conceptual Deep-Dive</h4>
+              <p class="loop-step-desc">Read the chapter section text to understand the intuition, trade-offs, and core architecture.</p>
+            </div>
+          </div>
+
+          <div class="loop-step">
+            <div class="loop-step-num">02</div>
+            <div>
+              <h4 class="loop-step-title">Visual Architecture Mapping</h4>
+              <p class="loop-step-desc">Analyze the custom SVG flowcharts and architectural diagrams to map data flows in your head.</p>
+            </div>
+          </div>
+
+          <div class="loop-step">
+            <div class="loop-step-num">03</div>
+            <div>
+              <h4 class="loop-step-title">Mathematical Formula Derivation</h4>
+              <p class="loop-step-desc">Examine inline formulas (like Loss functions or cosine distance equations) and solve small sample inputs by hand.</p>
+            </div>
+          </div>
+
+          <div class="loop-step">
+            <div class="loop-step-num">04</div>
+            <div>
+              <h4 class="loop-step-title">Hands-on Code Translation</h4>
+              <p class="loop-step-desc">Translate equations and algorithms into raw Python/JS code, building small scripts to prove working understanding.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Column: Completion Tracker -->
+      <div style="background: var(--surface); border: 1px solid var(--border); padding: 40px; position: relative;" class="tracker-box">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; flex-wrap: wrap; gap: 12px;">
+          <h3 style="font-family: 'Syne', sans-serif; font-size: 20px; color: var(--white);">Completion Tracker</h3>
+          <span class="rank-badge" id="tracker-rank">Novice</span>
+        </div>
+
+        <div style="margin-bottom: 32px;">
+          <div style="display: flex; justify-content: space-between; font-size: 12px; color: var(--muted); margin-bottom: 8px;">
+            <span>YOUR PROGRESS</span>
+            <span style="font-weight: bold; color: var(--accent);" id="tracker-percentage">0% Complete</span>
+          </div>
+          <div class="progress-bar-container">
+            <div class="progress-bar-fill" id="tracker-fill"></div>
+          </div>
+          <div style="font-size: 11px; color: var(--muted); margin-top: 8px; text-align: center;" id="tracker-summary">
+            0 of 6 Volumes completed
+          </div>
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: 16px;">
+          <label class="tracker-item">
+            <input type="checkbox" onchange="toggleVolume(0)" id="vol-0">
+            <span class="custom-checkbox"></span>
+            <div>
+              <span class="tracker-item-vol">Volume 1: Core Fundamentals</span>
+              <span class="tracker-item-sub">Chapters 1 - 5 (Introduction to Regularization)</span>
+            </div>
+          </label>
+
+          <label class="tracker-item">
+            <input type="checkbox" onchange="toggleVolume(1)" id="vol-1">
+            <span class="custom-checkbox"></span>
+            <div>
+              <span class="tracker-item-vol">Volume 2: Advanced ML Models</span>
+              <span class="tracker-item-sub">Chapters 6 - 10 (Ensembles, PCA, Evaluation)</span>
+            </div>
+          </label>
+
+          <label class="tracker-item">
+            <input type="checkbox" onchange="toggleVolume(2)" id="vol-2">
+            <span class="custom-checkbox"></span>
+            <div>
+              <span class="tracker-item-vol" style="color: var(--accent2);">Volume 3: Large Language Models</span>
+              <span class="tracker-item-sub">Companion Book: Transformers, SFT, Alignment &amp; Inference</span>
+            </div>
+          </label>
+
+          <label class="tracker-item">
+            <input type="checkbox" onchange="toggleVolume(3)" id="vol-3">
+            <span class="custom-checkbox"></span>
+            <div>
+              <span class="tracker-item-vol" style="color: var(--accent3);">Volume 4: Dense Vector Search</span>
+              <span class="tracker-item-sub">Companion Book: Semantic Embeddings &amp; Vector Databases</span>
+            </div>
+          </label>
+
+          <label class="tracker-item">
+            <input type="checkbox" onchange="toggleVolume(4)" id="vol-4">
+            <span class="custom-checkbox"></span>
+            <div>
+              <span class="tracker-item-vol" style="color: #c77dff;">Volume 5: Prompts &amp; Verticals</span>
+              <span class="tracker-item-sub">Companion Books: Prompt Engineering &amp; Domain Verticals</span>
+            </div>
+          </label>
+
+          <label class="tracker-item">
+            <input type="checkbox" onchange="toggleVolume(5)" id="vol-5">
+            <span class="custom-checkbox"></span>
+            <div>
+              <span class="tracker-item-vol" style="color: #00bbf9;">Volume 6: Autonomous AI Agents</span>
+              <span class="tracker-item-sub">Companion Book: Planning Loops &amp; Specialized Architectures</span>
+            </div>
+          </label>
+        </div>
+
+        <button class="reset-tracker-btn" onclick="resetTracker()">Reset All Progress</button>
+      </div>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
 <section class="section">
   <p class="section-label">Quick Reference</p>
   <h2 class="section-title">Types of Machine Learning</h2>
@@ -992,5 +1232,177 @@
   <div class="footer-note">Machine Learning Handbook — Based on your study notes</div>
 </footer>
 
-</body>
-</html>
+  <script>
+    // Dynamic Global Book active highlighting based on URL pathname
+    const currentPath = window.location.pathname;
+    let activeBookId = '';
+    if (currentPath.includes('chapter1') || currentPath.includes('chapter2') || currentPath.includes('chapter3')) {
+      activeBookId = 'nav-Foundations';
+    } else if (currentPath.includes('chapter4') || currentPath.includes('chapter5')) {
+      activeBookId = 'nav-Models';
+    } else if (currentPath.includes('chapter6') || currentPath.includes('chapter7') || currentPath.includes('chapter8')) {
+      activeBookId = 'nav-Ensemble';
+    } else if (currentPath.includes('chapter9') || currentPath.includes('chapter10')) {
+      activeBookId = 'nav-Tuning';
+    } else if (currentPath.includes('llm')) {
+      activeBookId = 'nav-LLMs';
+    } else if (currentPath.includes('embeddings') || currentPath.includes('training') || currentPath.includes('vector-search')) {
+      activeBookId = 'nav-Vectors';
+    } else if (currentPath.includes('prompt') || currentPath.includes('pe-')) {
+      activeBookId = 'nav-Prompts';
+    } else if (currentPath.includes('domain') || currentPath.includes('ds-')) {
+      activeBookId = 'nav-Vertical';
+    } else if (currentPath.includes('agent')) {
+      activeBookId = 'nav-Agents';
+    }
+    
+    if (activeBookId) {
+      const activeBookLink = document.getElementById(activeBookId);
+      if (activeBookLink) activeBookLink.classList.add('active-book');
+    }
+
+    // Fixed top header navbar mobile toggle
+    const navToggle = document.getElementById('navToggle');
+    const siteNav = document.getElementById('siteNav');
+    if (navToggle && siteNav) {
+      navToggle.addEventListener('click', () => {
+        const expanded = navToggle.getAttribute('aria-expanded') === 'true';
+        navToggle.setAttribute('aria-expanded', !expanded);
+        siteNav.classList.toggle('active');
+      });
+    }
+
+    // WORKFLOW TABS
+    function switchWorkflowTab(tabId) {
+      document.querySelectorAll('.workflow-tab').forEach(btn => btn.classList.remove('active'));
+      document.querySelectorAll('.workflow-tab-content').forEach(content => content.classList.remove('active'));
+      
+      // Find active button and content
+      event.currentTarget.classList.add('active');
+      document.getElementById('tab-content-' + tabId).classList.add('active');
+    }
+
+    // PATHWAY CUSTOMIZER SELECT
+    function selectPathway(pathId) {
+      document.querySelectorAll('.pathway-card').forEach(card => card.classList.remove('selected'));
+      document.querySelectorAll('.pathway-dot').forEach(dot => dot.classList.remove('active'));
+      
+      // Add active classes
+      const card = event.currentTarget;
+      card.classList.add('selected');
+      card.querySelector('.pathway-dot').classList.add('active');
+      
+      // Highlight roadmap steps dynamically
+      const steps = document.querySelectorAll('.roadmap-step');
+      steps.forEach(step => {
+        step.style.opacity = '0.3';
+        step.style.transform = 'scale(0.98)';
+        step.style.transition = 'all 0.3s';
+      });
+      
+      if (pathId === 'sequential') {
+        steps.forEach((step, idx) => {
+          step.style.opacity = '1';
+          step.style.transform = 'scale(1)';
+        });
+      } else if (pathId === 'fasttrack') {
+        // Highlight Steps 3, 4, 5 first
+        [2, 3, 4].forEach(idx => {
+          if (steps[idx]) {
+            steps[idx].style.opacity = '1';
+            steps[idx].style.transform = 'scale(1.02)';
+          }
+        });
+        // Dim Steps 1, 2
+        [0, 1].forEach(idx => {
+          if (steps[idx]) {
+            steps[idx].style.opacity = '0.5';
+          }
+        });
+      } else if (pathId === 'specialist') {
+        // Highlight Steps 4, 5
+        [3, 4].forEach(idx => {
+          if (steps[idx]) {
+            steps[idx].style.opacity = '1';
+            steps[idx].style.transform = 'scale(1.02)';
+          }
+        });
+        // Dim Steps 1, 2, 3
+        [0, 1, 2].forEach(idx => {
+          if (steps[idx]) {
+            steps[idx].style.opacity = '0.4';
+          }
+        });
+      }
+    }
+
+    // PROGRESS TRACKER LOGIC
+    let progressState = [false, false, false, false, false, false];
+
+    function toggleVolume(index) {
+      const chk = document.getElementById('vol-' + index);
+      progressState[index] = chk.checked;
+      saveTrackerState();
+      updateTrackerUI();
+    }
+
+    function saveTrackerState() {
+      localStorage.setItem('ml_notes_progress', JSON.stringify(progressState));
+    }
+
+    function loadTrackerState() {
+      const saved = localStorage.getItem('ml_notes_progress');
+      if (saved) {
+        try {
+          progressState = JSON.parse(saved);
+        } catch (e) {
+          progressState = [false, false, false, false, false, false];
+        }
+      }
+    }
+
+    function updateTrackerUI() {
+      let completedCount = 0;
+      progressState.forEach((val, idx) => {
+        const chk = document.getElementById('vol-' + idx);
+        if (chk) {
+          chk.checked = val;
+        }
+        if (val) completedCount++;
+      });
+
+      const percentage = Math.round((completedCount / 6) * 100);
+      const fill = document.getElementById('tracker-fill');
+      const label = document.getElementById('tracker-percentage');
+      const summary = document.getElementById('tracker-summary');
+      const rank = document.getElementById('tracker-rank');
+
+      if (fill) fill.style.width = percentage + '%';
+      if (label) label.textContent = percentage + '% Complete';
+      if (summary) summary.textContent = completedCount + ' of 6 Volumes Mastered';
+
+      // Compute rank
+      let rankText = 'Novice';
+      if (completedCount === 6) rankText = 'Grandmaster';
+      else if (completedCount >= 4) rankText = 'Architect';
+      else if (completedCount >= 2) rankText = 'Practitioner';
+      else if (completedCount >= 1) rankText = 'Initiate';
+      
+      if (rank) rank.textContent = rankText;
+    }
+
+    function resetTracker() {
+      if (confirm('Are you sure you want to reset all learning progress?')) {
+        progressState = [false, false, false, false, false, false];
+        saveTrackerState();
+        updateTrackerUI();
+      }
+    }
+
+    // Initialize progress tracker
+    loadTrackerState();
+    updateTrackerUI();
+  </script>
+
+  </body>
+  </html>

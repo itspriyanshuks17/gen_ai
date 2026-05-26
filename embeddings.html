@@ -198,7 +198,7 @@
 
   .chapters-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
     gap: 24px;
   }
   .chapter-card {
@@ -322,8 +322,11 @@
 
   @media (max-width: 768px) {
     nav {
-      padding: 16px 24px;
-      flex-wrap: wrap;
+      padding: 12px 24px;
+      height: 55px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
     }
     .nav-toggle {
       display: flex;
@@ -334,6 +337,10 @@
       color: var(--muted);
       cursor: pointer;
       padding: 8px;
+      transition: color 0.2s;
+    }
+    .nav-toggle:hover {
+      color: var(--white);
     }
     .nav-toggle svg {
       width: 20px;
@@ -344,31 +351,77 @@
     }
     .nav-links {
       display: none;
-      width: 100%;
+      position: fixed;
+      top: 55px;
+      left: 0;
+      width: 100vw;
+      height: calc(100vh - 55px);
+      background: rgba(10, 10, 15, 0.98);
+      backdrop-filter: blur(20px);
+      padding: 32px 24px;
       flex-direction: column;
-      gap: 12px;
-      padding: 16px 0 8px 0;
+      gap: 20px;
+      z-index: 999;
       border-top: 1px solid var(--border);
-      margin-top: 12px;
+      margin-top: 0;
+      overflow-y: auto;
       list-style: none;
     }
     .nav-links.active {
       display: flex;
-      animation: navSlideDown 0.2s ease-out;
+      animation: navSlideDown 0.25s cubic-bezier(0.16, 1, 0.3, 1) both;
+    }
+    .nav-links li {
+      width: 100%;
+      text-align: center;
     }
     .nav-links li a {
       display: block;
-      font-size: 13px;
-      padding: 6px 0;
+      font-size: 16px;
+      padding: 12px 0;
       color: var(--text);
+      border-bottom: 1px solid rgba(42, 42, 58, 0.3);
     }
     .nav-links li a:hover {
       color: var(--accent);
     }
-    .hero { padding: 100px 24px 60px; }
-    .section { padding: 60px 24px; }
-    .hero-stat-row { gap: 24px; flex-wrap: wrap; }
+    .hero { padding: 80px 24px 48px; }
+    .section { padding: 48px 24px; }
+    .hero-stat-row { gap: 16px; flex-wrap: wrap; }
     footer { padding: 32px 24px; flex-direction: column; gap: 16px; }
+  }
+
+  @media (max-width: 600px) {
+    h1 {
+      font-size: 36px !important;
+      letter-spacing: -1px !important;
+    }
+    .hero-sub {
+      font-size: 13px !important;
+      margin-top: 20px !important;
+    }
+    .hero-actions {
+      margin-top: 32px !important;
+      flex-direction: column !important;
+      align-items: stretch !important;
+      width: 100% !important;
+    }
+    .hero-actions a {
+      margin-left: 0 !important;
+      text-align: center !important;
+      justify-content: center !important;
+      width: 100% !important;
+    }
+    .hero-stat-row {
+      margin-top: 48px !important;
+      gap: 16px !important;
+    }
+    .table-section, table {
+      display: block !important;
+      width: 100% !important;
+      overflow-x: auto !important;
+      -webkit-overflow-scrolling: touch !important;
+    }
   }
 
   @keyframes navSlideDown {

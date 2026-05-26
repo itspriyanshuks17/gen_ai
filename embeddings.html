@@ -1,0 +1,685 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Embeddings & Vector Stores — Study Notes</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Mono:wght@300;400;500&family=Cabinet+Grotesk:wght@400;500;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #1a1612;
+    --ink-muted: #5c5248;
+    --ink-faint: #9e958d;
+    --paper: #f7f4ef;
+    --paper-warm: #efe9df;
+    --paper-dark: #e5ddd2;
+    --accent: #2d6a4f;
+    --accent-light: #d8f3dc;
+    --accent-muted: #74c69d;
+    --gold: #b7791f;
+    --gold-light: #fef3c7;
+    --rust: #9b2c2c;
+    --blue: #2b4c8c;
+    --blue-light: #dbeafe;
+    --border: rgba(26,22,18,0.12);
+    --border-strong: rgba(26,22,18,0.25);
+    --shadow: 0 2px 20px rgba(26,22,18,0.08);
+    --shadow-lg: 0 8px 40px rgba(26,22,18,0.14);
+    --radius: 4px;
+    --radius-lg: 8px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: 'Cabinet Grotesk', sans-serif;
+    background: var(--paper);
+    color: var(--ink);
+    line-height: 1.6;
+    min-height: 100vh;
+  }
+
+  /* HEADER */
+  .site-header {
+    background: var(--ink);
+    color: var(--paper);
+    padding: 0 2rem;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    border-bottom: 2px solid var(--accent);
+  }
+  .header-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 56px;
+  }
+  .logo {
+    font-family: 'Fraunces', serif;
+    font-size: 1.1rem;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    color: var(--paper);
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .logo span { color: var(--accent-muted); }
+  .nav { display: flex; gap: 2px; }
+  .nav a {
+    color: rgba(247,244,239,0.7);
+    text-decoration: none;
+    font-size: 0.82rem;
+    font-weight: 500;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    padding: 6px 12px;
+    border-radius: var(--radius);
+    transition: all 0.2s;
+  }
+  .nav a:hover { color: var(--paper); background: rgba(255,255,255,0.08); }
+  .nav a.active { color: var(--accent-muted); }
+
+  /* HERO */
+  .hero {
+    background: var(--ink);
+    color: var(--paper);
+    padding: 5rem 2rem 4rem;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute;
+    top: -60px; right: -80px;
+    width: 500px; height: 500px;
+    background: radial-gradient(circle, rgba(45,106,79,0.15) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .hero-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4rem;
+    align-items: center;
+  }
+  .hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(45,106,79,0.2);
+    color: var(--accent-muted);
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 4px 12px;
+    border-radius: 100px;
+    margin-bottom: 1.2rem;
+    border: 1px solid rgba(116,198,157,0.3);
+  }
+  .hero h1 {
+    font-family: 'Fraunces', serif;
+    font-size: clamp(2.4rem, 5vw, 3.8rem);
+    font-weight: 300;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    margin-bottom: 1rem;
+  }
+  .hero h1 em {
+    font-style: italic;
+    color: var(--accent-muted);
+  }
+  .hero-desc {
+    font-size: 1.05rem;
+    color: rgba(247,244,239,0.65);
+    line-height: 1.7;
+    margin-bottom: 2rem;
+  }
+  .hero-cta {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  .btn-primary {
+    background: var(--accent);
+    color: white;
+    text-decoration: none;
+    padding: 10px 22px;
+    border-radius: var(--radius);
+    font-size: 0.88rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    transition: all 0.2s;
+    border: 2px solid var(--accent);
+  }
+  .btn-primary:hover { background: #1e4d38; border-color: #1e4d38; }
+  .btn-outline {
+    background: transparent;
+    color: var(--paper);
+    text-decoration: none;
+    padding: 10px 22px;
+    border-radius: var(--radius);
+    font-size: 0.88rem;
+    font-weight: 500;
+    border: 1px solid rgba(247,244,239,0.25);
+    transition: all 0.2s;
+  }
+  .btn-outline:hover { border-color: rgba(247,244,239,0.5); background: rgba(255,255,255,0.05); }
+
+  /* HERO VISUAL */
+  .hero-visual {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+  .stat-card {
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: var(--radius-lg);
+    padding: 1.2rem;
+  }
+  .stat-card.accent-card {
+    background: rgba(45,106,79,0.15);
+    border-color: rgba(116,198,157,0.25);
+    grid-column: span 2;
+  }
+  .stat-num {
+    font-family: 'DM Mono', monospace;
+    font-size: 2rem;
+    font-weight: 400;
+    color: var(--accent-muted);
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+  .stat-label {
+    font-size: 0.75rem;
+    color: rgba(247,244,239,0.5);
+    font-weight: 500;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+  .stat-detail {
+    font-size: 0.82rem;
+    color: rgba(247,244,239,0.6);
+    margin-top: 6px;
+  }
+
+  /* MAIN CONTENT */
+  .main-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 3rem 2rem;
+  }
+
+  /* SECTION HEADER */
+  .section-header {
+    display: flex;
+    align-items: baseline;
+    gap: 1rem;
+    margin-bottom: 1.8rem;
+    padding-bottom: 0.8rem;
+    border-bottom: 1px solid var(--border);
+  }
+  .section-title {
+    font-family: 'Fraunces', serif;
+    font-size: 1.5rem;
+    font-weight: 400;
+    letter-spacing: -0.01em;
+  }
+  .section-count {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.75rem;
+    color: var(--ink-faint);
+    background: var(--paper-warm);
+    padding: 2px 8px;
+    border-radius: 100px;
+    border: 1px solid var(--border);
+  }
+
+  /* CHAPTER CARDS */
+  .chapters-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    gap: 16px;
+    margin-bottom: 3rem;
+  }
+  .chapter-card {
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    text-decoration: none;
+    color: var(--ink);
+    transition: all 0.25s;
+    display: flex;
+    flex-direction: column;
+    box-shadow: var(--shadow);
+  }
+  .chapter-card:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-lg);
+    border-color: var(--accent);
+  }
+  .chapter-card-top {
+    padding: 1.4rem 1.4rem 0;
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+  }
+  .chapter-num {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.72rem;
+    font-weight: 500;
+    color: var(--ink-faint);
+    letter-spacing: 0.05em;
+    background: var(--paper-warm);
+    padding: 3px 8px;
+    border-radius: 100px;
+    white-space: nowrap;
+  }
+  .chapter-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: var(--radius);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+    flex-shrink: 0;
+  }
+  .chapter-card-body { padding: 0.8rem 1.4rem 1.4rem; flex: 1; }
+  .chapter-title {
+    font-family: 'Fraunces', serif;
+    font-size: 1.15rem;
+    font-weight: 600;
+    margin-bottom: 0.4rem;
+    letter-spacing: -0.01em;
+  }
+  .chapter-desc {
+    font-size: 0.85rem;
+    color: var(--ink-muted);
+    line-height: 1.55;
+    margin-bottom: 1rem;
+  }
+  .chapter-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  .tag {
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    padding: 2px 8px;
+    border-radius: 100px;
+    border: 1px solid;
+  }
+  .tag-green { color: #166534; background: #dcfce7; border-color: #bbf7d0; }
+  .tag-blue { color: #1e3a8a; background: #dbeafe; border-color: #bfdbfe; }
+  .tag-amber { color: #92400e; background: #fef3c7; border-color: #fde68a; }
+  .tag-red { color: #991b1b; background: #fee2e2; border-color: #fecaca; }
+  .tag-purple { color: #4c1d95; background: #ede9fe; border-color: #ddd6fe; }
+  .tag-teal { color: #134e4a; background: #ccfbf1; border-color: #99f6e4; }
+  .chapter-card-footer {
+    padding: 0.8rem 1.4rem;
+    border-top: 1px solid var(--border);
+    background: var(--paper);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 0.78rem;
+    color: var(--ink-faint);
+  }
+  .arrow-link {
+    font-size: 0.8rem;
+    color: var(--accent);
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  /* OVERVIEW BOX */
+  .overview-box {
+    background: var(--ink);
+    color: var(--paper);
+    border-radius: var(--radius-lg);
+    padding: 2.5rem;
+    margin-bottom: 3rem;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 2rem;
+  }
+  .overview-item h3 {
+    font-family: 'Fraunces', serif;
+    font-size: 1rem;
+    font-weight: 400;
+    color: var(--accent-muted);
+    margin-bottom: 0.5rem;
+  }
+  .overview-item p {
+    font-size: 0.84rem;
+    color: rgba(247,244,239,0.65);
+    line-height: 1.6;
+  }
+
+  /* QUICK REF */
+  .quick-ref {
+    background: var(--gold-light);
+    border: 1px solid rgba(183,121,31,0.3);
+    border-radius: var(--radius-lg);
+    padding: 1.6rem;
+    margin-bottom: 3rem;
+  }
+  .quick-ref-title {
+    font-family: 'Fraunces', serif;
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--gold);
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .quick-ref-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 12px;
+  }
+  .quick-ref-item {
+    background: white;
+    border: 1px solid rgba(183,121,31,0.2);
+    border-radius: var(--radius);
+    padding: 0.8rem;
+  }
+  .quick-ref-item code {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.8rem;
+    color: var(--rust);
+    display: block;
+    margin-bottom: 3px;
+  }
+  .quick-ref-item p {
+    font-size: 0.78rem;
+    color: var(--ink-muted);
+  }
+
+  /* FOOTER */
+  footer {
+    background: var(--ink);
+    color: rgba(247,244,239,0.5);
+    text-align: center;
+    padding: 2rem;
+    font-size: 0.8rem;
+    margin-top: 4rem;
+  }
+  footer a { color: var(--accent-muted); text-decoration: none; }
+
+  @media (max-width: 768px) {
+    .hero-inner { grid-template-columns: 1fr; }
+    .hero-visual { display: none; }
+    .overview-box { grid-template-columns: 1fr; }
+    .chapters-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="header-inner">
+    <a href="index.html" class="logo">
+      <span>⬡</span> Embeddings & Vector Stores
+    </a>
+    <nav class="nav">
+      <a href="index.html" class="active">Home</a>
+      <a href="page-embeddings.html">Embeddings</a>
+      <a href="page-vector-search.html">Vector Search</a>
+      <a href="page-vector-db.html">Databases</a>
+      <a href="page-applications.html">Applications</a>
+      <a href="page-glossary.html">Glossary</a>
+    </nav>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="hero-inner">
+    <div>
+      <div class="hero-badge">📄 Google Whitepaper · Feb 2025</div>
+      <h1>Embeddings &<br><em>Vector Stores</em></h1>
+      <p class="hero-desc">
+        Comprehensive study notes covering the full lifecycle of embeddings — from theory to production. Text, images, graphs, vector search algorithms, databases, and real-world RAG applications.
+      </p>
+      <div class="hero-cta">
+        <a href="page-embeddings.html" class="btn-primary">Start with Embeddings →</a>
+        <a href="page-glossary.html" class="btn-outline">Quick Glossary</a>
+      </div>
+    </div>
+    <div class="hero-visual">
+      <div class="stat-card">
+        <div class="stat-num">768</div>
+        <div class="stat-label">BERT dimensions</div>
+        <div class="stat-detail">Original vector space size for BERT text embeddings</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num">55.7</div>
+        <div class="stat-label">2025 BEIR Score</div>
+        <div class="stat-detail">vs. 10.6 for original BERT — 5× improvement</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num">O(logN)</div>
+        <div class="stat-label">ANN complexity</div>
+        <div class="stat-detail">vs. O(N) for brute-force search</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num">RAG</div>
+        <div class="stat-label">Core pattern</div>
+        <div class="stat-detail">Retrieval-Augmented Generation for LLMs</div>
+      </div>
+      <div class="stat-card accent-card">
+        <div class="stat-num" style="font-size:1.1rem; font-family:'Cabinet Grotesk',sans-serif; font-weight:700; color:var(--accent-muted);">Text → Image → Structured → Graph</div>
+        <div class="stat-label">Types of embeddings covered</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<main class="main-content">
+
+  <div class="overview-box">
+    <div class="overview-item">
+      <h3>What are Embeddings?</h3>
+      <p>Low-dimensional numerical vectors that represent real-world data (text, images, audio). Geometric distance in vector space mirrors semantic similarity between objects.</p>
+    </div>
+    <div class="overview-item">
+      <h3>Why Vector Search?</h3>
+      <p>Traditional keyword search can't capture semantic meaning. Vector search enables finding conceptually similar items across billions of entries in milliseconds.</p>
+    </div>
+    <div class="overview-item">
+      <h3>Production Pipeline</h3>
+      <p>Precompute embeddings → Store in vector DB → Embed queries → ANN search → LLM generation. Each step has specialized tools and trade-offs to understand.</p>
+    </div>
+  </div>
+
+  <div class="section-header">
+    <h2 class="section-title">Study Chapters</h2>
+    <span class="section-count">5 chapters</span>
+  </div>
+
+  <div class="chapters-grid">
+
+    <a href="page-embeddings.html" class="chapter-card">
+      <div class="chapter-card-top">
+        <span class="chapter-num">Chapter 01</span>
+        <div class="chapter-icon" style="background:#dcfce7;">🧬</div>
+      </div>
+      <div class="chapter-card-body">
+        <h3 class="chapter-title">Understanding Embeddings</h3>
+        <p class="chapter-desc">What embeddings are, why they matter, how to evaluate them, and the full taxonomy — word, document, image, multimodal, structured data, and graph embeddings.</p>
+        <div class="chapter-tags">
+          <span class="tag tag-green">Word2Vec</span>
+          <span class="tag tag-green">BERT</span>
+          <span class="tag tag-green">GloVe</span>
+          <span class="tag tag-blue">Precision/Recall</span>
+          <span class="tag tag-blue">nDCG</span>
+        </div>
+      </div>
+      <div class="chapter-card-footer">
+        <span>Text · Image · Multimodal · Graph</span>
+        <span class="arrow-link">Read →</span>
+      </div>
+    </a>
+
+    <a href="page-training.html" class="chapter-card">
+      <div class="chapter-card-top">
+        <span class="chapter-num">Chapter 02</span>
+        <div class="chapter-icon" style="background:#dbeafe;">⚙️</div>
+      </div>
+      <div class="chapter-card-body">
+        <h3 class="chapter-title">Training Embeddings</h3>
+        <p class="chapter-desc">Dual encoder architectures, contrastive loss, pre-training vs. fine-tuning, and how modern LLMs like Gecko are used to generate training data synthetically.</p>
+        <div class="chapter-tags">
+          <span class="tag tag-blue">Dual Encoder</span>
+          <span class="tag tag-blue">Contrastive Loss</span>
+          <span class="tag tag-purple">Fine-tuning</span>
+          <span class="tag tag-purple">Gecko</span>
+        </div>
+      </div>
+      <div class="chapter-card-footer">
+        <span>Architectures · Loss functions · Data</span>
+        <span class="arrow-link">Read →</span>
+      </div>
+    </a>
+
+    <a href="page-vector-search.html" class="chapter-card">
+      <div class="chapter-card-top">
+        <span class="chapter-num">Chapter 03</span>
+        <div class="chapter-icon" style="background:#fef3c7;">🔍</div>
+      </div>
+      <div class="chapter-card-body">
+        <h3 class="chapter-title">Vector Search Algorithms</h3>
+        <p class="chapter-desc">From brute-force to approximate nearest neighbor search. Deep dives into LSH, KD-trees, HNSW, and ScaNN with their trade-offs in speed, recall, and memory.</p>
+        <div class="chapter-tags">
+          <span class="tag tag-amber">LSH</span>
+          <span class="tag tag-amber">HNSW</span>
+          <span class="tag tag-amber">ScaNN</span>
+          <span class="tag tag-amber">FAISS</span>
+          <span class="tag tag-red">ANN</span>
+        </div>
+      </div>
+      <div class="chapter-card-footer">
+        <span>LSH · Trees · HNSW · ScaNN</span>
+        <span class="arrow-link">Read →</span>
+      </div>
+    </a>
+
+    <a href="page-vector-db.html" class="chapter-card">
+      <div class="chapter-card-top">
+        <span class="chapter-num">Chapter 04</span>
+        <div class="chapter-icon" style="background:#ede9fe;">🗄️</div>
+      </div>
+      <div class="chapter-card-body">
+        <h3 class="chapter-title">Vector Databases</h3>
+        <p class="chapter-desc">How vector databases work, major options (Vertex AI, AlloyDB, Pinecone, Weaviate, ChromaDB), hybrid search, and operational considerations for production.</p>
+        <div class="chapter-tags">
+          <span class="tag tag-purple">Pinecone</span>
+          <span class="tag tag-purple">Weaviate</span>
+          <span class="tag tag-purple">ChromaDB</span>
+          <span class="tag tag-teal">AlloyDB</span>
+          <span class="tag tag-teal">pgvector</span>
+        </div>
+      </div>
+      <div class="chapter-card-footer">
+        <span>Storage · Indexing · Hybrid Search</span>
+        <span class="arrow-link">Read →</span>
+      </div>
+    </a>
+
+    <a href="page-applications.html" class="chapter-card">
+      <div class="chapter-card-top">
+        <span class="chapter-num">Chapter 05</span>
+        <div class="chapter-icon" style="background:#ccfbf1;">🚀</div>
+      </div>
+      <div class="chapter-card-body">
+        <h3 class="chapter-title">Applications & RAG</h3>
+        <p class="chapter-desc">Real-world use cases including retrieval-augmented generation (RAG), semantic search, recommendation systems, anomaly detection, and classification pipelines.</p>
+        <div class="chapter-tags">
+          <span class="tag tag-teal">RAG</span>
+          <span class="tag tag-teal">Semantic Search</span>
+          <span class="tag tag-green">Recommendations</span>
+          <span class="tag tag-green">Hallucinations</span>
+        </div>
+      </div>
+      <div class="chapter-card-footer">
+        <span>RAG · Search · Recommendations</span>
+        <span class="arrow-link">Read →</span>
+      </div>
+    </a>
+
+    <a href="page-glossary.html" class="chapter-card">
+      <div class="chapter-card-top">
+        <span class="chapter-num">Reference</span>
+        <div class="chapter-icon" style="background:#fee2e2;">📚</div>
+      </div>
+      <div class="chapter-card-body">
+        <h3 class="chapter-title">Glossary & Quick Reference</h3>
+        <p class="chapter-desc">Key terms, formulas, metrics, and code snippets all in one place. Perfect for quick review before an exam or project.</p>
+        <div class="chapter-tags">
+          <span class="tag tag-red">Definitions</span>
+          <span class="tag tag-red">Formulas</span>
+          <span class="tag tag-amber">Code</span>
+          <span class="tag tag-amber">Metrics</span>
+        </div>
+      </div>
+      <div class="chapter-card-footer">
+        <span>Terms · Formulas · Snippets</span>
+        <span class="arrow-link">Read →</span>
+      </div>
+    </a>
+
+  </div>
+
+  <div class="quick-ref">
+    <div class="quick-ref-title">⚡ Key Formulas at a Glance</div>
+    <div class="quick-ref-grid">
+      <div class="quick-ref-item">
+        <code>Precision@k = relevant / k</code>
+        <p>Fraction of retrieved docs that are relevant</p>
+      </div>
+      <div class="quick-ref-item">
+        <code>Recall@k = retrieved_rel / total_rel</code>
+        <p>Fraction of relevant docs that were retrieved</p>
+      </div>
+      <div class="quick-ref-item">
+        <code>DCG = Σ rel_i / log₂(i+1)</code>
+        <p>Discounted Cumulative Gain — penalizes low rank</p>
+      </div>
+      <div class="quick-ref-item">
+        <code>nDCG = DCG / IDCG</code>
+        <p>Normalized DCG, range 0.0–1.0</p>
+      </div>
+      <div class="quick-ref-item">
+        <code>L2 = ||a - b||₂</code>
+        <p>Euclidean distance (good for low-dim)</p>
+      </div>
+      <div class="quick-ref-item">
+        <code>cos(θ) = a·b / (|a||b|)</code>
+        <p>Cosine similarity (angle between vectors)</p>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<footer>
+  <p>Study notes derived from <em>Embeddings & Vector Stores</em> — Google (Nawalgaria, Ren, Sugnet, Feb 2025)</p>
+  <p style="margin-top:6px;"><a href="index.html">Home</a> · <a href="page-embeddings.html">Embeddings</a> · <a href="page-vector-search.html">Vector Search</a> · <a href="page-vector-db.html">Databases</a> · <a href="page-applications.html">Applications</a> · <a href="page-glossary.html">Glossary</a></p>
+</footer>
+
+</body>
+</html>

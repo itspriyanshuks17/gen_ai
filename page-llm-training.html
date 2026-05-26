@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ch.2 Training & Alignment | Foundational LLMs Notes</title>
+<link rel="stylesheet" href="shared.css">
+<style>
+:root {
+  --accent: #f7c86a;
+  --accent2: #ffe1a8;
+  --accent3: #d48c10;
+  --accent4: #f76a9a;
+}
+</style>
+</head>
+<body>
+<nav>
+  <a href="llm.html" class="nav-logo">LLM<span>.</span>Foundations</a>
+  <ul class="nav-links">
+    <li><a href="llm.html" class="nav-back">← Hub</a></li>
+    <li><a href="index.html">ML Notes</a></li>
+    <li><a href="embeddings.html">Vectors</a></li>
+    <li><a href="prompt-engineering.html">Prompts</a></li>
+  </ul>
+</nav>
+
+<div class="page-hero" style="background: linear-gradient(135deg, #070a13, #221a0f);">
+  <div class="page-hero-grid"></div>
+  <div class="page-hero-glow" style="background:radial-gradient(circle, rgba(247,200,106,0.15) 0%, transparent 70%)"></div>
+  <p class="page-eyebrow fade-up">Volume 02</p>
+  <h1 class="page-title fade-up d1">Training &amp; <em>Human Alignment</em></h1>
+  <p class="page-desc fade-up d2">Explore tokenization bounds (BPE, Unigram), pre-training loss functions, and post-training alignment (SFT, RLHF, DPO).</p>
+</div>
+
+<div class="page-layout">
+  <aside class="sidebar">
+    <button class="note-sidebar-toggle" id="sidebarToggle" aria-expanded="false" aria-controls="sidebarNoteList">All Notes <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><polyline points="2 5 7 10 12 5"></polyline></svg></button>
+    <div class="sidebar-note-list" id="sidebarNoteList">
+      <div class="sidebar-grid">
+        <div class="sidebar-column">
+          <div class="sidebar-section">
+            <p class="sidebar-label">This Volume</p>
+            <ul class="sidebar-nav">
+              
+              <li><a href="#training" class="active">2.1 Tokenization &amp; Training</a></li>
+              <li><a href="#alignment">2.2 Instruction Tuning &amp; Alignment</a></li>
+        
+            </ul>
+          </div>
+          <div class="sidebar-section">
+            <p class="sidebar-label">Next</p>
+            <ul class="sidebar-nav">
+              <li><a href="page-llm-models.html" style="color:var(--accent2); font-weight:bold;">Ch.3 Model Evolution →</a></li>
+            </ul>
+          </div>
+        </div>
+        <div class="sidebar-column">
+          <p class="sidebar-label">All Subjects</p>
+          <ul class="sidebar-nav global-nav">
+            <li><a href="chapter1.html" id="nav-Foundations">Foundations</a></li>
+            <li><a href="chapter2.html" id="nav-Features">Features</a></li>
+            <li><a href="chapter4.html" id="nav-Models">Models</a></li>
+            <li><a href="chapter6.html" id="nav-Ensemble">Ensemble</a></li>
+            <li><a href="chapter9.html" id="nav-Tuning">Tuning</a></li>
+            <li><a href="llm.html" id="nav-LLMs" style="color:var(--accent2); font-weight:bold;">LLMs</a></li>
+            <li><a href="embeddings.html" id="nav-Vectors" style="color:var(--accent3); font-weight:bold;">Vectors</a></li>
+            <li><a href="prompt-engineering.html" id="nav-Prompts" style="color:#c77dff; font-weight:bold;">Prompts</a></li>
+            <li><a href="domain-specific-llms.html" id="nav-Vertical" style="color:#ef233c; font-weight:bold;">Vertical</a></li>
+            <li><a href="ai-agents.html" id="nav-Agents" style="color:#00bbf9; font-weight:bold;">Agents</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <main class="main-content">
+    
+    <!-- SECTION 2.1: PRETRAINING & TOKENIZATION -->
+    <div class="content-section">
+      <span class="section-anchor" id="training"></span>
+      <h2 class="section-h">2.1 Pretraining &amp; Tokenization Math <span class="section-badge">Training</span></h2>
+      <h1>Training & <em>Data Preparation</em></h1>
+    </div>
+    <div class="content">
+      
+      
+
+      <div class="callout callout-definition">
+        <div class="callout-label">📌 Key Distinction</div>
+        <div class="callout-title">Training vs. Inference</div>
+        <strong>Training</strong>: modifies model parameters using loss functions and backpropagation.<br>
+        <strong>Inference</strong>: uses fixed parameters to generate predictions — no weight updates occur.
+      </div>
+
+      <div class="section">
+        <div class="section-title">Data Preparation Pipeline</div>
+        <ol class="steps">
+          <li>
+            <strong>Data Cleaning</strong>
+            <span>Filtering, deduplication, and normalization of raw text to remove noise and redundancy.</span>
+          </li>
+          <li>
+            <strong>Tokenization</strong>
+            <span>Convert text to tokens using Byte-Pair Encoding (BPE) or Unigram tokenization. Generates a vocabulary — the model's "language".</span>
+          </li>
+          <li>
+            <strong>Train/Test Split</strong>
+            <span>Data split into training set (for weight updates) and test set (for performance evaluation).</span>
+          </li>
+        </ol>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Tokenization Methods</div>
+        <div class="cards-grid">
+          <div class="card">
+            <span class="card-icon">🔤</span>
+            <div class="card-title">Byte-Pair Encoding (BPE)</div>
+            <p>Iteratively merges the most frequent pair of characters/subwords. Balances vocabulary size with coverage of rare words.</p>
+            <span class="card-tag tag-amber">Most Common</span>
+          </div>
+          <div class="card">
+            <span class="card-icon">📊</span>
+            <div class="card-title">Unigram Tokenization</div>
+            <p>Uses a probabilistic model to find the most likely tokenization. Can produce multiple segmentations with different probabilities.</p>
+            <span class="card-tag tag-sage">Probabilistic</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Training Loop & Loss Function</div>
+        <ul class="note-list">
+          <li>Sample <strong>batches of input sequences</strong> from the training dataset</li>
+          <li>Feed into transformer → generate predicted output sequences</li>
+          <li>Measure prediction error with <strong>cross-entropy loss</strong></li>
+          <li>Calculate gradients of the loss via backpropagation</li>
+          <li>Optimizer (Adam/AdamW) updates parameters based on gradients</li>
+          <li>Repeat until convergence or target token count reached</li>
+        </ul>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Training Tasks by Architecture</div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Architecture</th>
+                <th>Pre-training Task</th>
+                <th>Example</th>
+                <th>Models</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Decoder-Only</td>
+                <td>Language Modeling (next-token prediction)</td>
+                <td>Input: "the cat sat on" → Predict: "the"</td>
+                <td>GPT series, Gemini, LLaMA</td>
+              </tr>
+              <tr>
+                <td>Encoder-Only</td>
+                <td>Masked Language Modeling (MLM)</td>
+                <td>Input: "The [MASK] sat on the mat" → Predict: "cat"</td>
+                <td>BERT</td>
+              </tr>
+              <tr>
+                <td>Encoder-Decoder</td>
+                <td>Sequence-to-Sequence supervised</td>
+                <td>Translation, summarization, Q&amp;A</td>
+                <td>Original Transformer, T5</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Context Length Tradeoffs</div>
+        <div class="callout callout-warning">
+          <div class="callout-label">⚠️ Tradeoff</div>
+          <div class="callout-title">Longer Context = Better Performance but Higher Cost</div>
+          Longer context lengths allow the model to capture more complex relationships — but require more memory and compute, slowing both training and inference. The right context length depends on task requirements and available resources.
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Scaling Laws</div>
+        <p>Performance follows predictable power laws as model size (N), data (D), and compute (C) scale. The <strong>Chinchilla paper (2022)</strong> overturned earlier wisdom:</p>
+        <div class="callout callout-formula">
+          <div class="callout-label">📐 Chinchilla Scaling Law</div>
+          <div class="callout-title">Compute-Optimal Scaling</div>
+          For a 100× increase in compute (C):<br>
+          → Increase model size N by ~10× (not 28.8× as previously thought)<br>
+          → Increase data size D by ~10× (not just 3.5×)<br><br>
+          <span class="comment">// Near-equal scaling of parameters AND data is optimal</span><br>
+          <span class="comment">// Previous Kaplan et al. over-weighted model size vs. data</span>
+        </div>
+      </div>
+    </div>
+    </div>
+
+    <!-- SECTION 2.2: ALIGNMENT & POST-TRAINING -->
+    <div class="content-section">
+      <span class="section-anchor" id="alignment"></span>
+      <h2 class="section-h">2.2 Instruction Tuning &amp; Human Alignment <span class="section-badge">Alignment</span></h2>
+      <h1>Fine-Tuning <em>Methods</em></h1>
+    </div>
+    <div class="content">
+      
+      
+
+      <p>LLMs go through <strong>multiple training stages</strong>. Pre-training (weeks/months, massive compute) gives general language ability. Fine-tuning then specializes the model at far lower cost.</p>
+
+      <div class="section">
+        <div class="section-title">Stage 1: Supervised Fine-Tuning (SFT)</div>
+        <div class="callout callout-definition">
+          <div class="callout-label">📋 Definition</div>
+          <div class="callout-title">Supervised Fine-Tuning (SFT)</div>
+          Training an LLM on a small, high-quality, human-curated dataset of <em>input-output pairs</em>. Each data point = a prompt + its ideal target response. Dataset is much smaller than pre-training data, of higher quality.
+        </div>
+        <p>SFT use cases:</p>
+        <ul class="note-list">
+          <li><strong>Instruction tuning</strong> — follow instructions (summarize, write code, write a poem)</li>
+          <li><strong>Dialogue tuning</strong> — multi-turn conversational data (question-answer format)</li>
+          <li><strong>Safety tuning</strong> — reduce bias, discrimination, toxic outputs via RLHF guardrails</li>
+        </ul>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Stage 2: Reinforcement Learning from Human Feedback (RLHF)</div>
+        <p>RLHF aligns LLM responses with human preferences — making them more helpful, truthful, and safer. Unlike SFT (only positive examples), RLHF can <strong>penalize bad outputs</strong>.</p>
+        <ol class="steps">
+          <li>
+            <strong>Train a Reward Model (RM)</strong>
+            <span>Initialize with a pre-trained (often SFT'd) model. Fine-tune on human preference data: given two responses A and B, humans label which is preferred.</span>
+          </li>
+          <li>
+            <strong>Generate responses with policy LLM</strong>
+            <span>The LLM generates candidate responses to prompts.</span>
+          </li>
+          <li>
+            <strong>Score with Reward Model</strong>
+            <span>RM scores each response on dimensions like helpfulness, truthfulness, safety.</span>
+          </li>
+          <li>
+            <strong>Update policy via RL</strong>
+            <span>A policy gradient algorithm (e.g., PPO) updates the LLM to maximize reward model scores.</span>
+          </li>
+        </ol>
+        <div class="cards-grid">
+          <div class="card">
+            <span class="card-icon">🤖</span>
+            <div class="card-title">RLAIF</div>
+            <p>RL from AI Feedback — uses another AI model to generate preference labels instead of humans. Scales better than pure human annotation.</p>
+            <span class="card-tag tag-sage">Scalable</span>
+          </div>
+          <div class="card">
+            <span class="card-icon">📐</span>
+            <div class="card-title">DPO</div>
+            <p>Direct Preference Optimization — removes the need for a separate reward model. Directly optimizes the policy on preference data.</p>
+            <span class="card-tag tag-amber">Simpler</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Parameter Efficient Fine-Tuning (PEFT)</div>
+        <p>Full fine-tuning of billion-parameter models is expensive. PEFT techniques add/modify a <strong>tiny fraction of parameters</strong> to achieve comparable results at a fraction of the cost.</p>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr><th>Method</th><th>How It Works</th><th>Advantage</th><th>Cost vs. Performance</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Adapter</td>
+                <td>Add small adapter modules to each transformer layer; only train adapters</td>
+                <td>Few new parameters; original weights unchanged</td>
+                <td>Low cost, good performance</td>
+              </tr>
+              <tr>
+                <td>LoRA</td>
+                <td>Approximate weight updates with two small low-rank matrices; freeze original weights</td>
+                <td>Plug-and-play; minimal inference latency overhead</td>
+                <td>Very efficient; near full-finetune quality</td>
+              </tr>
+              <tr>
+                <td>QLoRA</td>
+                <td>LoRA + quantized base weights</td>
+                <td>Even greater memory efficiency</td>
+                <td>Best cost; slightly lower than LoRA</td>
+              </tr>
+              <tr>
+                <td>Soft Prompting</td>
+                <td>Learn continuous "soft prompt" vectors prepended to input; freeze model</td>
+                <td>As few as 5 tokens; enables mixed-task inference</td>
+                <td>Cheapest; slightly lower quality</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="callout callout-key">
+          <div class="callout-label">📊 Performance Ranking</div>
+          <div class="callout-title">Quality vs Cost</div>
+          <strong>Quality:</strong> Full Fine-tuning &gt; LoRA &gt; Soft Prompting<br>
+          <strong>Cost:</strong> Soft Prompting &lt; LoRA &lt; Full Fine-tuning<br>
+          All three are more memory-efficient than traditional full fine-tuning and achieve comparable performance for most tasks.
+        </div>
+      </div>
+    </div>
+    </div>
+
+  </main>
+</div>
+
+<script>
+  // Active link highlighting on scroll
+  const sections = document.querySelectorAll('.section-anchor');
+  const links = document.querySelectorAll('.sidebar-nav a');
+  window.addEventListener('scroll', () => {
+    let cur = '';
+    sections.forEach(s => { if (window.scrollY >= s.offsetTop - 120) cur = s.id; });
+    links.forEach(l => {
+      l.classList.remove('active');
+      if (l.getAttribute('href') === '#' + cur) l.classList.add('active');
+    });
+  });
+
+  // Mobile/Universal dropdown toggler
+  const toggleBtn = document.getElementById('sidebarToggle');
+  const noteList = document.getElementById('sidebarNoteList');
+  if (toggleBtn && noteList) {
+    toggleBtn.addEventListener('click', () => {
+      const expanded = toggleBtn.getAttribute('aria-expanded') === 'true';
+      toggleBtn.setAttribute('aria-expanded', !expanded);
+      noteList.classList.toggle('active');
+    });
+    noteList.querySelectorAll('.sidebar-nav a').forEach(link => {
+      link.addEventListener('click', () => {
+        toggleBtn.setAttribute('aria-expanded', 'false');
+        noteList.classList.remove('active');
+      });
+    });
+  }
+
+  // Dynamic global book active highlighting
+  const currentPath = window.location.pathname;
+  let activeBookId = 'nav-LLMs';
+  if (activeBookId) {
+    const activeBookLink = document.getElementById(activeBookId);
+    if (activeBookLink) activeBookLink.classList.add('active-book');
+  }
+</script>
+</body>
+</html>

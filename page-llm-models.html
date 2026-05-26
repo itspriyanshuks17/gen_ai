@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ch.3 Model Evolution & MoE | Foundational LLMs Notes</title>
+<link rel="stylesheet" href="shared.css">
+<style>
+:root {
+  --accent: #f7c86a;
+  --accent2: #ffe1a8;
+  --accent3: #d48c10;
+  --accent4: #f76a9a;
+}
+</style>
+</head>
+<body>
+<nav>
+  <a href="llm.html" class="nav-logo">LLM<span>.</span>Foundations</a>
+  <ul class="nav-links">
+    <li><a href="llm.html" class="nav-back">← Hub</a></li>
+    <li><a href="index.html">ML Notes</a></li>
+    <li><a href="embeddings.html">Vectors</a></li>
+    <li><a href="prompt-engineering.html">Prompts</a></li>
+  </ul>
+</nav>
+
+<div class="page-hero" style="background: linear-gradient(135deg, #070a13, #221a0f);">
+  <div class="page-hero-grid"></div>
+  <div class="page-hero-glow" style="background:radial-gradient(circle, rgba(247,200,106,0.15) 0%, transparent 70%)"></div>
+  <p class="page-eyebrow fade-up">Volume 02</p>
+  <h1 class="page-title fade-up d1">Model Evolution &amp; <em>Architectures</em></h1>
+  <p class="page-desc fade-up d2">From the GPT-1 and BERT era through the scaling wars (GPT-3, PaLM, Chinchilla) to state-of-the-art open models (LLaMA, Gemini, Gemma) and Mixture-of-Experts (MoE).</p>
+</div>
+
+<div class="page-layout">
+  <aside class="sidebar">
+    <button class="note-sidebar-toggle" id="sidebarToggle" aria-expanded="false" aria-controls="sidebarNoteList">All Notes <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><polyline points="2 5 7 10 12 5"></polyline></svg></button>
+    <div class="sidebar-note-list" id="sidebarNoteList">
+      <div class="sidebar-grid">
+        <div class="sidebar-column">
+          <div class="sidebar-section">
+            <p class="sidebar-label">This Volume</p>
+            <ul class="sidebar-nav">
+              
+              <li><a href="#early" class="active">3.1 GPT &amp; BERT Foundations</a></li>
+              <li><a href="#scaling">3.2 The Scaling Era</a></li>
+              <li><a href="#modern">3.3 SOTA &amp; MoE Architectures</a></li>
+        
+            </ul>
+          </div>
+          <div class="sidebar-section">
+            <p class="sidebar-label">Next</p>
+            <ul class="sidebar-nav">
+              <li><a href="page-llm-inference.html" style="color:var(--accent2); font-weight:bold;">Ch.4 Inference Acceleration →</a></li>
+            </ul>
+          </div>
+        </div>
+        <div class="sidebar-column">
+          <p class="sidebar-label">All Subjects</p>
+          <ul class="sidebar-nav global-nav">
+            <li><a href="chapter1.html" id="nav-Foundations">Foundations</a></li>
+            <li><a href="chapter2.html" id="nav-Features">Features</a></li>
+            <li><a href="chapter4.html" id="nav-Models">Models</a></li>
+            <li><a href="chapter6.html" id="nav-Ensemble">Ensemble</a></li>
+            <li><a href="chapter9.html" id="nav-Tuning">Tuning</a></li>
+            <li><a href="llm.html" id="nav-LLMs" style="color:var(--accent2); font-weight:bold;">LLMs</a></li>
+            <li><a href="embeddings.html" id="nav-Vectors" style="color:var(--accent3); font-weight:bold;">Vectors</a></li>
+            <li><a href="prompt-engineering.html" id="nav-Prompts" style="color:#c77dff; font-weight:bold;">Prompts</a></li>
+            <li><a href="domain-specific-llms.html" id="nav-Vertical" style="color:#ef233c; font-weight:bold;">Vertical</a></li>
+            <li><a href="ai-agents.html" id="nav-Agents" style="color:#00bbf9; font-weight:bold;">Agents</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <main class="main-content">
+    
+    <!-- SECTION 3.1: EARLY ERA -->
+    <div class="content-section">
+      <span class="section-anchor" id="early"></span>
+      <h2 class="section-h">3.1 GPT &amp; BERT Foundations <span class="section-badge">Early Era</span></h2>
+      <h1>The GPT & BERT <em>Era (2018–2020)</em></h1>
+    </div>
+    <div class="content">
+      
+      
+
+      <div class="timeline">
+        <div class="timeline-item">
+          <div class="timeline-date">2018 · OpenAI</div>
+          <div class="timeline-title">GPT-1 — Decoder-Only Pre-training</div>
+          <div class="timeline-body">
+            <strong>Key Innovations:</strong><br>
+            1. <em>Unsupervised pre-training + supervised fine-tuning</em> — showed this beats supervised-only training. Trained on BooksCorpus (5GB, 7000+ books).<br>
+            2. <em>Task-aware input transformations</em> — converts structured tasks (entailment, QA) into formats the model can parse without task-specific architectures.<br><br>
+            <strong>Limitations:</strong> Repetitive text on out-of-distribution prompts; poor multi-turn reasoning; limited long-passage cohesion.
+          </div>
+        </div>
+
+        <div class="timeline-item">
+          <div class="timeline-date">2018 · Google</div>
+          <div class="timeline-title">BERT — Bidirectional Encoder Representations</div>
+          <div class="timeline-body">
+            <strong>Architecture:</strong> Encoder-only. Cannot generate text — focused purely on language <em>understanding</em>.<br><br>
+            <strong>Training Tasks:</strong><br>
+            1. <em>Masked Language Modeling (MLM)</em> — randomly mask tokens, predict originals using bidirectional context<br>
+            2. <em>Next Sentence Prediction (NSP)</em> — predict if sentence B follows sentence A<br><br>
+            <strong>Strength:</strong> Captures context from <em>both</em> left and right simultaneously → excellent at NLU tasks (QA, sentiment, NLI).
+          </div>
+        </div>
+
+        <div class="timeline-item">
+          <div class="timeline-date">2019 · OpenAI</div>
+          <div class="timeline-title">GPT-2 — Scaled Up to 1.5B Parameters</div>
+          <div class="timeline-body">
+            <strong>Scale-up:</strong> 10× more parameters (1.5B vs 117M), 10× more data (WebText: 40GB, 45M Reddit pages with ≥3 karma).<br><br>
+            <strong>Zero-Shot Learning:</strong> GPT-2's landmark achievement — performing tasks like translation, summarization, and reading comprehension without any explicit supervision or fine-tuning.<br><br>
+            <strong>Finding:</strong> Zero-shot performance increased log-linearly with model capacity.
+          </div>
+        </div>
+
+        <div class="timeline-item">
+          <div class="timeline-date">2020 · OpenAI</div>
+          <div class="timeline-title">GPT-3 — 175B Parameters & Few-Shot Learning</div>
+          <div class="timeline-body">
+            <strong>Scale:</strong> 175B parameters (vs. GPT-2's 1.5B) — a 116× jump in size.<br><br>
+            <strong>Few-Shot Capability:</strong> Can understand and execute tasks from just a few examples in the prompt — no task-specific fine-tuning needed.<br><br>
+            <strong>Release:</strong> Made available as a commercial API (unlike GPT-2, which was initially withheld).<br><br>
+            <strong>InstructGPT (GPT-3 variant):</strong> Fine-tuned with SFT + RLHF. A 1.3B InstructGPT outperformed 175B raw GPT-3 on human evaluations — showing alignment matters more than raw scale.
+          </div>
+        </div>
+      </div>
+
+      <hr class="divider">
+
+      <div class="section">
+        <div class="section-title">GPT-3.5 & GPT-4 Highlights</div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr><th>Model</th><th>Key Feature</th><th>Context Window</th><th>Note</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>GPT-3.5 Turbo</td>
+                <td>Code understanding + generation; dialogue-optimized</td>
+                <td>16,385 tokens input / 4,096 output</td>
+                <td>Optimized for chat</td>
+              </tr>
+              <tr>
+                <td>GPT-4</td>
+                <td>Multimodal (text + image input); advanced reasoning</td>
+                <td>128,000 tokens input / 4,096 output</td>
+                <td>Matches/exceeds human on many tasks</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    </div>
+
+    <!-- SECTION 3.2: SCALING ERA -->
+    <div class="content-section">
+      <span class="section-anchor" id="scaling"></span>
+      <h2 class="section-h">3.2 The Scaling Era (2021–22) <span class="section-badge">Scale</span></h2>
+      <h1>The Scaling Era <em>(2021–2022)</em></h1>
+    </div>
+    <div class="content">
+      
+      
+
+      <div class="timeline">
+        <div class="timeline-item">
+          <div class="timeline-date">2021 · Google</div>
+          <div class="timeline-title">LaMDA — Language Model for Dialogue Applications</div>
+          <div class="timeline-body">
+            Designed for <strong>open-ended, natural conversations</strong> — not just isolated responses. Trained on dialogue-focused data to encourage conversational flow. Unlike GPT's multi-task generalism, LaMDA prioritized conversational depth and breadth.
+          </div>
+        </div>
+
+        <div class="timeline-item">
+          <div class="timeline-date">2021 · DeepMind</div>
+          <div class="timeline-title">Gopher — 280B Parameters with Data Quality Focus</div>
+          <div class="timeline-body">
+            <strong>Dataset:</strong> MassiveText — 10TB, 2.45B documents (web, books, news, GitHub). Trained on only 300B tokens (12% of dataset) with aggressive deduplication and filtering.<br><br>
+            <strong>Optimization:</strong> Warmup LR → cosine decay; gradient clipping to max norm 1; as model size increased, LR decreased and batch size increased.<br><br>
+            <strong>Result:</strong> Outperformed prior SotA on 81% of tasks. Strong on knowledge-intensive tasks, weaker on abstract reasoning (e.g., algebra).
+          </div>
+        </div>
+
+        <div class="timeline-item">
+          <div class="timeline-date">2021 · Google</div>
+          <div class="timeline-title">GLaM — First Sparse Mixture-of-Experts LLM</div>
+          <div class="timeline-body">
+            <strong>Scale:</strong> 1.2 trillion parameters — but only activates a fraction per token (sparse activation).<br><br>
+            <strong>Efficiency:</strong> Used only ⅓ the energy of GPT-3's training and half the FLOPs for inference — while <em>outperforming</em> GPT-3 overall. First major demonstration of MoE's practical value at LLM scale.
+          </div>
+        </div>
+
+        <div class="timeline-item">
+          <div class="timeline-date">2022 · DeepMind</div>
+          <div class="timeline-title">Chinchilla — Rewriting Scaling Laws</div>
+          <div class="timeline-body">
+            <strong>The Finding:</strong> Prior LLMs were massively undertrained relative to their size. Optimal scaling requires <em>equal</em> increases in data and model size with compute budget.<br><br>
+            <strong>Result:</strong> Chinchilla (70B, same compute as Gopher 280B) <strong>uniformly outperformed</strong> Gopher, GPT-3, and Megatron-Turing NLG (530B) while being 4× smaller — cheaper to run.<br><br>
+            <strong>Impact:</strong> Shifted the field toward scaling data quality/quantity alongside parameters.
+          </div>
+        </div>
+
+        <div class="timeline-item">
+          <div class="timeline-date">2022–2023 · Google</div>
+          <div class="timeline-title">PaLM & PaLM 2 — Pathways Architecture</div>
+          <div class="timeline-body">
+            <strong>PaLM:</strong> 540B parameters. Trained via the Pathways system across two TPU v4 Pods. State-of-the-art on GLUE and SuperGLUE benchmarks. Strong on common sense, arithmetic, joke explanation, code, translation.<br><br>
+            <strong>PaLM 2 (May 2023):</strong> Architectural and training improvements made it more capable than PaLM with <em>fewer</em> total parameters. Foundation for Google Cloud Generative AI commercial models.
+          </div>
+        </div>
+      </div>
+
+      <div class="callout callout-key">
+        <div class="callout-label">📊 Hyperparameter Comparison (Selected Models)</div>
+        <div class="callout-title">Key Specs Table</div>
+        <div style="overflow-x:auto; margin-top:12px;">
+          <div class="table-wrap" style="margin:0;">
+            <table>
+              <thead><tr><th>Model</th><th>Year</th><th>Params</th><th>Pre-train Tokens</th><th>Context</th></tr></thead>
+              <tbody>
+                <tr><td>GPT-1</td><td>2018</td><td>117M</td><td>~1.25B</td><td>512</td></tr>
+                <tr><td>GPT-2</td><td>2019</td><td>1.5B</td><td>~10B</td><td>1024</td></tr>
+                <tr><td>GPT-3</td><td>2020</td><td>175B</td><td>~300B</td><td>2048</td></tr>
+                <tr><td>LaMDA</td><td>2021</td><td>137B</td><td>~168B</td><td>N/A</td></tr>
+                <tr><td>Gopher</td><td>2021</td><td>280B</td><td>~300B</td><td>2048</td></tr>
+                <tr><td>Chinchilla</td><td>2022</td><td>70B</td><td>~1.4T</td><td>2048</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+    </div>
+
+    <!-- SECTION 3.3: SOTA MODELS -->
+    <div class="content-section">
+      <span class="section-anchor" id="modern"></span>
+      <h2 class="section-h">3.3 SOTA Google &amp; Open Models (2023–25) <span class="section-badge">Modern</span></h2>
+      <h1>Modern Models <em>(2023–2025)</em></h1>
+    </div>
+    <div class="content">
+      
+      
+
+      <div class="section">
+        <div class="section-title">Gemini Family (Google DeepMind)</div>
+        <p>Gemini is a <strong>natively multimodal</strong> family — processes interleaved text, image, audio, and video as input. Built on transformer decoders with MoE architecture and optimized for Google TPUs.</p>
+        <div class="cards-grid">
+          <div class="card">
+            <span class="card-icon">🏆</span>
+            <div class="card-title">Gemini Ultra</div>
+            <p>Highest capability — SotA on 30/32 benchmark tasks. Designed for highly complex reasoning and tasks.</p>
+            <span class="card-tag tag-amber">Most Capable</span>
+          </div>
+          <div class="card">
+            <span class="card-icon">⚡</span>
+            <div class="card-title">Gemini Pro</div>
+            <p>Balanced capability + scale. Up to 2M token context on Vertex AI. Multi-query attention for efficiency.</p>
+            <span class="card-tag tag-sage">Production</span>
+          </div>
+          <div class="card">
+            <span class="card-icon">📱</span>
+            <div class="card-title">Gemini Nano</div>
+            <p>On-device deployment. Uses distillation for state-of-the-art small-model performance.</p>
+            <span class="card-tag tag-rust">On-Device</span>
+          </div>
+          <div class="card">
+            <span class="card-icon">🔥</span>
+            <div class="card-title">Gemini Flash</div>
+            <p>Fastest model in API. Optimized for high-volume, high-frequency tasks. 1M token context, cost-efficient.</p>
+            <span class="card-tag tag-amber">Speed</span>
+          </div>
+        </div>
+        <div class="callout callout-key">
+          <div class="callout-label">📌 Gemini 1.5 Pro Highlights</div>
+          <div class="callout-title">Landmark Long-Context Performance</div>
+          100% recall on documents up to 530K tokens · 99.7% recall up to 1M tokens · 99.2% accuracy up to 10M tokens · Followed ~90% of complex multi-step instructions in rigorous testing.
+        </div>
+        <div class="callout callout-definition">
+          <div class="callout-label">🆕 Gemini 2.0</div>
+          <div class="callout-title">Next Generation (Late 2024)</div>
+          <strong>Flash:</strong> Exceeds 1.5 Pro performance while maintaining speed — improved multimodal understanding, spatial reasoning, code gen, video analysis.<br>
+          <strong>Flash Thinking Experimental:</strong> Fast reasoning model with visible "thought processes". 1M token input, 64K output. Best for complex science/math where latency isn't critical.
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Gemma — Open Lightweight Models</div>
+        <p>Built from same research as Gemini. Vocabulary of 256K words, trained on 6T tokens. The 2B version runs efficiently on a single GPU.</p>
+        <ul class="note-list">
+          <li><strong>Gemma 2 (27B)</strong>: Performance comparable to Llama 3 70B — at much smaller size</li>
+          <li><strong>Gemma 3</strong>: Multimodal (text + image). 128K context. 140+ languages. Sizes: 1B, 4B, 12B, 27B</li>
+        </ul>
+      </div>
+
+      <div class="section">
+        <div class="section-title">LLaMA Family (Meta)</div>
+        <div class="timeline">
+          <div class="timeline-item">
+            <div class="timeline-date">Llama 1</div>
+            <div class="timeline-title">7B to 65B — Strong Open-Source Baseline</div>
+            <div class="timeline-body">Notable for strong performance vs. similarly-sized open-source models. Research license only.</div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-date">Llama 2</div>
+            <div class="timeline-title">7B, 13B, 70B — Commercial Use Licensed</div>
+            <div class="timeline-body">4096-token context. Fine-tuned Llama 2-Chat for dialogue. 40% larger training dataset, doubled context, grouped-query attention. First major Meta open model for commercial use.</div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-date">Llama 3 / 3.2</div>
+            <div class="timeline-title">Enhanced Reasoning, Safety & Multilingual</div>
+            <div class="timeline-body">Improved reasoning, coding, general knowledge. Llama 3.2 adds vision LLMs and multilingual text-only models. Quantized versions for on-device. 128K token vocabulary with grouped-query attention.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Mixtral (Mistral AI) — Sparse MoE</div>
+        <p>Mixtral 8x7B uses <strong>Sparse Mixture of Experts</strong>: 47B total parameters but only <mark>13B active parameters per token</mark> → faster inference, higher throughput.</p>
+        <ul class="note-list">
+          <li>32K token context length</li>
+          <li>Excels at mathematics, code generation, multilingual tasks</li>
+          <li>Instruction-tuned variant surpasses several closed-source models on human eval</li>
+          <li>Available under Apache 2.0 license</li>
+        </ul>
+      </div>
+
+      <div class="section">
+        <div class="section-title">OpenAI o1 — Reasoning via Chain-of-Thought RL</div>
+        <div class="callout callout-definition">
+          <div class="callout-label">💡 Novel Approach</div>
+          <div class="callout-title">Internal Chain-of-Thought + RL</div>
+          The o1 series uses reinforcement learning to develop an internal "chain-of-thought" process — deliberating extensively before generating a final response. Results: 89th percentile on Codeforces, top 500 on AIME, surpasses PhD-level accuracy on GPQA (physics/bio/chem).
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">DeepSeek — RL Without Labeled Data (GRPO)</div>
+        <p>DeepSeek achieved o1-comparable reasoning performance using a novel RL approach that <strong>eliminates the critic model</strong>:</p>
+        <ul class="note-list">
+          <li><strong>GRPO (Group Relative Policy Optimization)</strong>: Uses predefined rules (coherence, completeness, fluency) to score outputs; model compares against group average — "self-play" learning</li>
+          <li><strong>DeepSeek-R1</strong>: Multi-stage training — cold-start SFT → pure RL → rejection sampling → combined SFT+RL → final polish</li>
+          <li>Matches or exceeds o1 on many benchmarks. Despite open weights, effectively closed-source (no training data transparency)</li>
+        </ul>
+      </div>
+    </div>
+    </div>
+
+  </main>
+</div>
+
+<script>
+  // Active link highlighting on scroll
+  const sections = document.querySelectorAll('.section-anchor');
+  const links = document.querySelectorAll('.sidebar-nav a');
+  window.addEventListener('scroll', () => {
+    let cur = '';
+    sections.forEach(s => { if (window.scrollY >= s.offsetTop - 120) cur = s.id; });
+    links.forEach(l => {
+      l.classList.remove('active');
+      if (l.getAttribute('href') === '#' + cur) l.classList.add('active');
+    });
+  });
+
+  // Mobile/Universal dropdown toggler
+  const toggleBtn = document.getElementById('sidebarToggle');
+  const noteList = document.getElementById('sidebarNoteList');
+  if (toggleBtn && noteList) {
+    toggleBtn.addEventListener('click', () => {
+      const expanded = toggleBtn.getAttribute('aria-expanded') === 'true';
+      toggleBtn.setAttribute('aria-expanded', !expanded);
+      noteList.classList.toggle('active');
+    });
+    noteList.querySelectorAll('.sidebar-nav a').forEach(link => {
+      link.addEventListener('click', () => {
+        toggleBtn.setAttribute('aria-expanded', 'false');
+        noteList.classList.remove('active');
+      });
+    });
+  }
+
+  // Dynamic global book active highlighting
+  const currentPath = window.location.pathname;
+  let activeBookId = 'nav-LLMs';
+  if (activeBookId) {
+    const activeBookLink = document.getElementById(activeBookId);
+    if (activeBookLink) activeBookLink.classList.add('active-book');
+  }
+</script>
+</body>
+</html>

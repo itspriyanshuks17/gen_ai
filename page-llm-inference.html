@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ch.4 Inference & Applications | Foundational LLMs Notes</title>
+<link rel="stylesheet" href="shared.css">
+<style>
+:root {
+  --accent: #f7c86a;
+  --accent2: #ffe1a8;
+  --accent3: #d48c10;
+  --accent4: #f76a9a;
+}
+</style>
+</head>
+<body>
+<nav>
+  <a href="llm.html" class="nav-logo">LLM<span>.</span>Foundations</a>
+  <ul class="nav-links">
+    <li><a href="llm.html" class="nav-back">← Hub</a></li>
+    <li><a href="index.html">ML Notes</a></li>
+    <li><a href="embeddings.html">Vectors</a></li>
+    <li><a href="prompt-engineering.html">Prompts</a></li>
+  </ul>
+</nav>
+
+<div class="page-hero" style="background: linear-gradient(135deg, #070a13, #221a0f);">
+  <div class="page-hero-grid"></div>
+  <div class="page-hero-glow" style="background:radial-gradient(circle, rgba(247,200,106,0.15) 0%, transparent 70%)"></div>
+  <p class="page-eyebrow fade-up">Volume 02</p>
+  <h1 class="page-title fade-up d1">Inference Acceleration &amp; <em>Applications</em></h1>
+  <p class="page-desc fade-up d2">Learn key execution speedups like KV Caching, FP8/INT8 Quantization, Speculative Decoding, and production Agent framework configurations.</p>
+</div>
+
+<div class="page-layout">
+  <aside class="sidebar">
+    <button class="note-sidebar-toggle" id="sidebarToggle" aria-expanded="false" aria-controls="sidebarNoteList">All Notes <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><polyline points="2 5 7 10 12 5"></polyline></svg></button>
+    <div class="sidebar-note-list" id="sidebarNoteList">
+      <div class="sidebar-grid">
+        <div class="sidebar-column">
+          <div class="sidebar-section">
+            <p class="sidebar-label">This Volume</p>
+            <ul class="sidebar-nav">
+              
+              <li><a href="#sampling" class="active">4.1 Prompt Controls &amp; Sampling</a></li>
+              <li><a href="#inference">4.2 KV Cache &amp; Quantization</a></li>
+              <li><a href="#rag">4.3 RAG &amp; Multi-Agent Systems</a></li>
+        
+            </ul>
+          </div>
+          <div class="sidebar-section">
+            <p class="sidebar-label">Next</p>
+            <ul class="sidebar-nav">
+              <li><a href="embeddings.html" style="color:var(--accent2); font-weight:bold;">Vectors Handbook →</a></li>
+            </ul>
+          </div>
+        </div>
+        <div class="sidebar-column">
+          <p class="sidebar-label">All Subjects</p>
+          <ul class="sidebar-nav global-nav">
+            <li><a href="chapter1.html" id="nav-Foundations">Foundations</a></li>
+            <li><a href="chapter2.html" id="nav-Features">Features</a></li>
+            <li><a href="chapter4.html" id="nav-Models">Models</a></li>
+            <li><a href="chapter6.html" id="nav-Ensemble">Ensemble</a></li>
+            <li><a href="chapter9.html" id="nav-Tuning">Tuning</a></li>
+            <li><a href="llm.html" id="nav-LLMs" style="color:var(--accent2); font-weight:bold;">LLMs</a></li>
+            <li><a href="embeddings.html" id="nav-Vectors" style="color:var(--accent3); font-weight:bold;">Vectors</a></li>
+            <li><a href="prompt-engineering.html" id="nav-Prompts" style="color:#c77dff; font-weight:bold;">Prompts</a></li>
+            <li><a href="domain-specific-llms.html" id="nav-Vertical" style="color:#ef233c; font-weight:bold;">Vertical</a></li>
+            <li><a href="ai-agents.html" id="nav-Agents" style="color:#00bbf9; font-weight:bold;">Agents</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <main class="main-content">
+    
+    <!-- SECTION 4.1: SAMPLING & STOCHASTICS -->
+    <div class="content-section">
+      <span class="section-anchor" id="sampling"></span>
+      <h2 class="section-h">4.1 Prompt Engineering &amp; Sampling Bounds <span class="section-badge">Controls</span></h2>
+      <h1>Prompting & <em>Sampling Techniques</em></h1>
+    </div>
+    <div class="content">
+      
+      
+
+      <div class="section">
+        <div class="section-title">Prompt Engineering Techniques</div>
+        <p>Prompt engineering is the art of composing inputs to guide LLMs toward desired outputs — without modifying model weights. It's the most accessible way to improve LLM behavior.</p>
+        <div class="cards-grid">
+          <div class="card">
+            <span class="card-icon">🎯</span>
+            <div class="card-title">Zero-Shot Prompting</div>
+            <p>Provide task description only — no examples. The LLM relies entirely on pre-trained knowledge. Fast, but less reliable for complex tasks.</p>
+            <span class="card-tag tag-rust">No examples</span>
+          </div>
+          <div class="card">
+            <span class="card-icon">📝</span>
+            <div class="card-title">Few-Shot Prompting</div>
+            <p>Provide 3–5 carefully chosen input-output examples before the actual query. Guides the model's response format and style significantly.</p>
+            <span class="card-tag tag-amber">3–5 examples</span>
+          </div>
+          <div class="card">
+            <span class="card-icon">🔗</span>
+            <div class="card-title">Chain-of-Thought (CoT)</div>
+            <p>Prompt includes step-by-step reasoning examples. Model generates its own reasoning chain before answering. Dramatically improves complex reasoning.</p>
+            <span class="card-tag tag-sage">Reasoning</span>
+          </div>
+        </div>
+        <div class="callout callout-definition">
+          <div class="callout-label">🧠 Advanced CoT Variants</div>
+          <div class="callout-title">Tree-of-Thoughts & Least-to-Most</div>
+          <strong>Tree-of-Thoughts:</strong> Explores multiple reasoning paths using a search algorithm. Useful for game trees and combinatorial problems.<br><br>
+          <strong>Least-to-Most Prompting:</strong> Guides the model to solve subproblems of increasing complexity. Output of one subproblem feeds into the next.
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Sampling Techniques</div>
+        <p>Sampling determines <em>how</em> the model selects the next token. Different strategies trade off quality, creativity, and diversity.</p>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr><th>Technique</th><th>How It Works</th><th>Best For</th><th>Tradeoff</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Greedy Search</td>
+                <td>Always selects highest-probability token</td>
+                <td>Factual, deterministic output</td>
+                <td>Repetitive, predictable</td>
+              </tr>
+              <tr>
+                <td>Random Sampling</td>
+                <td>Sample proportionally to probability distribution</td>
+                <td>Creative, diverse text</td>
+                <td>Can produce nonsense</td>
+              </tr>
+              <tr>
+                <td>Temperature</td>
+                <td>Scale probability distribution by temperature T</td>
+                <td>Tuning creativity level</td>
+                <td>High T=diverse; Low T=predictable</td>
+              </tr>
+              <tr>
+                <td>Top-K</td>
+                <td>Sample from top K most probable tokens</td>
+                <td>Controlled randomness</td>
+                <td>K controls diversity</td>
+              </tr>
+              <tr>
+                <td>Top-P (Nucleus)</td>
+                <td>Sample from tokens summing to probability P</td>
+                <td>Adaptive diversity</td>
+                <td>Adapts to model confidence</td>
+              </tr>
+              <tr>
+                <td>Best-of-N</td>
+                <td>Generate N responses; select best by reward model</td>
+                <td>Short snippets, code, logic</td>
+                <td>N× compute cost</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="callout callout-key">
+          <div class="callout-label">💡 Practical Guidance</div>
+          <div class="callout-title">Temperature Settings</div>
+          <strong>Temperature → 0:</strong> Near-deterministic. Best for factual Q&amp;A, code generation, extraction.<br>
+          <strong>Temperature → 1:</strong> Standard sampling. Good balance for conversational responses.<br>
+          <strong>Temperature &gt; 1:</strong> High creativity/diversity. Good for brainstorming, creative writing.
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Task-Based Evaluation Framework</div>
+        <p>A tailored evaluation framework is essential when moving LLM applications from prototype to production:</p>
+        <ul class="note-list">
+          <li><strong>Evaluation Data</strong> — Custom dataset mirroring production traffic; enriched with real interactions and synthetic edge cases</li>
+          <li><strong>Development Context</strong> — Evaluate the entire system including RAG, agentic workflows, not just the LLM output</li>
+          <li><strong>Definition of "Good"</strong> — Move beyond single-answer similarity; use rubrics capturing business outcomes and desired output properties</li>
+        </ul>
+        <div class="cards-grid">
+          <div class="card">
+            <span class="card-icon">📊</span>
+            <div class="card-title">Traditional Metrics</div>
+            <p>Quantitative metrics (BLEU, ROUGE, accuracy) comparing to reference answers. Objective but penalizes valid unexpected solutions.</p>
+          </div>
+          <div class="card">
+            <span class="card-icon">👤</span>
+            <div class="card-title">Human Evaluation</div>
+            <p>Gold standard — nuanced assessment of complex outputs. Expensive and slow to scale.</p>
+          </div>
+          <div class="card">
+            <span class="card-icon">🤖</span>
+            <div class="card-title">LLM Autoraters</div>
+            <p>Use an LLM to judge outputs. Scalable, can work with or without references. Requires calibration via meta-evaluation against human judgments.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    </div>
+
+    <!-- SECTION 4.2: INFERENCE COMPRESSION -->
+    <div class="content-section">
+      <span class="section-anchor" id="inference"></span>
+      <h2 class="section-h">4.2 KV Cache &amp; Model Optimization <span class="section-badge">Systems</span></h2>
+      <h1>Accelerating <em>Inference</em></h1>
+    </div>
+    <div class="content">
+      
+      
+
+      <p>As LLMs scale, inference cost and latency become critical. Two primary resources: <strong>memory</strong> and <strong>computation</strong>. Optimization methods fall into two categories:</p>
+
+      <div class="cards-grid">
+        <div class="card">
+          <span class="card-icon">📐</span>
+          <div class="card-title">Output-Approximating</div>
+          <p>May slightly change model outputs in exchange for significant speed/cost gains. Includes quantization and distillation.</p>
+          <span class="card-tag tag-amber">Quality Tradeoff</span>
+        </div>
+        <div class="card">
+          <span class="card-icon">🎯</span>
+          <div class="card-title">Output-Preserving</div>
+          <p>Guarantee identical model outputs — pure engineering wins. Include Flash Attention, prefix caching, speculative decoding.</p>
+          <span class="card-tag tag-sage">Quality Neutral</span>
+        </div>
+      </div>
+
+      <hr class="divider">
+
+      <div class="section">
+        <div class="section-title">Output-Approximating: Quantization</div>
+        <p>Reduce numerical precision of model weights and activations from 32-bit floats to 8-bit or 4-bit integers.</p>
+        <ul class="note-list">
+          <li>Reduces <strong>memory footprint</strong> — fit larger models on same hardware</li>
+          <li>Reduces <strong>communication overhead</strong> within/across chips in distributed inference</li>
+          <li>Enables <strong>faster arithmetic</strong> — TPUs/GPUs natively support lower-precision operations</li>
+          <li><strong>QAT (Quantization-Aware Training)</strong> — incorporate quantization during training → model recovers quality losses</li>
+        </ul>
+        <div class="callout callout-key">
+          <div class="callout-label">📊 Benchmark</div>
+          <div class="callout-title">Quantization Quality Impact</div>
+          Benoit Jacob et al. reported a <strong>2× speed-up</strong> for only a <strong>2% accuracy drop</strong> on FaceDetection (MobileNet SSD). In many use cases, quality impact is negligible.
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Output-Approximating: Distillation</div>
+        <p>Train a smaller <strong>student model</strong> to mimic a larger <strong>teacher model</strong>. Smaller models + same data = worse than larger models, but distillation bridges the gap.</p>
+        <ul class="note-list">
+          <li><strong>Data Distillation</strong> — use teacher to generate synthetic training data for student; more data → better student performance</li>
+          <li><strong>Knowledge Distillation</strong> — align student's output token distributions to teacher's (more sample-efficient)</li>
+          <li><strong>On-Policy Distillation</strong> — teacher provides feedback on student's generated sequences via RL setup</li>
+        </ul>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Output-Preserving: Flash Attention</div>
+        <p>Self-attention is O(n²) in sequence length — a major bottleneck. Flash Attention (Tri Dao et al.) optimizes this by being <strong>IO-aware</strong>:</p>
+        <ul class="note-list">
+          <li>Minimizes data movement between slow HBM (high bandwidth memory) and fast SRAM/VMEM</li>
+          <li>Fuses multiple attention operations to maximize fast memory utilization</li>
+          <li>Mathematically exact — zero quality loss</li>
+          <li>Achieves <strong>2–4× latency improvement</strong> in attention computation</li>
+        </ul>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Output-Preserving: Prefix Caching (KV Cache)</div>
+        <p>The costliest part of LLM inference is the <strong>prefill phase</strong> — computing attention key/value scores for all input tokens. These are cached as the <em>KV Cache</em>.</p>
+        <div class="callout callout-definition">
+          <div class="callout-label">💾 How It Works</div>
+          <div class="callout-title">Prefix Caching Explained</div>
+          The KV cache from a previous inference request is stored (memory or disk) and reused if the same prefix appears in a new request — skipping the expensive recompute.<br><br>
+          <strong>Best use cases:</strong> Multi-turn chatbots (conversation history unchanged), large document/code uploads (file unchanged between queries).
+        </div>
+        <div class="callout callout-warning">
+          <div class="callout-label">⚠️ Gotcha</div>
+          <div class="callout-title">Keep Prefixes Stable!</div>
+          Changing the prefix (e.g., putting a fresh timestamp at the very beginning of each request) invalidates the cache for ALL tokens that follow — eliminating all caching benefits.
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Output-Preserving: Speculative Decoding</div>
+        <p>The <strong>decode phase</strong> (token-by-token generation) is memory-bound and inherently serial — each token must wait for the previous. Speculative decoding breaks this bottleneck:</p>
+        <ol class="steps">
+          <li>
+            <strong>Drafter runs ahead</strong>
+            <span>A small, fast "drafter" model generates N candidate tokens (e.g., 4 tokens) very quickly.</span>
+          </li>
+          <li>
+            <strong>Main model verifies in parallel</strong>
+            <span>The large main model verifies all N hypotheses simultaneously — using spare compute capacity.</span>
+          </li>
+          <li>
+            <strong>Accept maximum valid prefix</strong>
+            <span>The longest accepted hypothesis is used. If drafter was wrong at token 3, tokens 1-2 are accepted, token 3 is corrected.</span>
+          </li>
+        </ol>
+        <div class="callout callout-formula">
+          <div class="callout-label">⚡ Latency Example</div>
+          <div class="callout-title">Speed Calculation</div>
+          Without speculative decoding: 3 tokens × 10ms = 30ms<br>
+          With speculative decoding: (3 × 1ms drafter) + 10ms main = 13ms<br>
+          → <strong>2.3× speedup</strong> with zero quality loss<br><br>
+          <span class="comment">// Main model rejects any token it wouldn't have produced itself</span><br>
+          <span class="comment">// Drafter quality matters — better alignment = more accepted tokens</span>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Batching & Parallelization</div>
+        <ul class="note-list">
+          <li><strong>Batching</strong> — run multiple requests simultaneously on the same hardware (best on decode phase, which is not compute-bound)</li>
+          <li><strong>Sequence Parallelism</strong> — split input sequence across devices</li>
+          <li><strong>Pipeline Parallelism</strong> — split transformer layers across devices</li>
+          <li><strong>Tensor Parallelism</strong> — split individual layer computations across devices</li>
+          <li>Key challenge: inter-device communication overhead can erode gains if strategy is wrong</li>
+        </ul>
+      </div>
+    </div>
+    </div>
+
+    <!-- SECTION 4.3: PRODUCTION RAG & AGENTS -->
+    <div class="content-section">
+      <span class="section-anchor" id="rag"></span>
+      <h2 class="section-h">4.3 RAG Pipelines &amp; Multi-Agent Topologies <span class="section-badge">Apps</span></h2>
+      <h1>LLM <em>Applications</em></h1>
+    </div>
+    <div class="content">
+      
+      
+
+      <div class="section">
+        <div class="section-title">Code & Mathematics</div>
+        <div class="cards-grid">
+          <div class="card"><span class="card-icon">✍️</span><div class="card-title">Code Generation</div><p>Natural language prompts → code in any language. Output used as draft for review.</p></div>
+          <div class="card"><span class="card-icon">🔮</span><div class="card-title">Code Completion</div><p>Proactively suggest code as developer types — saves time, improves quality.</p></div>
+          <div class="card"><span class="card-icon">🔧</span><div class="card-title">Refactoring & Debugging</div><p>Reduce technical debt by identifying and fixing code quality issues.</p></div>
+          <div class="card"><span class="card-icon">🔄</span><div class="card-title">Code Translation</div><p>Convert code between programming languages (Python → Java, etc.).</p></div>
+          <div class="card"><span class="card-icon">🧪</span><div class="card-title">Test Generation</div><p>Automatically generate unit tests for provided codebases.</p></div>
+          <div class="card"><span class="card-icon">📖</span><div class="card-title">Documentation</div><p>Generate comments, understand copyright status, create release notes via conversational chat.</p></div>
+        </div>
+        <div class="callout callout-key">
+          <div class="callout-label">🏆 Notable Achievements</div>
+          <div class="callout-title">Math & Competitive Coding</div>
+          <strong>AlphaCode 2:</strong> Top 15% on Codeforces competitive coding platform<br>
+          <strong>FunSearch:</strong> Solved the open Cap Set problem in mathematics; discovered more efficient bin-packing algorithms<br>
+          <strong>AlphaGeometry:</strong> Solved 25/30 Olympiad geometry problems (human gold medalists average 25.9)
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Machine Translation</div>
+        <p>LLMs understand linguistic nuances, idioms, and cultural context — producing far more natural translations than word-for-word algorithms.</p>
+        <ul class="note-list">
+          <li><strong>Instant messaging:</strong> Translate slang, colloquialisms, regional differences naturally</li>
+          <li><strong>E-commerce:</strong> Product descriptions with culturally-appropriate localization</li>
+          <li><strong>Travel apps:</strong> Real-time spoken translation with natural conversational flow</li>
+        </ul>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Text Summarization & Q&A</div>
+        <div class="cards-grid">
+          <div class="card">
+            <span class="card-icon">📰</span>
+            <div class="card-title">News Summarization</div>
+            <p>Capture main events, sentiment, and tone — not just keywords. Holistic article understanding.</p>
+          </div>
+          <div class="card">
+            <span class="card-icon">🔬</span>
+            <div class="card-title">Research Abstracts</div>
+            <p>Automatically generate summaries encapsulating core findings and implications of scientific papers.</p>
+          </div>
+          <div class="card">
+            <span class="card-icon">💬</span>
+            <div class="card-title">Chat Summaries</div>
+            <p>Thread summaries capturing urgency and tone — helping users prioritize multi-conversation responses.</p>
+          </div>
+          <div class="card">
+            <span class="card-icon">🤝</span>
+            <div class="card-title">Contextual Q&A</div>
+            <p>Unlike keyword-matching, LLMs infer intent and provide contextually rich, precise answers drawing on full context.</p>
+          </div>
+        </div>
+        <div class="callout callout-key">
+          <div class="callout-label">💡 Improving Q&A Quality</div>
+          <div class="callout-title">RAG Architecture</div>
+          Quality significantly improved by Retrieval-Augmented Generation (RAG) — expands the prompt with retrieved relevant information from external knowledge bases + post-hoc grounding after generation.
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Text Classification & Analysis</div>
+        <ul class="note-list">
+          <li><strong>Spam detection</strong> — context/intent-aware (vs. keyword-only), reduced false positives</li>
+          <li><strong>News categorization</strong> — handles articles blurring category boundaries</li>
+          <li><strong>Sentiment analysis</strong> — nuanced emotions ('elation', 'disappointment') not just positive/negative</li>
+          <li><strong>Legal review</strong> — identify contradictions and implications in contracts</li>
+          <li><strong>Medical inference</strong> — assist diagnostics by analyzing patient descriptions and histories</li>
+          <li><strong>LLM autoraters</strong> — use LLMs to evaluate, rank, and compare other LLMs' outputs</li>
+        </ul>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Multimodal Applications</div>
+        <p>Multimodal LLMs process and generate across text, images, audio, and video — opening entirely new application categories:</p>
+        <div class="cards-grid">
+          <div class="card"><span class="card-icon">📚</span><div class="card-title">Education</div><p>Personalized learning combining text, interactive visuals and audio. Assistive tools for visually/hearing-impaired.</p></div>
+          <div class="card"><span class="card-icon">🏥</span><div class="card-title">Medical Diagnosis</div><p>Analyze medical scans and reports together — identify potential issues, provide insights for doctors.</p></div>
+          <div class="card"><span class="card-icon">🧬</span><div class="card-title">Drug Discovery</div><p>Integrate medical images, protein structures, research papers to accelerate bioinformatics research.</p></div>
+          <div class="card"><span class="card-icon">🎬</span><div class="card-title">Creative Content</div><p>Storytelling from images/video. Ad generation from product photos. Script writing assistance.</p></div>
+          <div class="card"><span class="card-icon">🏢</span><div class="card-title">Document Intelligence</div><p>Extract key info from invoices and contracts combining text and visual elements automatically.</p></div>
+          <div class="card"><span class="card-icon">💬</span><div class="card-title">Rich Chatbots</div><p>Multimodal customer service — understand text + images for richer, more personalized support experiences.</p></div>
+        </div>
+      </div>
+
+      <hr class="divider">
+
+      <div class="callout callout-definition">
+        <div class="callout-label">📋 Summary — Key Takeaways</div>
+        <div class="callout-title">What to Remember</div>
+        1. <strong>Transformer architecture</strong> = basis for all modern LLMs. Dataset quality matters as much as parameter count.<br><br>
+        2. <strong>Fine-tuning order matters:</strong> Instruction Tuning → Safety Tuning → RLHF/RLAIF for alignment. SFT captures task essence; RLHF shifts distribution toward desired behavior.<br><br>
+        3. <strong>Inference efficiency</strong> is an active research area — many methods reduce latency/cost with minimal quality impact; some (Flash Attention, prefix caching, speculative decoding) are quality-neutral.<br><br>
+        4. <strong>Prompt engineering</strong> is powerful — combine with the right sampling parameters (temperature, top-K, top-P) for task-specific optimization.
+      </div>
+    </div>
+    </div>
+
+  </main>
+</div>
+
+<script>
+  // Active link highlighting on scroll
+  const sections = document.querySelectorAll('.section-anchor');
+  const links = document.querySelectorAll('.sidebar-nav a');
+  window.addEventListener('scroll', () => {
+    let cur = '';
+    sections.forEach(s => { if (window.scrollY >= s.offsetTop - 120) cur = s.id; });
+    links.forEach(l => {
+      l.classList.remove('active');
+      if (l.getAttribute('href') === '#' + cur) l.classList.add('active');
+    });
+  });
+
+  // Mobile/Universal dropdown toggler
+  const toggleBtn = document.getElementById('sidebarToggle');
+  const noteList = document.getElementById('sidebarNoteList');
+  if (toggleBtn && noteList) {
+    toggleBtn.addEventListener('click', () => {
+      const expanded = toggleBtn.getAttribute('aria-expanded') === 'true';
+      toggleBtn.setAttribute('aria-expanded', !expanded);
+      noteList.classList.toggle('active');
+    });
+    noteList.querySelectorAll('.sidebar-nav a').forEach(link => {
+      link.addEventListener('click', () => {
+        toggleBtn.setAttribute('aria-expanded', 'false');
+        noteList.classList.remove('active');
+      });
+    });
+  }
+
+  // Dynamic global book active highlighting
+  const currentPath = window.location.pathname;
+  let activeBookId = 'nav-LLMs';
+  if (activeBookId) {
+    const activeBookLink = document.getElementById(activeBookId);
+    if (activeBookLink) activeBookLink.classList.add('active-book');
+  }
+</script>
+</body>
+</html>

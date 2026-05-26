@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ch.1 Transformer & Attention | Foundational LLMs Notes</title>
+<link rel="stylesheet" href="shared.css">
+<style>
+:root {
+  --accent: #f7c86a;
+  --accent2: #ffe1a8;
+  --accent3: #d48c10;
+  --accent4: #f76a9a;
+}
+</style>
+</head>
+<body>
+<nav>
+  <a href="llm.html" class="nav-logo">LLM<span>.</span>Foundations</a>
+  <ul class="nav-links">
+    <li><a href="llm.html" class="nav-back">← Hub</a></li>
+    <li><a href="index.html">ML Notes</a></li>
+    <li><a href="embeddings.html">Vectors</a></li>
+    <li><a href="prompt-engineering.html">Prompts</a></li>
+  </ul>
+</nav>
+
+<div class="page-hero" style="background: linear-gradient(135deg, #070a13, #221a0f);">
+  <div class="page-hero-grid"></div>
+  <div class="page-hero-glow" style="background:radial-gradient(circle, rgba(247,200,106,0.15) 0%, transparent 70%)"></div>
+  <p class="page-eyebrow fade-up">Volume 02</p>
+  <h1 class="page-title fade-up d1">Transformer &amp; <em>Self-Attention</em></h1>
+  <p class="page-desc fade-up d2">Analyze the sequential limitations of RNNs, input embeddings, and the mathematical details of self-attention query-key-value projections.</p>
+</div>
+
+<div class="page-layout">
+  <aside class="sidebar">
+    <button class="note-sidebar-toggle" id="sidebarToggle" aria-expanded="false" aria-controls="sidebarNoteList">All Notes <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><polyline points="2 5 7 10 12 5"></polyline></svg></button>
+    <div class="sidebar-note-list" id="sidebarNoteList">
+      <div class="sidebar-grid">
+        <div class="sidebar-column">
+          <div class="sidebar-section">
+            <p class="sidebar-label">This Volume</p>
+            <ul class="sidebar-nav">
+              
+              <li><a href="#intro" class="active">1.1 Why LMs Matter</a></li>
+              <li><a href="#transformer">1.2 Transformer Blocks</a></li>
+              <li><a href="#attention">1.3 Self-Attention Math</a></li>
+        
+            </ul>
+          </div>
+          <div class="sidebar-section">
+            <p class="sidebar-label">Next</p>
+            <ul class="sidebar-nav">
+              <li><a href="page-llm-training.html" style="color:var(--accent2); font-weight:bold;">Ch.2 Training & Alignment →</a></li>
+            </ul>
+          </div>
+        </div>
+        <div class="sidebar-column">
+          <p class="sidebar-label">All Subjects</p>
+          <ul class="sidebar-nav global-nav">
+            <li><a href="chapter1.html" id="nav-Foundations">Foundations</a></li>
+            <li><a href="chapter2.html" id="nav-Features">Features</a></li>
+            <li><a href="chapter4.html" id="nav-Models">Models</a></li>
+            <li><a href="chapter6.html" id="nav-Ensemble">Ensemble</a></li>
+            <li><a href="chapter9.html" id="nav-Tuning">Tuning</a></li>
+            <li><a href="llm.html" id="nav-LLMs" style="color:var(--accent2); font-weight:bold;">LLMs</a></li>
+            <li><a href="embeddings.html" id="nav-Vectors" style="color:var(--accent3); font-weight:bold;">Vectors</a></li>
+            <li><a href="prompt-engineering.html" id="nav-Prompts" style="color:#c77dff; font-weight:bold;">Prompts</a></li>
+            <li><a href="domain-specific-llms.html" id="nav-Vertical" style="color:#ef233c; font-weight:bold;">Vertical</a></li>
+            <li><a href="ai-agents.html" id="nav-Agents" style="color:#00bbf9; font-weight:bold;">Agents</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <main class="main-content">
+    
+    <!-- SECTION 1.1: INTRODUCTION -->
+    <div class="content-section">
+      <span class="section-anchor" id="intro"></span>
+      <h2 class="section-h">1.1 Why Language Models Matter <span class="section-badge">Concepts</span></h2>
+      <h1>Introduction to <em>Large Language Models</em></h1>
+    </div>
+    <div class="content">
+      
+      
+
+      <div class="section">
+        <div class="section-title">What is a Language Model?</div>
+        <p>A <strong>language model</strong> predicts the probability of a sequence of words. Given a prefix ("The most famous city in the US is…"), it assigns high probabilities to likely next words ("New York") and low probabilities to nonsensical ones ("laptop").</p>
+        <div class="callout callout-definition">
+          <div class="callout-label">📚 Definition</div>
+          <div class="callout-title">Large Language Model (LLM)</div>
+          An advanced AI system implemented as a <strong>deep neural network</strong>, trained on <mark>massive amounts of text data</mark> to learn intricate language patterns — enabling machine translation, creative text generation, question answering, summarization, and complex reasoning.
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Before Transformers: RNNs</div>
+        <p>Prior to the transformer revolution, <strong>Recurrent Neural Networks (RNNs)</strong> — specifically LSTM and GRU architectures — were the dominant approach for sequence modeling.</p>
+        <ul class="note-list">
+          <li>RNNs process sequences <strong>sequentially</strong>, making parallelization hard</li>
+          <li>Generate hidden states based on previous state + current input</li>
+          <li>Theoretically infinite context, but suffer from <strong>vanishing gradient problem</strong></li>
+          <li>Compute-intensive, slow to train at scale</li>
+        </ul>
+      </div>
+
+      <div class="section">
+        <div class="section-title">The Transformer Advantage</div>
+        <div class="cards-grid">
+          <div class="card">
+            <span class="card-icon">⚡</span>
+            <div class="card-title">Parallelization</div>
+            <p>Processes all tokens simultaneously via self-attention — dramatically faster training than sequential RNNs.</p>
+            <span class="card-tag tag-amber">Key Win</span>
+          </div>
+          <div class="card">
+            <span class="card-icon">🔭</span>
+            <div class="card-title">Long-range Context</div>
+            <p>Self-attention allows every token to "see" every other token directly, capturing distant dependencies.</p>
+            <span class="card-tag tag-sage">Context</span>
+          </div>
+          <div class="card">
+            <span class="card-icon">⚠️</span>
+            <div class="card-title">Quadratic Cost</div>
+            <p>Self-attention is O(n²) in sequence length — limits context window size in original architecture.</p>
+            <span class="card-tag tag-rust">Tradeoff</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Why LLMs Are Important</div>
+        <p>LLMs achieve a massive performance boost over previous NLP models across tasks requiring complex reasoning. They display <strong>emergent behaviors</strong> — abilities not directly trained for.</p>
+
+        <div class="callout callout-key">
+          <div class="callout-label">🔑 Key Concept</div>
+          <div class="callout-title">Emergent Behavior</div>
+          Foundational LLMs trained on diverse data perform well <em>out of the box</em> and can generalize to tasks they were never explicitly trained on (zero/few-shot). This emerges from scale — not specific task design.
+        </div>
+
+        <ul class="note-list">
+          <li><strong>Fine-tuning</strong> adapts a pre-trained LLM to specific domains — requires far less data than training from scratch</li>
+          <li><strong>Prompt Engineering</strong> guides the model via carefully composed inputs — no training required</li>
+          <li>Key applications: translation, code generation, text classification, summarization, Q&amp;A, chatbots</li>
+        </ul>
+      </div>
+    </div>
+    </div>
+
+    <!-- SECTION 1.2: TRANSFORMER ARCHITECTURE -->
+    <div class="content-section">
+      <span class="section-anchor" id="transformer"></span>
+      <h2 class="section-h">1.2 Transformer Block Architecture <span class="section-badge">System</span></h2>
+      <h1>The Transformer <em>Architecture</em></h1>
+    </div>
+    <div class="content">
+      
+      
+
+      <div class="callout callout-definition">
+        <div class="callout-label">📅 Origin</div>
+        The transformer was developed at <strong>Google in 2017</strong> (Vaswani et al., "Attention is All You Need") as a sequence-to-sequence model for translation. It replaced RNNs with a pure attention mechanism.
+      </div>
+
+      <div class="section">
+        <div class="section-title">Input Preparation & Embedding</div>
+        <p>Before tokens enter the transformer, raw text undergoes a multi-step preparation pipeline:</p>
+        <ol class="steps">
+          <li>
+            <strong>Normalization (Optional)</strong>
+            <span>Standardizes text by removing redundant whitespace, accents, and inconsistent formatting.</span>
+          </li>
+          <li>
+            <strong>Tokenization</strong>
+            <span>Breaks sentence into words or subwords; maps each to an integer token ID from a vocabulary (using BPE or Unigram methods).</span>
+          </li>
+          <li>
+            <strong>Embedding</strong>
+            <span>Converts each token ID into a high-dimensional vector representation (learned during training via a lookup table).</span>
+          </li>
+          <li>
+            <strong>Positional Encoding</strong>
+            <span>Adds position information to each token's vector — since self-attention is order-agnostic without it.</span>
+          </li>
+        </ol>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Encoder vs. Decoder</div>
+        <div class="cards-grid">
+          <div class="card">
+            <span class="card-icon">📥</span>
+            <div class="card-title">Encoder</div>
+            <p>Processes the full input sequence into contextual representations Z. Uses <strong>bidirectional self-attention</strong> — every token can attend to every other.</p>
+            <span class="card-tag tag-sage">BERT-style</span>
+          </div>
+          <div class="card">
+            <span class="card-icon">📤</span>
+            <div class="card-title">Decoder</div>
+            <p>Generates output token-by-token using <strong>masked self-attention</strong> (can only see past tokens) + cross-attention to encoder output Z.</p>
+            <span class="card-tag tag-amber">GPT-style</span>
+          </div>
+          <div class="card">
+            <span class="card-icon">🔀</span>
+            <div class="card-title">Decoder-Only</div>
+            <p>Most modern LLMs use only the decoder — skipping the encoder. Generates output directly from input via masked self-attention alone.</p>
+            <span class="card-tag tag-rust">Modern LLMs</span>
+          </div>
+        </div>
+
+        <div class="callout callout-key">
+          <div class="callout-label">🔑 Key Insight</div>
+          <div class="callout-title">Majority of Modern LLMs = Decoder-Only</div>
+          GPT, Gemini, LLaMA, Gopher, PaLM, etc. all use the decoder-only variant. It forgoes encoder-decoder separation and directly generates output from input via masked self-attention.
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Feedforward & Normalization Layers</div>
+        <p>Each transformer block contains:</p>
+        <ul class="note-list">
+          <li><strong>Multi-Head Attention</strong> — computes relationships between tokens</li>
+          <li><strong>Add & Norm (Residual + Layer Norm)</strong> — stabilizes training, helps gradient flow</li>
+          <li><strong>Feedforward Layer</strong> — two linear transformations + non-linear activation (ReLU/GELU) applied position-wise</li>
+          <li>Another <strong>Add & Norm</strong> after feedforward</li>
+        </ul>
+        <div class="callout callout-formula">
+          <div class="callout-label">📐 Formula</div>
+          <div class="callout-title">Residual Connection</div>
+          Output = LayerNorm(x + Sublayer(x))<br>
+          <span class="comment">// 'Add' = skip connection; 'Norm' = layer normalization</span><br>
+          <span class="comment">// Prevents vanishing gradients in deep stacks</span>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Mixture of Experts (MoE)</div>
+        <p>MoE is an architecture that combines <strong>multiple specialized sub-models ("experts")</strong> to tackle complex tasks efficiently.</p>
+        <ul class="note-list">
+          <li><strong>Experts</strong> — individual sub-models (typically transformer-based), each specializing in a subset of inputs</li>
+          <li><strong>Gating Network (Router)</strong> — learns to route inputs to the most relevant expert(s), producing a probability distribution over experts</li>
+          <li><strong>Combination Mechanism</strong> — combines expert outputs weighted by gate probabilities (typically a weighted average)</li>
+          <li><strong>Sparse Activation</strong> — only a subset of experts activate per token → huge computational savings</li>
+        </ul>
+        <div class="callout callout-key">
+          <div class="callout-label">💡 MoE Advantage</div>
+          <div class="callout-title">More Parameters, Less Compute</div>
+          MoE models have massive total parameter counts but only activate a fraction per forward pass. GLaM (1.2T params) used ⅓ the energy of GPT-3's training while outperforming it.
+        </div>
+      </div>
+    </div>
+    </div>
+
+    <!-- SECTION 1.3: SELF-ATTENTION MATH -->
+    <div class="content-section">
+      <span class="section-anchor" id="attention"></span>
+      <h2 class="section-h">1.3 Deep Dive into Self-Attention <span class="section-badge">Math</span></h2>
+      <h1>The Self-Attention <em>Mechanism</em></h1>
+    </div>
+    <div class="content">
+      
+      
+
+      <p>Self-attention is the <strong>core innovation</strong> of transformers. It enables each token to dynamically "attend" to all other tokens, capturing relationships and context that span the entire sequence.</p>
+
+      <div class="section">
+        <div class="section-title">The Q, K, V Framework</div>
+        <p>Each input embedding is projected into three specialized vectors via learned weight matrices:</p>
+        <div class="cards-grid">
+          <div class="card">
+            <span class="card-icon">❓</span>
+            <div class="card-title">Query (Q)</div>
+            <p>Represents the current token asking: <em>"Which other words in the sequence are relevant to me?"</em></p>
+            <span class="card-tag tag-amber">Wq matrix</span>
+          </div>
+          <div class="card">
+            <span class="card-icon">🔑</span>
+            <div class="card-title">Key (K)</div>
+            <p>Represents how each token identifies itself — a label for determining relevance to other queries.</p>
+            <span class="card-tag tag-sage">Wk matrix</span>
+          </div>
+          <div class="card">
+            <span class="card-icon">💎</span>
+            <div class="card-title">Value (V)</div>
+            <p>Holds the actual <strong>content information</strong> of each token — what gets aggregated into the output.</p>
+            <span class="card-tag tag-rust">Wv matrix</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Step-by-Step Self-Attention Computation</div>
+        <ol class="steps">
+          <li>
+            <strong>Project embeddings → Q, K, V</strong>
+            <span>Multiply each input embedding by learned matrices Wq, Wk, Wv to produce query, key, and value vectors for every token.</span>
+          </li>
+          <li>
+            <strong>Calculate attention scores</strong>
+            <span>Compute dot products of each Query with all Keys: Score(Q, K) = Q · Kᵀ. High dot product = high relevance.</span>
+          </li>
+          <li>
+            <strong>Scale & Normalize</strong>
+            <span>Divide scores by √d_k (dimension of keys) for numerical stability. Apply softmax to convert scores to probabilities (attention weights).</span>
+          </li>
+          <li>
+            <strong>Weighted value aggregation</strong>
+            <span>Multiply each Value vector by its attention weight, then sum. This produces a context-aware representation for each token.</span>
+          </li>
+        </ol>
+        <div class="callout callout-formula">
+          <div class="callout-label">📐 Attention Formula</div>
+          <div class="callout-title">Scaled Dot-Product Attention</div>
+          Attention(Q, K, V) = softmax( Q·Kᵀ / √d_k ) · V<br><br>
+          <span class="comment">// Q = Queries matrix, K = Keys matrix, V = Values matrix</span><br>
+          <span class="comment">// d_k = dimension of key vectors (for stability scaling)</span><br>
+          <span class="comment">// Output Z = context-aware representation of input sequence</span>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Multi-Head Attention: Power in Diversity</div>
+        <p>Instead of one set of Q/K/V matrices, multi-head attention runs <strong>multiple attention "heads" in parallel</strong>, each potentially focusing on different aspects of relationships.</p>
+        <ul class="note-list">
+          <li>Each head learns different Q, K, V projections → captures different relationship types</li>
+          <li>Outputs from all heads are <strong>concatenated</strong> then linearly projected</li>
+          <li>Gives the model a richer, multi-perspective representation of the input</li>
+          <li>Crucial for tasks needing nuanced language understanding: translation, summarization, Q&amp;A</li>
+        </ul>
+        <div class="callout callout-key">
+          <div class="callout-label">💡 Example</div>
+          <div class="callout-title">Coreference Resolution via Attention</div>
+          In "The tiger jumped because <em>it</em> was thirsty" — self-attention correctly identifies that "it" and "tiger" refer to the same entity by assigning them high attention weights to each other.
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Layer Normalization & Residual Connections</div>
+        <div class="cards-grid">
+          <div class="card">
+            <span class="card-icon">⚖️</span>
+            <div class="card-title">Layer Normalization</div>
+            <p>Computes mean and variance of activations in a layer and normalizes them. Reduces covariate shift, improves gradient flow, speeds up convergence.</p>
+          </div>
+          <div class="card">
+            <span class="card-icon">🔄</span>
+            <div class="card-title">Residual Connections</div>
+            <p>Propagates the input directly to the output: Output = x + Sublayer(x). Makes optimization easier and prevents vanishing/exploding gradients in deep networks.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    </div>
+
+  </main>
+</div>
+
+<script>
+  // Active link highlighting on scroll
+  const sections = document.querySelectorAll('.section-anchor');
+  const links = document.querySelectorAll('.sidebar-nav a');
+  window.addEventListener('scroll', () => {
+    let cur = '';
+    sections.forEach(s => { if (window.scrollY >= s.offsetTop - 120) cur = s.id; });
+    links.forEach(l => {
+      l.classList.remove('active');
+      if (l.getAttribute('href') === '#' + cur) l.classList.add('active');
+    });
+  });
+
+  // Mobile/Universal dropdown toggler
+  const toggleBtn = document.getElementById('sidebarToggle');
+  const noteList = document.getElementById('sidebarNoteList');
+  if (toggleBtn && noteList) {
+    toggleBtn.addEventListener('click', () => {
+      const expanded = toggleBtn.getAttribute('aria-expanded') === 'true';
+      toggleBtn.setAttribute('aria-expanded', !expanded);
+      noteList.classList.toggle('active');
+    });
+    noteList.querySelectorAll('.sidebar-nav a').forEach(link => {
+      link.addEventListener('click', () => {
+        toggleBtn.setAttribute('aria-expanded', 'false');
+        noteList.classList.remove('active');
+      });
+    });
+  }
+
+  // Dynamic global book active highlighting
+  const currentPath = window.location.pathname;
+  let activeBookId = 'nav-LLMs';
+  if (activeBookId) {
+    const activeBookLink = document.getElementById(activeBookId);
+    if (activeBookLink) activeBookLink.classList.add('active-book');
+  }
+</script>
+</body>
+</html>

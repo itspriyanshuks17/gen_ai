@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chapter 6 — Ensemble Methods | ML Notes</title>
+<link rel="stylesheet" href="shared.css">
+</head>
+<body>
+<nav>
+  <a href="index.html" class="nav-logo">ML<span>.</span>Notes</a>
+  <ul class="nav-links">
+    <li><a href="index.html" class="nav-back">← Home</a></li>
+    <li><a href="chapter5.html">Ch.5</a></li>
+    <li><a href="chapter7.html">Ch.7</a></li>
+  </ul>
+</nav>
+
+<div class="page-hero">
+  <div class="page-hero-grid"></div>
+  <div class="page-hero-glow" style="background:radial-gradient(circle, rgba(124,106,247,0.15) 0%, transparent 70%)"></div>
+  <p class="page-eyebrow fade-up">Chapter 06</p>
+  <h1 class="page-title fade-up d1">Ensemble <em>Methods</em></h1>
+  <p class="page-desc fade-up d2">Combining multiple weak learners into a stronger, more accurate model using Bagging, Boosting, and Random Forests.</p>
+</div>
+
+<div class="page-layout">
+  <aside class="sidebar">
+    <div class="sidebar-section">
+      <p class="sidebar-label">This Chapter</p>
+      <ul class="sidebar-nav">
+        <li><a href="#why" class="active">6.1 Why Ensemble?</a></li>
+        <li><a href="#types">6.2 Types</a></li>
+        <li><a href="#bagging">6.2.1 Bagging</a></li>
+        <li><a href="#boosting">6.2.2 Boosting</a></li>
+        <li><a href="#rf">6.3 Random Forest</a></li>
+        <li><a href="#compare">6.4 Boosting Comparison</a></li>
+      </ul>
+    </div>
+  </aside>
+
+  <main class="main-content">
+
+    <div class="content-section">
+      <span class="section-anchor" id="why"></span>
+      <h2 class="section-h">6.1 Why Use Ensemble Methods?</h2>
+      <p>Ensemble learning combines multiple models (called <strong>"weak learners"</strong>) to create a stronger model. Instead of using one predictor, we use many and aggregate their outputs.</p>
+      <ul class="content-list">
+        <li>A single model may be unstable, inaccurate, or biased</li>
+        <li>By combining multiple models we can <strong>improve accuracy</strong></li>
+        <li>Reduces both overfitting and underfitting</li>
+        <li>Handles complex problems better</li>
+      </ul>
+    </div>
+
+    <div class="content-section">
+      <span class="section-anchor" id="types"></span>
+      <h2 class="section-h">6.2 Types of Ensemble Methods</h2>
+      <div class="compare-grid">
+        <div class="compare-card">
+          <div class="compare-card-title" style="color:var(--accent)">Bagging</div>
+          <ul><li>Train models in <strong>parallel</strong> on random subsets</li><li>Reduces variance (prevents overfitting)</li><li>Example: Random Forest</li></ul>
+        </div>
+        <div class="compare-card">
+          <div class="compare-card-title" style="color:var(--accent2)">Boosting</div>
+          <ul><li>Train models <strong>sequentially</strong>, focusing on previous mistakes</li><li>Reduces bias and variance</li><li>Examples: AdaBoost, GBM, XGBoost</li></ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="content-section">
+      <span class="section-anchor" id="bagging"></span>
+      <h2 class="section-h">6.2.1 Bagging (Bootstrap Aggregation)</h2>
+      <p>Train multiple models on different <strong style="color:var(--accent2)">random subsets of the data (with replacement)</strong> in parallel and aggregate their predictions.</p>
+      <div class="formula">
+        <span class="formula-label">Aggregation</span>
+        Classification → Majority Vote across all models
+        Regression → Average of all model outputs
+      </div>
+      <div class="steps">
+        <div class="step"><div class="step-num">1</div><div class="step-body"><div class="step-title">Bootstrap Sampling</div><div class="step-desc">Create several bootstrapped datasets (random samples with replacement from original data)</div></div></div>
+        <div class="step"><div class="step-num">2</div><div class="step-body"><div class="step-title">Train Independent Models</div><div class="step-desc">Train a separate model on each subset independently (in parallel)</div></div></div>
+        <div class="step"><div class="step-num">3</div><div class="step-body"><div class="step-title">Combine Results</div><div class="step-desc">Majority vote (classification) or average (regression)</div></div></div>
+      </div>
+      <div class="callout green"><div class="callout-title">Objective</div>Reduce Variance and prevent overfitting.</div>
+    </div>
+
+    <div class="content-section">
+      <span class="section-anchor" id="boosting"></span>
+      <h2 class="section-h">6.2.2 Boosting</h2>
+      <p>Train models <strong style="color:var(--accent2)">sequentially</strong>, where each model focuses more on the mistakes made by the previous ones.</p>
+      <div class="steps">
+        <div class="step"><div class="step-num">1</div><div class="step-body"><div class="step-title">Train First Model</div><div class="step-desc">Train the first base learner on the original dataset</div></div></div>
+        <div class="step"><div class="step-num">2</div><div class="step-body"><div class="step-title">Identify Errors</div><div class="step-desc">Find misclassified/incorrect predictions from the first model</div></div></div>
+        <div class="step"><div class="step-num">3</div><div class="step-body"><div class="step-title">Reweight Data</div><div class="step-desc">Give more weight to difficult/misclassified points; decrease weight of correctly classified</div></div></div>
+        <div class="step"><div class="step-num">4</div><div class="step-body"><div class="step-title">Train Next Model</div><div class="step-desc">Train next learner to focus on correcting those weighted mistakes</div></div></div>
+        <div class="step"><div class="step-num">5</div><div class="step-body"><div class="step-title">Weighted Combination</div><div class="step-desc">Final prediction is a weighted combination of all weak learners' outputs</div></div></div>
+      </div>
+      <div class="callout green"><div class="callout-title">Objective</div>Reduce both Bias and Variance, prevents underfitting.</div>
+    </div>
+
+    <div class="content-section">
+      <span class="section-anchor" id="rf"></span>
+      <h2 class="section-h">6.3 Random Forest</h2>
+      <p>Random Forest is a Bagging-based ensemble that builds <strong style="color:var(--accent2)">multiple decision trees</strong> and combines their results.</p>
+
+      <h3 class="sub-h">What Makes It "Random"?</h3>
+      <div class="compare-grid">
+        <div class="compare-card"><div class="compare-card-title">Random Data Subsets</div><ul><li>Each tree trained on a random bootstrap sample (with replacement)</li></ul></div>
+        <div class="compare-card"><div class="compare-card-title">Random Feature Subsets</div><ul><li>At each split, only a random subset of features is considered — not all</li></ul></div>
+      </div>
+
+      <h3 class="sub-h">Prediction</h3>
+      <div class="formula">
+        Classification: Each tree votes → Final = Majority Vote
+        Regression: Each tree gives value → Final = Average
+      </div>
+
+      <div class="pros-cons">
+        <div class="pros"><div class="pros-title">Advantages</div><ul><li>Reduces overfitting vs. single tree</li><li>Handles high-dimensional data well</li><li>Works with missing or unscaled data</li><li>Less sensitive to noisy data</li><li>Provides automatic feature importance</li></ul></div>
+        <div class="cons"><div class="cons-title">Disadvantages</div><ul><li>Memory-intensive with too many trees</li><li>Slower than a single tree</li><li>Can overfit with too many trees (rarely)</li></ul></div>
+      </div>
+    </div>
+
+    <div class="content-section">
+      <span class="section-anchor" id="compare"></span>
+      <h2 class="section-h">6.4 Boosting Algorithms Comparison</h2>
+      <table class="data-table">
+        <thead><tr><th>Feature</th><th>AdaBoost</th><th>Gradient Boosting (GBM)</th><th>XGBoost</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Core Idea</strong></td><td>Focus on misclassified samples</td><td>Minimize loss via gradient descent</td><td>Optimized GBM with regularization</td></tr>
+          <tr><td><strong>Training</strong></td><td>Sequential weak learners</td><td>Sequential (gradient descent)</td><td>Sequential + optimized boosting</td></tr>
+          <tr><td><strong>Loss Function</strong></td><td>Exponential loss</td><td>Customizable (MSE, Log Loss)</td><td>Customizable + 2nd-order derivatives</td></tr>
+          <tr><td><strong>Regularization</strong></td><td style="color:var(--accent4)">No</td><td style="color:var(--accent4)">No</td><td style="color:var(--accent3)">Yes (L1 & L2)</td></tr>
+          <tr><td><strong>Speed</strong></td><td style="color:var(--accent4)">Slower</td><td>Medium</td><td style="color:var(--accent3)">Fastest</td></tr>
+          <tr><td><strong>Overfitting</strong></td><td style="color:var(--accent4)">Prone on noisy data</td><td>Prone if not tuned</td><td style="color:var(--accent3)">Best handling</td></tr>
+          <tr><td><strong>Performance</strong></td><td>Good for clean data</td><td>Better than AdaBoost</td><td style="color:var(--accent3)">Best for large complex datasets</td></tr>
+          <tr><td><strong>Noise Robustness</strong></td><td style="color:var(--accent4)">Low (sensitive to outliers)</td><td>Medium</td><td style="color:var(--accent3)">High (ignores outliers via reg.)</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="chapter-nav">
+      <a href="chapter5.html"><span class="nav-dir">← Previous</span><span class="nav-title">Chapter 5: Errors in ML</span></a>
+      <a href="chapter7.html"><span class="nav-dir">Next Chapter →</span><span class="nav-title">Unsupervised ML Models</span></a>
+    </div>
+  </main>
+</div>
+<script>
+  const sections = document.querySelectorAll('.section-anchor');
+  const links = document.querySelectorAll('.sidebar-nav a');
+  window.addEventListener('scroll', () => {
+    let cur = '';
+    sections.forEach(s => { if (window.scrollY >= s.offsetTop - 120) cur = s.id; });
+    links.forEach(l => { l.classList.remove('active'); if (l.getAttribute('href') === '#' + cur) l.classList.add('active'); });
+  });
+</script>
+</body>
+</html>

@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chapter 5 — Errors in ML | ML Notes</title>
+<link rel="stylesheet" href="shared.css">
+</head>
+<body>
+<nav>
+  <a href="index.html" class="nav-logo">ML<span>.</span>Notes</a>
+  <ul class="nav-links">
+    <li><a href="index.html" class="nav-back">← Home</a></li>
+    <li><a href="chapter4.html">Ch.4</a></li>
+    <li><a href="chapter6.html">Ch.6</a></li>
+  </ul>
+</nav>
+
+<div class="page-hero">
+  <div class="page-hero-grid"></div>
+  <div class="page-hero-glow" style="background:radial-gradient(circle, rgba(247,200,106,0.12) 0%, transparent 70%)"></div>
+  <p class="page-eyebrow fade-up" style="color:var(--accent2)">Chapter 05</p>
+  <h1 class="page-title fade-up d1">Errors <em>in ML</em></h1>
+  <p class="page-desc fade-up d2">Understanding bias, variance, and the tradeoff between underfitting and overfitting — the fundamental challenge in machine learning.</p>
+</div>
+
+<div class="page-layout">
+  <aside class="sidebar">
+    <div class="sidebar-section">
+      <p class="sidebar-label">This Chapter</p>
+      <ul class="sidebar-nav">
+        <li><a href="#types" class="active">5.1 Types of Error</a></li>
+        <li><a href="#tradeoff">5.2 Bias-Variance Tradeoff</a></li>
+        <li><a href="#affects">5.3 What Affects B&V</a></li>
+        <li><a href="#handle">5.4 How to Handle It</a></li>
+      </ul>
+    </div>
+  </aside>
+
+  <main class="main-content">
+
+    <div class="content-section">
+      <span class="section-anchor" id="types"></span>
+      <h2 class="section-h">5.1 Types of Error</h2>
+
+      <div class="compare-grid">
+        <div class="compare-card">
+          <div class="compare-card-title" style="color:var(--accent4)">Irreducible Error</div>
+          <p style="font-size:12.5px;color:var(--muted);margin-bottom:8px;">The noise in the data that <strong>cannot be removed</strong>, no matter how good your model is. All models will always have some irreducible error.</p>
+        </div>
+        <div class="compare-card">
+          <div class="compare-card-title" style="color:var(--accent3)">Reducible Error</div>
+          <p style="font-size:12.5px;color:var(--muted);margin-bottom:8px;">The part of error that <strong>can be reduced</strong> by choosing better models, features, or techniques. Has two components: Bias + Variance.</p>
+        </div>
+      </div>
+
+      <h3 class="sub-h">Bias</h3>
+      <p>The difference between actual and predicted values. High bias = model is too simple to capture the complexity of data → <strong style="color:var(--accent4)">Underfitting</strong>.</p>
+
+      <h3 class="sub-h">Variance</h3>
+      <p>The model's sensitivity to small fluctuations when trained on small subsets of the same training data. High variance = model is too complex, captures noise as patterns → <strong style="color:var(--accent4)">Overfitting</strong>.</p>
+    </div>
+
+    <div class="content-section">
+      <span class="section-anchor" id="tradeoff"></span>
+      <h2 class="section-h">5.2 Bias-Variance Tradeoff</h2>
+      <table class="data-table">
+        <thead><tr><th>Model Type</th><th>Bias</th><th>Variance</th><th>Total Error</th><th>Problem</th></tr></thead>
+        <tbody>
+          <tr><td>Simple Model</td><td style="color:var(--accent4)">High ↑</td><td style="color:var(--accent3)">Low ↓</td><td style="color:var(--accent4)">High</td><td>Underfitting</td></tr>
+          <tr><td>Complex Model</td><td style="color:var(--accent3)">Low ↓</td><td style="color:var(--accent4)">High ↑</td><td style="color:var(--accent4)">High</td><td>Overfitting</td></tr>
+          <tr><td><strong style="color:var(--white)">Generalized Model</strong></td><td style="color:var(--accent3)">Balanced ✓</td><td style="color:var(--accent3)">Balanced ✓</td><td style="color:var(--accent3)">Low ✓</td><td style="color:var(--accent3)">Ideal</td></tr>
+        </tbody>
+      </table>
+      <div class="callout green">
+        <div class="callout-title">The Goal</div>
+        Find the sweet spot between underfitting and overfitting to achieve good <strong>generalization on unseen data</strong>.
+      </div>
+    </div>
+
+    <div class="content-section">
+      <span class="section-anchor" id="affects"></span>
+      <h2 class="section-h">5.3 What Affects Bias and Variance?</h2>
+      <table class="data-table">
+        <thead><tr><th>Factor</th><th>Effect on Bias</th><th>Effect on Variance</th></tr></thead>
+        <tbody>
+          <tr><td><strong>More complex model</strong></td><td style="color:var(--accent3)">↓ Decreases</td><td style="color:var(--accent4)">↑ Increases</td></tr>
+          <tr><td><strong>More training data</strong></td><td style="color:var(--muted)">Little effect</td><td style="color:var(--accent3)">↓ Decreases</td></tr>
+          <tr><td><strong>Regularization</strong></td><td style="color:var(--accent4)">↑ Slightly</td><td style="color:var(--accent3)">↓ Controls</td></tr>
+          <tr><td><strong>Better feature engineering</strong></td><td style="color:var(--accent3)">↓ Decreases</td><td style="color:var(--accent3)">↓ Decreases</td></tr>
+          <tr><td><strong>Noise in data</strong></td><td style="color:var(--muted)">Little effect</td><td style="color:var(--accent4)">↑ Increases</td></tr>
+          <tr><td><strong>Cross-Validation</strong></td><td style="color:var(--muted)">Detects both</td><td style="color:var(--accent3)">Detects high variance</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="content-section">
+      <span class="section-anchor" id="handle"></span>
+      <h2 class="section-h">5.4 How to Handle It?</h2>
+      <ul class="content-list">
+        <li><strong>Cross-Validation</strong> — detect and measure bias/variance accurately</li>
+        <li><strong>Feature Engineering</strong> — better features reduce both bias and variance</li>
+        <li><strong>Ensemble Methods</strong> — combine multiple models to balance bias and variance</li>
+        <li><strong>Regularization</strong> — penalize complexity to control variance</li>
+        <li><strong>More data</strong> — reduces variance in complex models</li>
+      </ul>
+    </div>
+
+    <div class="chapter-nav">
+      <a href="chapter4.html"><span class="nav-dir">← Previous</span><span class="nav-title">Chapter 4: Supervised Models</span></a>
+      <a href="chapter6.html"><span class="nav-dir">Next Chapter →</span><span class="nav-title">Ensemble Methods</span></a>
+    </div>
+  </main>
+</div>
+<script>
+  const sections = document.querySelectorAll('.section-anchor');
+  const links = document.querySelectorAll('.sidebar-nav a');
+  window.addEventListener('scroll', () => {
+    let cur = '';
+    sections.forEach(s => { if (window.scrollY >= s.offsetTop - 120) cur = s.id; });
+    links.forEach(l => { l.classList.remove('active'); if (l.getAttribute('href') === '#' + cur) l.classList.add('active'); });
+  });
+</script>
+</body>
+</html>

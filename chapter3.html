@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chapter 3 — Regularization | ML Notes</title>
+<link rel="stylesheet" href="shared.css">
+</head>
+<body>
+<nav>
+  <a href="index.html" class="nav-logo">ML<span>.</span>Notes</a>
+  <ul class="nav-links">
+    <li><a href="index.html" class="nav-back">← Home</a></li>
+    <li><a href="chapter2.html">Ch.2</a></li>
+    <li><a href="chapter4.html">Ch.4</a></li>
+  </ul>
+</nav>
+
+<div class="page-hero">
+  <div class="page-hero-grid"></div>
+  <div class="page-hero-glow" style="background:radial-gradient(circle, rgba(247,106,154,0.12) 0%, transparent 70%)"></div>
+  <p class="page-eyebrow fade-up" style="color:var(--accent4)">Chapter 03</p>
+  <h1 class="page-title fade-up d1"><em>Regularization</em></h1>
+  <p class="page-desc fade-up d2">A technique to prevent overfitting by penalizing large coefficients — adding a penalty term to the loss function that discourages model complexity.</p>
+</div>
+
+<div class="page-layout">
+  <aside class="sidebar">
+    <div class="sidebar-section">
+      <p class="sidebar-label">This Chapter</p>
+      <ul class="sidebar-nav">
+        <li><a href="#intro" class="active">3.0 Introduction</a></li>
+        <li><a href="#l1">3.1.1 L1 (Lasso)</a></li>
+        <li><a href="#l2">3.1.2 L2 (Ridge)</a></li>
+        <li><a href="#elastic">3.1.3 Elastic Net</a></li>
+        <li><a href="#lambda">3.2 Choosing Lambda</a></li>
+      </ul>
+    </div>
+  </aside>
+
+  <main class="main-content">
+
+    <div class="content-section">
+      <span class="section-anchor" id="intro"></span>
+      <h2 class="section-h">Introduction to Regularization <span class="section-badge">Anti-Overfitting</span></h2>
+      <p>Regularization prevents overfitting by <strong style="color:var(--accent2)">penalizing large coefficients</strong> — reducing their magnitude so the model doesn't fit noise in training data.</p>
+      <div class="formula">
+        <span class="formula-label">Core Formula</span>
+        Regularized Loss = Loss Function + λ × Penalty
+        where λ = regularization parameter (controls penalty strength)
+      </div>
+      <ul class="content-list">
+        <li>It adds a penalty term to the loss function</li>
+        <li>This discourages the model from assigning large weights to features</li>
+        <li>The more complex the model (larger weights), the bigger the penalty</li>
+      </ul>
+    </div>
+
+    <div class="content-section">
+      <span class="section-anchor" id="l1"></span>
+      <h2 class="section-h">3.1.1 L1 Regularization (Lasso)</h2>
+      <p>Adds the <strong style="color:var(--accent2)">absolute value of coefficients</strong> as a penalty to the loss function.</p>
+      <div class="formula">
+        <span class="formula-label">L1 Penalty</span>
+        Loss + λ × Σ|wᵢ|
+      </div>
+      <ul class="content-list">
+        <li>Some weights become <strong>exactly zero</strong>, effectively removing irrelevant features</li>
+        <li>Acts as automatic <strong>feature selection</strong></li>
+        <li>Useful when only <strong>few features are important</strong></li>
+        <li>Good for <strong>sparse models</strong></li>
+      </ul>
+      <div class="callout green">
+        <div class="callout-title">Key Property</div>
+        L1 produces sparse solutions — coefficients of unimportant features collapse to 0. This makes Lasso a built-in feature selector.
+      </div>
+    </div>
+
+    <div class="content-section">
+      <span class="section-anchor" id="l2"></span>
+      <h2 class="section-h">3.1.2 L2 Regularization (Ridge)</h2>
+      <p>Adds the <strong style="color:var(--accent2)">square of coefficients</strong> as a penalty to the loss function.</p>
+      <div class="formula">
+        <span class="formula-label">L2 Penalty</span>
+        Loss + λ × Σwᵢ²
+      </div>
+      <ul class="content-list">
+        <li>Shrinks all weights <strong>towards zero</strong>, but not exactly zero</li>
+        <li>Useful when <strong>all features are useful</strong></li>
+        <li>Reduces model variance</li>
+        <li>Good when features are many but all contribute</li>
+      </ul>
+      <div class="callout">
+        <div class="callout-title">Key Property</div>
+        L2 distributes the penalty across all features — none are eliminated, but all are shrunk toward 0.
+      </div>
+    </div>
+
+    <div class="content-section">
+      <span class="section-anchor" id="elastic"></span>
+      <h2 class="section-h">3.1.3 Elastic Net Regularization</h2>
+      <p>Combines both <strong>L1</strong> and <strong>L2</strong> penalties. Gets the benefits of both Lasso and Ridge.</p>
+      <div class="formula">
+        <span class="formula-label">Elastic Net Penalty</span>
+        Loss + λ₁ × Σ|wᵢ| + λ₂ × Σwᵢ²
+      </div>
+      <ul class="content-list">
+        <li>Balances <strong>feature selection</strong> and <strong>coefficient shrinkage</strong></li>
+        <li>Removes irrelevant features (L1 effect) AND reduces variance (L2 effect)</li>
+        <li>Works well when <strong>features are correlated</strong></li>
+      </ul>
+
+      <h3 class="sub-h">Comparison: L1 vs L2 vs Elastic Net</h3>
+      <table class="data-table">
+        <thead><tr><th>Property</th><th>L1 (Lasso)</th><th>L2 (Ridge)</th><th>Elastic Net</th></tr></thead>
+        <tbody>
+          <tr><td>Penalty</td><td>|w|</td><td>w²</td><td>|w| + w²</td></tr>
+          <tr><td>Weights → 0?</td><td style="color:var(--accent3)">Yes (exactly)</td><td style="color:var(--accent4)">No (shrinks)</td><td style="color:var(--accent2)">Some (L1 part)</td></tr>
+          <tr><td>Feature Selection</td><td style="color:var(--accent3)">Yes</td><td style="color:var(--accent4)">No</td><td style="color:var(--accent3)">Yes</td></tr>
+          <tr><td>Reduces Variance</td><td style="color:var(--accent4)">Partial</td><td style="color:var(--accent3)">Yes</td><td style="color:var(--accent3)">Yes</td></tr>
+          <tr><td>Correlated Features</td><td style="color:var(--accent4)">Poor</td><td style="color:var(--accent3)">Good</td><td style="color:var(--accent3)">Best</td></tr>
+          <tr><td>Best Use Case</td><td>Few important features</td><td>All features useful</td><td>Correlated features</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="content-section">
+      <span class="section-anchor" id="lambda"></span>
+      <h2 class="section-h">3.2 Choosing Lambda (λ)</h2>
+      <p>Lambda controls the <strong>strength of regularization</strong>. It's a critical hyperparameter to tune.</p>
+      <div class="steps">
+        <div class="step" style="border-left-color:var(--accent3)">
+          <div class="step-body">
+            <div class="step-title" style="color:var(--accent3)">Small λ → Weak Regularization</div>
+            <div class="step-desc">Little penalty → Model can still overfit → Complex model possible</div>
+          </div>
+        </div>
+        <div class="step" style="border-left-color:var(--accent4)">
+          <div class="step-body">
+            <div class="step-title" style="color:var(--accent4)">Large λ → Strong Regularization</div>
+            <div class="step-desc">Too much penalty → Weights collapse too much → Model underfits</div>
+          </div>
+        </div>
+        <div class="step" style="border-left-color:var(--accent2)">
+          <div class="step-body">
+            <div class="step-title" style="color:var(--accent2)">Optimal λ → Best Balance</div>
+            <div class="step-desc">Use cross-validation to find the λ value that minimizes validation error</div>
+          </div>
+        </div>
+      </div>
+      <div class="callout green">
+        <div class="callout-title">Best Practice</div>
+        Use <strong>cross-validation</strong> (e.g., k-fold) to sweep over a range of λ values and pick the one with the lowest validation error.
+      </div>
+    </div>
+
+    <div class="chapter-nav">
+      <a href="chapter2.html"><span class="nav-dir">← Previous</span><span class="nav-title">Chapter 2: Feature Engineering</span></a>
+      <a href="chapter4.html"><span class="nav-dir">Next Chapter →</span><span class="nav-title">Supervised ML Models</span></a>
+    </div>
+  </main>
+</div>
+
+<script>
+  const sections = document.querySelectorAll('.section-anchor');
+  const links = document.querySelectorAll('.sidebar-nav a');
+  window.addEventListener('scroll', () => {
+    let cur = '';
+    sections.forEach(s => { if (window.scrollY >= s.offsetTop - 120) cur = s.id; });
+    links.forEach(l => { l.classList.remove('active'); if (l.getAttribute('href') === '#' + cur) l.classList.add('active'); });
+  });
+</script>
+</body>
+</html>

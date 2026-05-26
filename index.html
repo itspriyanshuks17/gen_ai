@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ML Notes — Machine Learning Handbook</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:ital,wght@0,300;0,400;1,300&family=Fraunces:ital,wght@0,300;0,600;1,300&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a0f;
+    --surface: #111118;
+    --surface2: #1a1a24;
+    --border: #2a2a3a;
+    --accent: #7c6af7;
+    --accent2: #f7c86a;
+    --accent3: #6af7c8;
+    --accent4: #f76a9a;
+    --text: #e8e8f0;
+    --muted: #6b6b88;
+    --white: #ffffff;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Mono', monospace;
+    font-size: 14px;
+    line-height: 1.7;
+    overflow-x: hidden;
+  }
+
+  /* NAV */
+  nav {
+    position: fixed; top:0; left:0; right:0; z-index:100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 16px 48px;
+    background: rgba(10,10,15,0.85);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+  }
+  .nav-logo {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 18px;
+    color: var(--white);
+    text-decoration: none;
+    letter-spacing: -0.5px;
+  }
+  .nav-logo span { color: var(--accent); }
+  .nav-links { display:flex; gap:32px; list-style:none; }
+  .nav-links a {
+    color: var(--muted);
+    text-decoration: none;
+    font-size: 12px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    transition: color 0.2s;
+  }
+  .nav-links a:hover { color: var(--accent2); }
+
+  /* HERO */
+  .hero {
+    min-height: 100vh;
+    display: flex; flex-direction: column; justify-content: center;
+    padding: 120px 48px 80px;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero-grid {
+    position: absolute; inset: 0;
+    background-image:
+      linear-gradient(rgba(124,106,247,0.06) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(124,106,247,0.06) 1px, transparent 1px);
+    background-size: 48px 48px;
+  }
+  .hero-glow {
+    position: absolute;
+    width: 600px; height: 600px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(124,106,247,0.15) 0%, transparent 70%);
+    top: -100px; right: -100px;
+    pointer-events: none;
+  }
+  .hero-glow2 {
+    position: absolute;
+    width: 400px; height: 400px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(106,247,200,0.08) 0%, transparent 70%);
+    bottom: -50px; left: 100px;
+    pointer-events: none;
+  }
+  .hero-eyebrow {
+    font-size: 11px;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--accent3);
+    margin-bottom: 24px;
+    display: flex; align-items: center; gap: 12px;
+    position: relative;
+  }
+  .hero-eyebrow::before {
+    content: '';
+    display: inline-block;
+    width: 32px; height: 1px;
+    background: var(--accent3);
+  }
+  h1 {
+    font-family: 'Fraunces', serif;
+    font-size: clamp(48px, 8vw, 96px);
+    font-weight: 600;
+    line-height: 1.0;
+    letter-spacing: -2px;
+    color: var(--white);
+    position: relative;
+    max-width: 900px;
+  }
+  h1 em {
+    font-style: italic;
+    color: var(--accent2);
+  }
+  .hero-sub {
+    margin-top: 32px;
+    max-width: 560px;
+    font-size: 15px;
+    color: var(--muted);
+    line-height: 1.8;
+    position: relative;
+  }
+  .hero-actions {
+    margin-top: 48px;
+    display: flex; gap: 16px; align-items: center;
+    position: relative;
+  }
+  .btn-primary {
+    display: inline-flex; align-items: center; gap: 10px;
+    padding: 14px 28px;
+    background: var(--accent);
+    color: white;
+    text-decoration: none;
+    font-family: 'Syne', sans-serif;
+    font-weight: 600;
+    font-size: 13px;
+    letter-spacing: 0.05em;
+    transition: all 0.2s;
+    clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 8px 100%, 0 calc(100% - 8px));
+  }
+  .btn-primary:hover { background: #9584f9; transform: translateY(-2px); }
+  .btn-secondary {
+    display: inline-flex; align-items: center; gap: 10px;
+    padding: 14px 28px;
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text);
+    text-decoration: none;
+    font-family: 'Syne', sans-serif;
+    font-weight: 600;
+    font-size: 13px;
+    letter-spacing: 0.05em;
+    transition: all 0.2s;
+    clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 8px 100%, 0 calc(100% - 8px));
+  }
+  .btn-secondary:hover { border-color: var(--accent2); color: var(--accent2); transform: translateY(-2px); }
+  .hero-stat-row {
+    margin-top: 80px;
+    display: flex; gap: 48px;
+    position: relative;
+  }
+  .hero-stat { display: flex; flex-direction: column; gap: 4px; }
+  .hero-stat-num {
+    font-family: 'Syne', sans-serif;
+    font-size: 32px;
+    font-weight: 800;
+    color: var(--white);
+  }
+  .hero-stat-label { font-size: 11px; color: var(--muted); letter-spacing: 0.1em; text-transform: uppercase; }
+
+  /* CHAPTERS GRID */
+  .section { padding: 80px 48px; }
+  .section-label {
+    font-size: 11px;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 16px;
+    display: flex; align-items: center; gap: 12px;
+  }
+  .section-label::before { content: ''; display:inline-block; width:24px; height:1px; background:var(--accent); }
+  .section-title {
+    font-family: 'Fraunces', serif;
+    font-size: clamp(28px, 4vw, 48px);
+    font-weight: 600;
+    color: var(--white);
+    letter-spacing: -1px;
+    margin-bottom: 48px;
+  }
+
+  .chapters-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    gap: 2px;
+  }
+  .chapter-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 32px;
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+    text-decoration: none;
+    display: block;
+    transition: all 0.3s;
+    group: true;
+  }
+  .chapter-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, transparent, rgba(124,106,247,0.05));
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+  .chapter-card:hover::before { opacity: 1; }
+  .chapter-card:hover { border-color: var(--accent); transform: translateY(-2px); }
+  .chapter-card:hover .chapter-arrow { transform: translateX(4px); }
+
+  .chapter-num {
+    font-family: 'Syne', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.2em;
+    color: var(--muted);
+    margin-bottom: 20px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .chapter-tag {
+    padding: 2px 8px;
+    font-size: 10px;
+    border-radius: 2px;
+    font-family: 'DM Mono', monospace;
+  }
+  .tag-supervised { background: rgba(124,106,247,0.15); color: var(--accent); }
+  .tag-unsupervised { background: rgba(106,247,200,0.15); color: var(--accent3); }
+  .tag-core { background: rgba(247,200,106,0.15); color: var(--accent2); }
+  .tag-advanced { background: rgba(247,106,154,0.15); color: var(--accent4); }
+
+  .chapter-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--white);
+    margin-bottom: 12px;
+    letter-spacing: -0.3px;
+  }
+  .chapter-desc {
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.6;
+    margin-bottom: 24px;
+  }
+  .chapter-topics {
+    display: flex; flex-wrap: wrap; gap: 8px;
+    margin-bottom: 24px;
+  }
+  .topic-pill {
+    font-size: 10px;
+    padding: 4px 10px;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    letter-spacing: 0.05em;
+  }
+  .chapter-footer {
+    display: flex; align-items: center; justify-content: space-between;
+    padding-top: 20px;
+    border-top: 1px solid var(--border);
+  }
+  .chapter-count { font-size: 11px; color: var(--muted); }
+  .chapter-arrow {
+    font-size: 18px;
+    color: var(--accent);
+    transition: transform 0.2s;
+  }
+
+  /* QUICK REF TABLE */
+  .table-section {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    overflow: hidden;
+  }
+  .table-header {
+    padding: 24px 32px;
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .table-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--white);
+  }
+  table { width: 100%; border-collapse: collapse; }
+  th {
+    padding: 14px 24px;
+    text-align: left;
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--muted);
+    border-bottom: 1px solid var(--border);
+    background: var(--surface2);
+  }
+  td {
+    padding: 14px 24px;
+    font-size: 13px;
+    border-bottom: 1px solid rgba(42,42,58,0.5);
+    vertical-align: top;
+  }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: rgba(124,106,247,0.04); }
+
+  /* FOOTER */
+  footer {
+    padding: 48px;
+    border-top: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .footer-logo {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 16px;
+    color: var(--muted);
+  }
+  .footer-logo span { color: var(--accent); }
+  .footer-note { font-size: 12px; color: var(--muted); }
+
+  /* ANIMATIONS */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .fade-up { animation: fadeUp 0.6s ease both; }
+  .delay-1 { animation-delay: 0.1s; }
+  .delay-2 { animation-delay: 0.2s; }
+  .delay-3 { animation-delay: 0.3s; }
+  .delay-4 { animation-delay: 0.4s; }
+
+  /* DECORATIVE LINE */
+  .divider {
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--border), transparent);
+    margin: 0 48px;
+  }
+
+  @media (max-width: 768px) {
+    nav { padding: 16px 24px; }
+    .nav-links { display: none; }
+    .hero { padding: 100px 24px 60px; }
+    .section { padding: 60px 24px; }
+    .hero-stat-row { gap: 24px; flex-wrap: wrap; }
+    footer { padding: 32px 24px; flex-direction: column; gap: 16px; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="nav-logo">ML<span>.</span>Notes</a>
+  <ul class="nav-links">
+    <li><a href="chapter1.html">Foundations</a></li>
+    <li><a href="chapter2.html">Features</a></li>
+    <li><a href="chapter4.html">Models</a></li>
+    <li><a href="chapter6.html">Ensemble</a></li>
+    <li><a href="chapter9.html">Tuning</a></li>
+    <li><a href="llm.html" style="color: var(--accent2); font-weight: bold; border-bottom: 1px dashed rgba(247,200,106,0.3);">LLM Notes</a></li>
+  </ul>
+</nav>
+
+<section class="hero">
+  <div class="hero-grid"></div>
+  <div class="hero-glow"></div>
+  <div class="hero-glow2"></div>
+
+  <p class="hero-eyebrow fade-up">Complete Reference Guide</p>
+  <h1 class="fade-up delay-1">Machine<br><em>Learning</em><br>Handbook</h1>
+  <p class="hero-sub fade-up delay-2">A comprehensive, well-structured reference covering everything from fundamentals to advanced ensemble methods, clustering, PCA, and hyperparameter tuning.</p>
+
+  <div class="hero-actions fade-up delay-3">
+    <a href="chapter1.html" class="btn-primary">Start Learning →</a>
+    <a href="llm.html" class="btn-secondary" style="margin-left: 12px;">Foundational LLMs →</a>
+  </div>
+
+  <div class="hero-stat-row fade-up delay-4">
+    <div class="hero-stat">
+      <span class="hero-stat-num">10</span>
+      <span class="hero-stat-label">Chapters</span>
+    </div>
+    <div class="hero-stat">
+      <span class="hero-stat-num">40+</span>
+      <span class="hero-stat-label">Topics</span>
+    </div>
+    <div class="hero-stat">
+      <span class="hero-stat-num">15+</span>
+      <span class="hero-stat-label">Algorithms</span>
+    </div>
+    <div class="hero-stat">
+      <span class="hero-stat-num">3</span>
+      <span class="hero-stat-label">ML Types</span>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<section class="section">
+  <p class="section-label">All Chapters</p>
+  <h2 class="section-title">Browse the Handbook</h2>
+
+  <div class="chapters-grid">
+
+    <a href="chapter1.html" class="chapter-card">
+      <div class="chapter-num">01 &nbsp;<span class="chapter-tag tag-core">CORE</span></div>
+      <div class="chapter-title">What is Machine Learning?</div>
+      <div class="chapter-desc">ML lifecycle, types of ML, regression, classification, clustering, and the end-to-end pipeline.</div>
+      <div class="chapter-topics">
+        <span class="topic-pill">Lifecycle</span>
+        <span class="topic-pill">Supervised</span>
+        <span class="topic-pill">Unsupervised</span>
+        <span class="topic-pill">Reinforcement</span>
+        <span class="topic-pill">Regression</span>
+        <span class="topic-pill">Classification</span>
+      </div>
+      <div class="chapter-footer">
+        <span class="chapter-count">7 sections</span>
+        <span class="chapter-arrow">→</span>
+      </div>
+    </a>
+
+    <a href="chapter2.html" class="chapter-card">
+      <div class="chapter-num">02 &nbsp;<span class="chapter-tag tag-core">CORE</span></div>
+      <div class="chapter-title">Feature Engineering</div>
+      <div class="chapter-desc">Transform raw data into model-ready features using encoding, scaling, extraction, and selection techniques.</div>
+      <div class="chapter-topics">
+        <span class="topic-pill">Encoding</span>
+        <span class="topic-pill">Scaling</span>
+        <span class="topic-pill">Extraction</span>
+        <span class="topic-pill">Selection</span>
+        <span class="topic-pill">Normalization</span>
+      </div>
+      <div class="chapter-footer">
+        <span class="chapter-count">5 sections</span>
+        <span class="chapter-arrow">→</span>
+      </div>
+    </a>
+
+    <a href="chapter3.html" class="chapter-card">
+      <div class="chapter-num">03 &nbsp;<span class="chapter-tag tag-core">CORE</span></div>
+      <div class="chapter-title">Regularization</div>
+      <div class="chapter-desc">Prevent overfitting with L1 (Lasso), L2 (Ridge), and Elastic Net regularization. Learn how to choose lambda.</div>
+      <div class="chapter-topics">
+        <span class="topic-pill">L1 / Lasso</span>
+        <span class="topic-pill">L2 / Ridge</span>
+        <span class="topic-pill">Elastic Net</span>
+        <span class="topic-pill">Lambda</span>
+      </div>
+      <div class="chapter-footer">
+        <span class="chapter-count">3 sections</span>
+        <span class="chapter-arrow">→</span>
+      </div>
+    </a>
+
+    <a href="chapter4.html" class="chapter-card">
+      <div class="chapter-num">04 &nbsp;<span class="chapter-tag tag-supervised">SUPERVISED</span></div>
+      <div class="chapter-title">Supervised ML Models</div>
+      <div class="chapter-desc">Deep dives into Linear Regression, Logistic Regression, Decision Trees, SVMs, and KNN.</div>
+      <div class="chapter-topics">
+        <span class="topic-pill">Linear Reg.</span>
+        <span class="topic-pill">Polynomial Reg.</span>
+        <span class="topic-pill">Logistic Reg.</span>
+        <span class="topic-pill">Decision Trees</span>
+        <span class="topic-pill">SVM</span>
+        <span class="topic-pill">KNN</span>
+      </div>
+      <div class="chapter-footer">
+        <span class="chapter-count">6 algorithms</span>
+        <span class="chapter-arrow">→</span>
+      </div>
+    </a>
+
+    <a href="chapter5.html" class="chapter-card">
+      <div class="chapter-num">05 &nbsp;<span class="chapter-tag tag-core">CORE</span></div>
+      <div class="chapter-title">Errors in ML</div>
+      <div class="chapter-desc">Understand bias-variance tradeoff, irreducible vs reducible error, and how to handle overfitting and underfitting.</div>
+      <div class="chapter-topics">
+        <span class="topic-pill">Bias</span>
+        <span class="topic-pill">Variance</span>
+        <span class="topic-pill">Tradeoff</span>
+        <span class="topic-pill">Overfitting</span>
+        <span class="topic-pill">Underfitting</span>
+      </div>
+      <div class="chapter-footer">
+        <span class="chapter-count">4 sections</span>
+        <span class="chapter-arrow">→</span>
+      </div>
+    </a>
+
+    <a href="chapter6.html" class="chapter-card">
+      <div class="chapter-num">06 &nbsp;<span class="chapter-tag tag-advanced">ADVANCED</span></div>
+      <div class="chapter-title">Ensemble Methods</div>
+      <div class="chapter-desc">Combine weak learners into powerful models using Bagging, Boosting, Random Forest, AdaBoost, and XGBoost.</div>
+      <div class="chapter-topics">
+        <span class="topic-pill">Bagging</span>
+        <span class="topic-pill">Boosting</span>
+        <span class="topic-pill">Random Forest</span>
+        <span class="topic-pill">AdaBoost</span>
+        <span class="topic-pill">XGBoost</span>
+      </div>
+      <div class="chapter-footer">
+        <span class="chapter-count">4 sections</span>
+        <span class="chapter-arrow">→</span>
+      </div>
+    </a>
+
+    <a href="chapter7.html" class="chapter-card">
+      <div class="chapter-num">07 &nbsp;<span class="chapter-tag tag-unsupervised">UNSUPERVISED</span></div>
+      <div class="chapter-title">Unsupervised ML Models</div>
+      <div class="chapter-desc">Explore K-Means, DBSCAN, HDBSCAN, and Agglomerative clustering to find hidden patterns without labels.</div>
+      <div class="chapter-topics">
+        <span class="topic-pill">K-Means</span>
+        <span class="topic-pill">DBSCAN</span>
+        <span class="topic-pill">HDBSCAN</span>
+        <span class="topic-pill">Agglomerative</span>
+      </div>
+      <div class="chapter-footer">
+        <span class="chapter-count">4 algorithms</span>
+        <span class="chapter-arrow">→</span>
+      </div>
+    </a>
+
+    <a href="chapter8.html" class="chapter-card">
+      <div class="chapter-num">08 &nbsp;<span class="chapter-tag tag-advanced">ADVANCED</span></div>
+      <div class="chapter-title">PCA & Dimensionality Reduction</div>
+      <div class="chapter-desc">Reduce high-dimensional data while preserving variance. Compare PCA, t-SNE, and UMAP techniques.</div>
+      <div class="chapter-topics">
+        <span class="topic-pill">PCA</span>
+        <span class="topic-pill">t-SNE</span>
+        <span class="topic-pill">UMAP</span>
+        <span class="topic-pill">Dim. Reduction</span>
+      </div>
+      <div class="chapter-footer">
+        <span class="chapter-count">3 sections</span>
+        <span class="chapter-arrow">→</span>
+      </div>
+    </a>
+
+    <a href="chapter9.html" class="chapter-card">
+      <div class="chapter-num">09 &nbsp;<span class="chapter-tag tag-advanced">ADVANCED</span></div>
+      <div class="chapter-title">Hyperparameter Tuning</div>
+      <div class="chapter-desc">Model validation, data splitting, cross-validation strategies, grid search and random search methods.</div>
+      <div class="chapter-topics">
+        <span class="topic-pill">Cross-Validation</span>
+        <span class="topic-pill">Grid Search</span>
+        <span class="topic-pill">Random Search</span>
+        <span class="topic-pill">K-Fold</span>
+      </div>
+      <div class="chapter-footer">
+        <span class="chapter-count">4 sections</span>
+        <span class="chapter-arrow">→</span>
+      </div>
+    </a>
+
+    <a href="chapter10.html" class="chapter-card">
+      <div class="chapter-num">10 &nbsp;<span class="chapter-tag tag-core">CORE</span></div>
+      <div class="chapter-title">Model Evaluation Metrics</div>
+      <div class="chapter-desc">Classification metrics (accuracy, precision, recall, F1), regression metrics (MAE, MSE, R²), and clustering metrics.</div>
+      <div class="chapter-topics">
+        <span class="topic-pill">Accuracy</span>
+        <span class="topic-pill">Precision</span>
+        <span class="topic-pill">Recall</span>
+        <span class="topic-pill">F1 Score</span>
+        <span class="topic-pill">MAE / MSE / R²</span>
+      </div>
+      <div class="chapter-footer">
+        <span class="chapter-count">3 sections</span>
+        <span class="chapter-arrow">→</span>
+      </div>
+    </a>
+
+    <!-- COMPANION BOOK SPECIAL CARD -->
+    <a href="llm.html" class="chapter-card" style="border-color: rgba(247,200,106,0.35); background: linear-gradient(135deg, rgba(20, 20, 28, 0.6), rgba(247,200,106,0.04)); grid-column: 1 / -1; display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 24px;">
+      <div>
+        <div class="chapter-num" style="color: var(--accent2);">SPECIAL VOLUME &nbsp;<span class="chapter-tag tag-advanced" style="background: rgba(247,200,106,0.15); color: var(--accent2);">COMPANION BOOK</span></div>
+        <div class="chapter-title" style="color: var(--accent2); font-size: 24px; font-family: 'Fraunces', serif; font-style: italic;">Foundational Large Language Models</div>
+        <div class="chapter-desc" style="font-size: 14px; max-width: 800px;">A comprehensive companion book focusing on advanced neural networks: from the math of Self-Attention and the Transformer architecture, to post-training alignment (SFT, RLHF, DPO) and industrial inference speedups.</div>
+        <div class="chapter-topics">
+          <span class="topic-pill" style="border-color: rgba(247,200,106,0.3); color: var(--accent2);">Transformers</span>
+          <span class="topic-pill" style="border-color: rgba(247,200,106,0.3); color: var(--accent2);">Self-Attention</span>
+          <span class="topic-pill" style="border-color: rgba(247,200,106,0.3); color: var(--accent2);">BPE Tokenization</span>
+          <span class="topic-pill" style="border-color: rgba(247,200,106,0.3); color: var(--accent2);">SFT & RLHF Alignment</span>
+          <span class="topic-pill" style="border-color: rgba(247,200,106,0.3); color: var(--accent2);">KV Caching & FlashAttention</span>
+        </div>
+      </div>
+      <div style="text-align: right; display: flex; flex-direction: column; justify-content: center; align-items: flex-end; padding-left: 20px; border-left: 1px solid rgba(247,200,106,0.2); height: 100%;">
+        <span style="font-family: 'Syne', sans-serif; font-size: 32px; font-weight: 800; color: var(--accent2); line-height: 1;">11</span>
+        <span style="font-size: 9px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-top: 4px; margin-bottom: 12px; white-space: nowrap;">Chapters</span>
+        <span class="chapter-arrow" style="color: var(--accent2); font-size: 24px; transition: transform 0.2s;">→</span>
+      </div>
+    </a>
+
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<section class="section">
+  <p class="section-label">Quick Reference</p>
+  <h2 class="section-title">Types of Machine Learning</h2>
+  <div class="table-section">
+    <div class="table-header">
+      <span class="table-title">ML Types at a Glance</span>
+    </div>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Uses Labeled Data?</th>
+          <th>Real-Life Example</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><span style="color:var(--accent);font-weight:600;">Supervised</span></td>
+          <td>Learns from labeled input-output pairs</td>
+          <td style="color:var(--accent3);">Yes</td>
+          <td>Spam detection, Disease diagnosis</td>
+        </tr>
+        <tr>
+          <td><span style="color:var(--accent3);font-weight:600;">Unsupervised</span></td>
+          <td>Finds hidden patterns in unlabeled data</td>
+          <td style="color:var(--accent4);">No</td>
+          <td>Customer segmentation, Anomaly detection</td>
+        </tr>
+        <tr>
+          <td><span style="color:var(--accent2);font-weight:600;">Reinforcement</span></td>
+          <td>Learns through trial-and-error with rewards</td>
+          <td style="color:var(--accent4);">No</td>
+          <td>Game playing (Chess), Self-driving cars</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<footer>
+  <div class="footer-logo">ML<span>.</span>Notes</div>
+  <div class="footer-note">Machine Learning Handbook — Based on your study notes</div>
+</footer>
+
+</body>
+</html>

@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chapter 2 — Feature Engineering | ML Notes</title>
+<link rel="stylesheet" href="shared.css">
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="nav-logo">ML<span>.</span>Notes</a>
+  <ul class="nav-links">
+    <li><a href="index.html" class="nav-back">← Home</a></li>
+    <li><a href="chapter1.html">Ch.1</a></li>
+    <li><a href="chapter3.html">Ch.3</a></li>
+    <li><a href="chapter4.html">Ch.4</a></li>
+  </ul>
+</nav>
+
+<div class="page-hero">
+  <div class="page-hero-grid"></div>
+  <div class="page-hero-glow" style="background:radial-gradient(circle, rgba(106,247,200,0.12) 0%, transparent 70%)"></div>
+  <p class="page-eyebrow fade-up" style="color:var(--accent3)">Chapter 02</p>
+  <h1 class="page-title fade-up d1">Feature <em>Engineering</em></h1>
+  <p class="page-desc fade-up d2">The process of creating, modifying, or selecting the most useful features from raw data to improve the performance of your ML model.</p>
+</div>
+
+<div class="page-layout">
+  <aside class="sidebar">
+    <div class="sidebar-section">
+      <p class="sidebar-label">This Chapter</p>
+      <ul class="sidebar-nav">
+        <li><a href="#why" class="active">2.1 Why It Matters</a></li>
+        <li><a href="#types">2.2 Types Overview</a></li>
+        <li><a href="#encoding">2.3.1 Feature Encoding</a></li>
+        <li><a href="#scaling">2.3.2 Feature Scaling</a></li>
+        <li><a href="#extraction">2.4 Feature Extraction</a></li>
+        <li><a href="#selection">2.5 Feature Selection</a></li>
+      </ul>
+    </div>
+  </aside>
+
+  <main class="main-content">
+
+    <!-- WHY -->
+    <div class="content-section">
+      <span class="section-anchor" id="why"></span>
+      <h2 class="section-h">2.1 Why Is Feature Engineering Important?</h2>
+      <ul class="content-list">
+        <li>An excessive number of features can lead to an <strong>overfit model</strong>, while too few may result in an <strong>underfit model</strong></li>
+        <li>Models like <code>KNN</code> and <code>SVM</code> require predictor variables to share the same unit or scale to prevent bias</li>
+        <li>Some models exhibit high sensitivity to correlations between predictors</li>
+        <li><strong>Models don't understand categorical data</strong> — they only understand numbers</li>
+        <li>It helps develop new features that represent something important to the outcome</li>
+      </ul>
+    </div>
+
+    <!-- TYPES -->
+    <div class="content-section">
+      <span class="section-anchor" id="types"></span>
+      <h2 class="section-h">2.2 Types of Feature Engineering</h2>
+      <div class="compare-grid">
+        <div class="compare-card">
+          <div class="compare-card-title" style="color:var(--accent)">Feature Transformation</div>
+          <ul>
+            <li>Feature Encoding (Label, One-Hot, Frequency, Target)</li>
+            <li>Feature Scaling (Normalization, Standardization)</li>
+          </ul>
+        </div>
+        <div class="compare-card">
+          <div class="compare-card-title" style="color:var(--accent3)">Feature Extraction</div>
+          <ul>
+            <li>Manual extraction (domain knowledge)</li>
+            <li>Binning / Discretization</li>
+            <li>Time-based extraction</li>
+          </ul>
+        </div>
+        <div class="compare-card">
+          <div class="compare-card-title" style="color:var(--accent2)">Feature Selection</div>
+          <ul>
+            <li>Filter methods (Correlation, Chi-Squared)</li>
+            <li>Wrapper methods (RFE, Forward Selection)</li>
+            <li>Embedded methods (Lasso, Tree importance)</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- ENCODING -->
+    <div class="content-section">
+      <span class="section-anchor" id="encoding"></span>
+      <h2 class="section-h">2.3.1 Feature Encoding</h2>
+      <p>Convert non-numeric values (like City, Color, Gender) into numbers, because <strong style="color:var(--accent2)">ML algorithms can only understand numbers</strong>, not strings or categories.</p>
+
+      <h3 class="sub-h">1. Label Encoding</h3>
+      <p>Assigns each category a unique number.</p>
+      <div class="formula">
+        <span class="formula-label">Example</span>
+        "Red" → 0 &nbsp;|&nbsp; "Blue" → 1 &nbsp;|&nbsp; "Green" → 2
+      </div>
+      <div class="compare-grid">
+        <div class="compare-card">
+          <div class="compare-card-title" style="color:var(--accent3)">✓ Use When</div>
+          <ul><li>Categories are ordinal (have meaningful order)</li><li>High School → 0, Bachelor → 1, Master → 2, PhD → 3</li></ul>
+        </div>
+        <div class="compare-card">
+          <div class="compare-card-title" style="color:var(--accent4)">✗ Avoid When</div>
+          <ul><li>Nominal (unordered) categories</li><li>Model may think higher number = better/more important</li></ul>
+        </div>
+      </div>
+
+      <h3 class="sub-h">2. One-Hot Encoding</h3>
+      <p>Creates a new binary column for each category (1 = present, 0 = absent). Best for <strong>nominal (unordered)</strong> categories.</p>
+      <div class="formula">
+        <span class="formula-label">Example</span>
+        City = {Delhi, Mumbai, Kolkata}
+        Creates columns: City_Delhi | City_Mumbai | City_Kolkata
+      </div>
+      <table class="data-table" style="margin:16px 0">
+        <thead><tr><th>ID</th><th>City</th><th>City_Delhi</th><th>City_Mumbai</th><th>City_Kolkata</th></tr></thead>
+        <tbody>
+          <tr><td>1</td><td>Delhi</td><td style="color:var(--accent3)">1</td><td style="color:var(--muted)">0</td><td style="color:var(--muted)">0</td></tr>
+          <tr><td>2</td><td>Mumbai</td><td style="color:var(--muted)">0</td><td style="color:var(--accent3)">1</td><td style="color:var(--muted)">0</td></tr>
+          <tr><td>3</td><td>Kolkata</td><td style="color:var(--muted)">0</td><td style="color:var(--muted)">0</td><td style="color:var(--accent3)">1</td></tr>
+        </tbody>
+      </table>
+      <div class="callout red">
+        <div class="callout-title">⚠️ Watch Out</div>
+        Can increase dataset size quickly with too many categories (dimensionality issue / curse of dimensionality).
+      </div>
+
+      <h3 class="sub-h">3. Frequency Encoding</h3>
+      <p>Replace each category with its <strong>frequency/count</strong> in the dataset.</p>
+      <div class="formula">
+        Delhi = 3 occurrences &nbsp;|&nbsp; Mumbai = 1 &nbsp;|&nbsp; Kolkata = 2
+      </div>
+      <div class="callout">
+        <div class="callout-title">⚠️ Problem</div>
+        When two categories have the same frequency, they get the same encoded value — which can be ambiguous.
+      </div>
+
+      <h3 class="sub-h">4. Target Encoding</h3>
+      <p>Replace each category with the <strong>mean value of the target variable</strong> for that category (classification only).</p>
+      <table class="data-table">
+        <thead><tr><th>City</th><th>Mean Purchased (Target)</th></tr></thead>
+        <tbody>
+          <tr><td>Delhi</td><td style="color:var(--accent2)">(1+0)/2 = 0.5</td></tr>
+          <tr><td>Mumbai</td><td style="color:var(--accent2)">0/1 = 0.0</td></tr>
+          <tr><td>Kolkata</td><td style="color:var(--accent2)">(1+1)/2 = 1.0</td></tr>
+        </tbody>
+      </table>
+      <div class="callout red">
+        <div class="callout-title">⚠️ Risk</div>
+        Risk of data leakage — apply on training data only with cross-validation. Not suitable for unseen categories in test data.
+      </div>
+    </div>
+
+    <!-- SCALING -->
+    <div class="content-section">
+      <span class="section-anchor" id="scaling"></span>
+      <h2 class="section-h">2.3.2 Feature Scaling</h2>
+      <p>Feature scaling brings all features to a <strong style="color:var(--accent2)">similar scale</strong> to improve model performance. Features with larger scales receive more weight, leading to bias.</p>
+
+      <div class="callout green">
+        <div class="callout-title">When to Use Scaling</div>
+        Use when model relies on distance-based calculations: <code>KNN</code>, <code>Linear Regression</code>, <code>SVM</code>
+      </div>
+      <div class="callout yellow">
+        <div class="callout-title">When NOT to Use Scaling</div>
+        Tree-based models (<code>Decision Tree</code>, <code>Random Forest</code>, <code>XGBoost</code>) don't need it — they split on thresholds, not absolute values.
+      </div>
+
+      <h3 class="sub-h">Normalization (Min-Max Scaling)</h3>
+      <p>Rescales all values into a fixed range between 0 and 1.</p>
+      <div class="formula">
+        <span class="formula-label">Formula</span>
+        Xᵢ_norm = (Xᵢ − Xₘᵢₙ) / (Xₘₐₓ − Xₘᵢₙ)
+      </div>
+      <div class="formula">
+        <span class="formula-label">Example</span>
+        Age = 25, min = 20, max = 60
+        → Normalized = (25 - 20) / (60 - 20) = 0.125
+      </div>
+      <div class="callout red"><div class="callout-title">⚠️ Weakness</div>Not good in case of outliers — they compress all other values into a narrow range.</div>
+
+      <h3 class="sub-h">Standardization (StandardScaler)</h3>
+      <p>Rescales data to have <strong>Mean = 0</strong> and <strong>Standard Deviation = 1</strong>.</p>
+      <div class="formula">
+        <span class="formula-label">Formula (Z-score)</span>
+        Xᵢ_standardized = (Xᵢ − μ) / σ
+        where μ = mean, σ = standard deviation
+      </div>
+      <div class="formula">
+        <span class="formula-label">Example</span>
+        Height = 170, mean = 160, std = 10
+        → Standardized = (170 - 160) / 10 = 1.0
+      </div>
+      <div class="compare-grid">
+        <div class="compare-card"><div class="compare-card-title">Normalization</div><ul><li>Range: [0, 1]</li><li>Sensitive to outliers</li><li>Good for bounded data</li></ul></div>
+        <div class="compare-card"><div class="compare-card-title">Standardization</div><ul><li>Mean = 0, SD = 1</li><li>Better with outliers</li><li>Best for Logistic Reg., SVM</li></ul></div>
+      </div>
+    </div>
+
+    <!-- EXTRACTION -->
+    <div class="content-section">
+      <span class="section-anchor" id="extraction"></span>
+      <h2 class="section-h">2.4 Feature Extraction</h2>
+      <p>Feature Extraction is the process of <strong style="color:var(--accent2)">creating new features</strong> from raw data that highlight hidden patterns or compress important information. Unlike feature selection (which chooses from existing features), extraction <em>creates new ones</em>.</p>
+
+      <h3 class="sub-h">1. Manual Feature Extraction</h3>
+      <p>Create new features using logic, experience, or real-world domain knowledge.</p>
+      <table class="data-table">
+        <thead><tr><th>Raw Feature</th><th>Extracted Feature</th></tr></thead>
+        <tbody>
+          <tr><td>Date of Birth</td><td style="color:var(--accent3)">Age</td></tr>
+          <tr><td>Timestamp</td><td style="color:var(--accent3)">Day of Week, Hour of Day</td></tr>
+          <tr><td>Full Address</td><td style="color:var(--accent3)">City, State, Zip Code</td></tr>
+          <tr><td>Review Text</td><td style="color:var(--accent3)">Length of Review, Sentiment Score</td></tr>
+        </tbody>
+      </table>
+
+      <h3 class="sub-h">2. Binning (Discretization)</h3>
+      <p>Group continuous numeric values into categories or buckets. Reduces noise and makes patterns easier to detect.</p>
+      <table class="data-table">
+        <thead><tr><th>Type</th><th>Description</th><th>Example</th></tr></thead>
+        <tbody>
+          <tr><td><strong style="color:var(--accent)">Equal Width Binning</strong></td><td>Divides values into equal ranges</td><td>Age: 0–20, 21–40, 41–60</td></tr>
+          <tr><td><strong style="color:var(--accent3)">Equal Frequency Binning</strong></td><td>Equal number of data points in each bin</td><td>Top 25% sales → High, next 25% → Medium</td></tr>
+          <tr><td><strong style="color:var(--accent2)">Custom Binning</strong></td><td>Based on domain knowledge</td><td>Income: Low (&lt;30k), Medium, High</td></tr>
+        </tbody>
+      </table>
+
+      <h3 class="sub-h">3. Time-based Feature Extraction</h3>
+      <p>From timestamps like <code>2024-06-07 14:30:00</code>, you can extract:</p>
+      <div style="display:flex;flex-wrap:wrap;gap:8px;margin:16px 0">
+        <span class="badge badge-purple">Hour of Day</span>
+        <span class="badge badge-green">Day of Week</span>
+        <span class="badge badge-yellow">Month</span>
+        <span class="badge badge-purple">Year</span>
+        <span class="badge badge-green">Weekend/Weekday</span>
+        <span class="badge badge-yellow">Time Since Last Event</span>
+        <span class="badge badge-purple">Quarter</span>
+      </div>
+    </div>
+
+    <!-- SELECTION -->
+    <div class="content-section">
+      <span class="section-anchor" id="selection"></span>
+      <h2 class="section-h">2.5 Feature Selection</h2>
+      <p>Feature Selection is identifying and selecting only the <strong style="color:var(--accent2)">most relevant features</strong> from your dataset to train a machine learning model.</p>
+
+      <h3 class="sub-h">Purpose</h3>
+      <ul class="content-list">
+        <li>Improve model performance and accuracy</li>
+        <li>Make the model simpler and easier to interpret</li>
+        <li>Speed up training time</li>
+        <li>Reduce overfitting by removing noise features</li>
+      </ul>
+
+      <h3 class="sub-h">1. Filter Methods</h3>
+      <p>Independent of any model. Use statistics to select features. Fast and simple.</p>
+      <ul class="content-list">
+        <li><strong>Correlation Matrix</strong> (numeric features) → Drop features highly correlated with each other and less correlated with target</li>
+        <li><strong>Chi-Squared Test</strong> (categorical + target) → Select features most associated with the output</li>
+        <li><strong>ANOVA F-Test</strong> (numeric + categorical target) → Measures variance between groups</li>
+      </ul>
+
+      <h3 class="sub-h">2. Wrapper Methods</h3>
+      <p>Use a model to test different combinations of features. Works well with Logistic Regression, Decision Trees.</p>
+      <div class="callout red"><div class="callout-title">⚠️ Downside</div>Computationally expensive for large datasets.</div>
+      <ul class="content-list">
+        <li><strong>Forward Selection</strong> → Start with no features, add one at a time based on performance</li>
+        <li><strong>Backward Elimination</strong> → Start with all features, remove one at a time</li>
+        <li><strong>Recursive Feature Elimination (RFE)</strong> → Repeatedly remove least important features based on a model</li>
+      </ul>
+
+      <h3 class="sub-h">3. Embedded Methods</h3>
+      <p>Feature selection happens inside the model training. Model-specific, more efficient than wrapper methods.</p>
+      <ul class="content-list">
+        <li><strong>Lasso Regression (L1)</strong> → Shrinks irrelevant feature weights to exactly zero</li>
+        <li><strong>Tree-based feature importance</strong> → Decision Trees, Random Forests, and XGBoost rank feature importance internally</li>
+      </ul>
+    </div>
+
+    <div class="chapter-nav">
+      <a href="chapter1.html"><span class="nav-dir">← Previous</span><span class="nav-title">Chapter 1: What is ML?</span></a>
+      <a href="chapter3.html"><span class="nav-dir">Next Chapter →</span><span class="nav-title">Regularization</span></a>
+    </div>
+
+  </main>
+</div>
+
+<script>
+  const sections = document.querySelectorAll('.section-anchor');
+  const links = document.querySelectorAll('.sidebar-nav a');
+  window.addEventListener('scroll', () => {
+    let cur = '';
+    sections.forEach(s => { if (window.scrollY >= s.offsetTop - 120) cur = s.id; });
+    links.forEach(l => {
+      l.classList.remove('active');
+      if (l.getAttribute('href') === '#' + cur) l.classList.add('active');
+    });
+  });
+</script>
+</body>
+</html>

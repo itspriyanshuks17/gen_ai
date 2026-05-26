@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chapter 1 — What is Machine Learning? | ML Notes</title>
+<link rel="stylesheet" href="shared.css">
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="nav-logo">ML<span>.</span>Notes</a>
+  <ul class="nav-links">
+    <li><a href="index.html" class="nav-back">← Home</a></li>
+    <li><a href="chapter2.html">Ch.2 Features</a></li>
+    <li><a href="chapter3.html">Ch.3 Regularization</a></li>
+    <li><a href="chapter4.html">Ch.4 Models</a></li>
+  </ul>
+</nav>
+
+<div class="page-hero">
+  <div class="page-hero-grid"></div>
+  <div class="page-hero-glow"></div>
+  <p class="page-eyebrow fade-up">Chapter 01</p>
+  <h1 class="page-title fade-up d1">What is <em>Machine Learning?</em></h1>
+  <p class="page-desc fade-up d2">A branch of AI that teaches computers to learn from data and make decisions or predictions without being explicitly programmed.</p>
+</div>
+
+<div class="page-layout">
+  <aside class="sidebar">
+    <div class="sidebar-section">
+      <p class="sidebar-label">This Chapter</p>
+      <ul class="sidebar-nav">
+        <li><a href="#intro" class="active">1.0 Introduction</a></li>
+        <li><a href="#lifecycle">1.1 ML Lifecycle</a></li>
+        <li><a href="#when">1.2 When to Use ML</a></li>
+        <li><a href="#types">1.3 Types of ML</a></li>
+        <li><a href="#regression">1.4 Regression</a></li>
+        <li><a href="#classification">1.5 Classification</a></li>
+        <li><a href="#clustering">1.6 Clustering</a></li>
+        <li><a href="#pipeline">1.7 ML Pipeline</a></li>
+      </ul>
+    </div>
+    <div class="sidebar-section">
+      <p class="sidebar-label">Next</p>
+      <ul class="sidebar-nav">
+        <li><a href="chapter2.html">Chapter 2 →</a></li>
+      </ul>
+    </div>
+  </aside>
+
+  <main class="main-content">
+
+    <!-- INTRO -->
+    <div class="content-section">
+      <span class="section-anchor" id="intro"></span>
+      <h2 class="section-h">Introduction <span class="section-badge">Foundation</span></h2>
+      <p><strong style="color:var(--white)">Machine Learning (ML)</strong>, a branch of AI, is a way to teach computers to learn from data and make decisions or predictions <em>without being explicitly programmed</em>.</p>
+      <div class="callout yellow">
+        <div class="callout-title">Think of it as</div>
+        Instead of writing rules for every situation, we let the computer find patterns from data and create its own rules.
+      </div>
+    </div>
+
+    <!-- LIFECYCLE -->
+    <div class="content-section">
+      <span class="section-anchor" id="lifecycle"></span>
+      <h2 class="section-h">1.1 Machine Learning Lifecycle</h2>
+      <div class="steps">
+        <div class="step"><div class="step-num">1</div><div class="step-body"><div class="step-title">Input Data</div><div class="step-desc">Raw training data is collected and prepared as the starting point.</div></div></div>
+        <div class="step"><div class="step-num">2</div><div class="step-body"><div class="step-title">Feature Engineering</div><div class="step-desc">Transform raw data into meaningful features the model can learn from.</div></div></div>
+        <div class="step"><div class="step-num">3</div><div class="step-body"><div class="step-title">Model Training (Pattern Recognition)</div><div class="step-desc">The model learns patterns from training data using algorithms.</div></div></div>
+        <div class="step"><div class="step-num">4</div><div class="step-body"><div class="step-title">Best Fit Model</div><div class="step-desc">The optimized model is selected based on performance metrics.</div></div></div>
+        <div class="step"><div class="step-num">5</div><div class="step-body"><div class="step-title">Prediction on Unseen Data</div><div class="step-desc">The trained model makes predictions on new, real-world data.</div></div></div>
+      </div>
+      <div class="callout green">
+        <div class="callout-title">Flow Summary</div>
+        Input Data → Feature Engineering → Model Training → Best Fit Model → Prediction
+      </div>
+    </div>
+
+    <!-- WHEN TO USE -->
+    <div class="content-section">
+      <span class="section-anchor" id="when"></span>
+      <h2 class="section-h">1.2 When to Use Machine Learning</h2>
+      <p>ML is the right tool in specific situations. Use it when:</p>
+      <ul class="content-list">
+        <li><strong>Rules are too complex or unknown</strong> to program manually (e.g. image recognition, natural language understanding)</li>
+        <li><strong>There's a lot of data</strong> with patterns that can be discovered through learning</li>
+        <li><strong>You need the system to improve over time</strong> as more data becomes available</li>
+      </ul>
+    </div>
+
+    <!-- TYPES -->
+    <div class="content-section">
+      <span class="section-anchor" id="types"></span>
+      <h2 class="section-h">1.3 Types of Machine Learning</h2>
+      <div class="compare-grid">
+        <div class="compare-card">
+          <div class="compare-card-title" style="color:var(--accent)">🎯 Supervised</div>
+          <p style="font-size:12.5px;color:var(--muted);margin-bottom:12px;">Learns from <strong>labeled data</strong> — input-output pairs are provided during training.</p>
+          <ul>
+            <li>Uses labeled training data</li>
+            <li>Learns input → output mapping</li>
+            <li>Examples: Spam detection, Disease diagnosis</li>
+          </ul>
+        </div>
+        <div class="compare-card">
+          <div class="compare-card-title" style="color:var(--accent3)">🔍 Unsupervised</div>
+          <p style="font-size:12.5px;color:var(--muted);margin-bottom:12px;">Finds <strong>hidden patterns</strong> in unlabeled data without guidance.</p>
+          <ul>
+            <li>No labeled data required</li>
+            <li>Discovers structure in data</li>
+            <li>Examples: Customer segmentation, Anomaly detection</li>
+          </ul>
+        </div>
+        <div class="compare-card">
+          <div class="compare-card-title" style="color:var(--accent2)">🎮 Reinforcement</div>
+          <p style="font-size:12.5px;color:var(--muted);margin-bottom:12px;">Learns through <strong>trial and error</strong> by interacting with an environment and receiving rewards.</p>
+          <ul>
+            <li>Agent takes actions in environment</li>
+            <li>Gets reward/penalty signals</li>
+            <li>Examples: Game playing (Chess), Self-driving cars</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- REGRESSION -->
+    <div class="content-section">
+      <span class="section-anchor" id="regression"></span>
+      <h2 class="section-h">1.4 Regression</h2>
+      <p>Regression is a type of supervised machine learning where the goal is to <strong style="color:var(--accent2)">predict a continuous numerical value</strong> based on input features.</p>
+
+      <h3 class="sub-h">Simple Regression</h3>
+      <p>One input feature → one continuous output (straight line)</p>
+      <div class="formula">
+        <span class="formula-label">Simple Linear</span>
+        y = θ₀ + θ₁X
+      </div>
+      <div class="callout">
+        <div class="callout-title">Example</div>
+        Years of Experience → Salary
+      </div>
+
+      <h3 class="sub-h">Multiple Regression</h3>
+      <p>Multiple input features → one continuous output (n-dimensional plane)</p>
+      <div class="formula">
+        <span class="formula-label">Multiple Linear</span>
+        y = θ₀ + θ₁X₁ + θ₂X₂ + θ₃X₃ + ... + θₙXₙ
+      </div>
+      <div class="callout">
+        <div class="callout-title">Example</div>
+        Experience + Skills + Education → Salary
+      </div>
+
+      <h3 class="sub-h">Applications of Regression</h3>
+      <ul class="content-list">
+        <li>House price prediction</li>
+        <li>Forecasting sales for next month</li>
+        <li>Estimating salary based on experience</li>
+        <li>Forecasting electricity consumption</li>
+      </ul>
+    </div>
+
+    <!-- CLASSIFICATION -->
+    <div class="content-section">
+      <span class="section-anchor" id="classification"></span>
+      <h2 class="section-h">1.5 Classification</h2>
+      <p>Classification is supervised ML where the goal is to <strong style="color:var(--accent2)">assign a label (class)</strong> to a given input based on its features. A <em>decision boundary</em> separates the classes.</p>
+
+      <h3 class="sub-h">Types of Classification</h3>
+      <div class="compare-grid">
+        <div class="compare-card">
+          <div class="compare-card-title">Binary Classification</div>
+          <ul>
+            <li>Predicts only 2 classes (0 or 1)</li>
+            <li>Email → Spam (1) or Not Spam (0)</li>
+            <li>Patient → Disease or No Disease</li>
+          </ul>
+        </div>
+        <div class="compare-card">
+          <div class="compare-card-title">Multi-class Classification</div>
+          <ul>
+            <li>Predicts more than 2 classes</li>
+            <li>Fruit → Apple, Banana, or Orange</li>
+            <li>Document → Category A, B, or C</li>
+          </ul>
+        </div>
+      </div>
+
+      <h3 class="sub-h">Applications</h3>
+      <ul class="content-list">
+        <li>Email filtering as spam or not spam</li>
+        <li>Medical diagnosis: disease or no disease</li>
+        <li>Loan approval: rejected or approved</li>
+        <li>Customer churn prediction: will leave or stay</li>
+      </ul>
+    </div>
+
+    <!-- CLUSTERING -->
+    <div class="content-section">
+      <span class="section-anchor" id="clustering"></span>
+      <h2 class="section-h">1.6 Clustering</h2>
+      <p>Clustering is an <strong style="color:var(--accent3)">unsupervised learning technique</strong> used to group similar data points together based on patterns in features, without using labeled outputs.</p>
+
+      <h3 class="sub-h">Types of Clustering</h3>
+
+      <h4 class="sub-sub-h">1. Partition-Based Clustering</h4>
+      <ul class="content-list">
+        <li>Divides data into non-overlapping clusters, each represented by a <strong>centroid</strong></li>
+        <li>Identifies K clusters with minimal variance</li>
+        <li>Efficient and scales well with large datasets</li>
+        <li>⚠️ Fails on non-spherical clusters; sensitive to outliers</li>
+      </ul>
+
+      <h4 class="sub-sub-h">2. Density-Based Clustering</h4>
+      <ul class="content-list">
+        <li>Groups data based on areas of <strong>high density</strong> of closely-packed points</li>
+        <li>Suitable for irregular-shaped clusters</li>
+        <li>Separates noise and outliers from clusters</li>
+        <li>No need to specify number of clusters</li>
+      </ul>
+
+      <h4 class="sub-sub-h">3. Hierarchical Clustering</h4>
+      <ul class="content-list">
+        <li>Builds a <strong>tree of clusters (dendrogram)</strong> by merging or splitting</li>
+        <li>Reveals relationships between clusters</li>
+        <li>⚠️ Computationally expensive</li>
+      </ul>
+
+      <div class="compare-grid">
+        <div class="compare-card">
+          <div class="compare-card-title">Agglomerative (Bottom-up)</div>
+          <ul>
+            <li>Starts with each observation as individual clusters</li>
+            <li>Merges similar clusters into larger parent clusters</li>
+          </ul>
+        </div>
+        <div class="compare-card">
+          <div class="compare-card-title">Divisive (Top-down)</div>
+          <ul>
+            <li>All observations in single root cluster</li>
+            <li>Iteratively splits into smaller child clusters</li>
+          </ul>
+        </div>
+      </div>
+
+      <h3 class="sub-h">Applications of Clustering</h3>
+      <ul class="content-list">
+        <li>Customer segmentation</li>
+        <li>Social network analysis</li>
+        <li>Anomaly detection</li>
+        <li>Fraud detection</li>
+        <li>Analyzing market segments</li>
+      </ul>
+    </div>
+
+    <!-- PIPELINE -->
+    <div class="content-section">
+      <span class="section-anchor" id="pipeline"></span>
+      <h2 class="section-h">1.7 Machine Learning Pipeline</h2>
+      <p>The end-to-end process of building and deploying an ML model:</p>
+      <div class="steps">
+        <div class="step"><div class="step-num">1</div><div class="step-body"><div class="step-title">Problem Definition</div><div class="step-desc">Clearly understand what you're solving — define the goal, output type, and success criteria.</div></div></div>
+        <div class="step"><div class="step-num">2</div><div class="step-body"><div class="step-title">Data Collection</div><div class="step-desc">Gather the right data from the right sources — structured, unstructured, APIs, databases.</div></div></div>
+        <div class="step"><div class="step-num">3</div><div class="step-body"><div class="step-title">Data Cleaning & Preprocessing</div><div class="step-desc">Handle missing values, remove duplicates, fix formats. Prepare data so it can be used in ML models.</div></div></div>
+        <div class="step"><div class="step-num">4</div><div class="step-body"><div class="step-title">Feature Engineering</div><div class="step-desc">Create or select the most meaningful features that influence the output.</div></div></div>
+        <div class="step"><div class="step-num">5</div><div class="step-body"><div class="step-title">Train / Test Split</div><div class="step-desc">Create training set to train the model and test set to evaluate performance after training.</div></div></div>
+        <div class="step"><div class="step-num">6</div><div class="step-body"><div class="step-title">Model Building</div><div class="step-desc">Choose and train an algorithm that learns patterns in data (Linear Reg, SVM, Random Forest, etc.)</div></div></div>
+        <div class="step"><div class="step-num">7</div><div class="step-body"><div class="step-title">Model Evaluation</div><div class="step-desc">Check how well your model performs on unseen test data using appropriate metrics.</div></div></div>
+        <div class="step"><div class="step-num">8</div><div class="step-body"><div class="step-title">Model Tuning & Optimization</div><div class="step-desc">Fine-tune hyperparameters to increase performance (cross-validation, grid search).</div></div></div>
+        <div class="step"><div class="step-num">9</div><div class="step-body"><div class="step-title">Model Deployment</div><div class="step-desc">Take the trained model and use it in the real world — as an API, embedded in apps, or in cloud.</div></div></div>
+        <div class="step"><div class="step-num">10</div><div class="step-body"><div class="step-title">Monitoring & Maintenance</div><div class="step-desc">Track performance over time. Watch for data drift, performance decay, and need for retraining.</div></div></div>
+      </div>
+    </div>
+
+    <div class="chapter-nav">
+      <a href="index.html"><span class="nav-dir">← Back to</span><span class="nav-title">Home</span></a>
+      <a href="chapter2.html"><span class="nav-dir">Next Chapter →</span><span class="nav-title">Feature Engineering</span></a>
+    </div>
+
+  </main>
+</div>
+
+<script>
+  // Sidebar active link on scroll
+  const sections = document.querySelectorAll('.section-anchor');
+  const links = document.querySelectorAll('.sidebar-nav a');
+  window.addEventListener('scroll', () => {
+    let cur = '';
+    sections.forEach(s => { if (window.scrollY >= s.offsetTop - 120) cur = s.id; });
+    links.forEach(l => {
+      l.classList.remove('active');
+      if (l.getAttribute('href') === '#' + cur) l.classList.add('active');
+    });
+  });
+</script>
+</body>
+</html>

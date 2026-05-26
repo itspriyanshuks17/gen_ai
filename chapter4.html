@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chapter 4 — Supervised ML Models | ML Notes</title>
+<link rel="stylesheet" href="shared.css">
+</head>
+<body>
+<nav>
+  <a href="index.html" class="nav-logo">ML<span>.</span>Notes</a>
+  <ul class="nav-links">
+    <li><a href="index.html" class="nav-back">← Home</a></li>
+    <li><a href="chapter3.html">Ch.3</a></li>
+    <li><a href="chapter5.html">Ch.5</a></li>
+    <li><a href="chapter6.html">Ch.6</a></li>
+  </ul>
+</nav>
+
+<div class="page-hero">
+  <div class="page-hero-grid"></div>
+  <div class="page-hero-glow" style="background:radial-gradient(circle, rgba(124,106,247,0.15) 0%, transparent 70%)"></div>
+  <p class="page-eyebrow fade-up">Chapter 04</p>
+  <h1 class="page-title fade-up d1">Supervised <em>ML Models</em></h1>
+  <p class="page-desc fade-up d2">Deep dives into 6 core supervised learning algorithms: Linear Regression, Polynomial Regression, Logistic Regression, Decision Trees, SVMs, and KNN.</p>
+</div>
+
+<div class="page-layout">
+  <aside class="sidebar">
+    <div class="sidebar-section">
+      <p class="sidebar-label">This Chapter</p>
+      <ul class="sidebar-nav">
+        <li><a href="#linear" class="active">4.1 Linear Regression</a></li>
+        <li><a href="#poly">4.2 Polynomial Regression</a></li>
+        <li><a href="#logistic">4.3 Logistic Regression</a></li>
+        <li><a href="#dtree">4.4 Decision Trees</a></li>
+        <li><a href="#svm">4.5 Support Vector Machines</a></li>
+        <li><a href="#knn">4.6 K Nearest Neighbors</a></li>
+      </ul>
+    </div>
+  </aside>
+
+  <main class="main-content">
+
+    <!-- LINEAR REGRESSION -->
+    <div class="content-section">
+      <span class="section-anchor" id="linear"></span>
+      <h2 class="section-h">4.1 Linear Regression <span class="section-badge">Regression</span></h2>
+      <p>Used to predict a <strong style="color:var(--accent2)">continuous numerical value</strong> based on one or more input features using a straight line. Works when the relationship between input and output is roughly linear.</p>
+
+      <div class="formula">
+        <span class="formula-label">Simple Linear</span>
+        y_pred = θ₀ + θ₁X
+      </div>
+      <div class="formula">
+        <span class="formula-label">Multiple Linear</span>
+        y_pred = θ₀ + θ₁X₁ + θ₂X₂ + ... + θₙXₙ
+      </div>
+      <div class="formula">
+        <span class="formula-label">Residual &amp; Loss</span>
+        Residual = y_actual − y_pred
+        Least Squares = Σ(y_actual − y_pred)²
+        Loss Function: MSE (Mean Squared Error)
+      </div>
+
+      <h3 class="sub-h">Assumptions</h3>
+      <ul class="content-list">
+        <li>Linear relationship between inputs and output</li>
+        <li>No multicollinearity (input features shouldn't be too correlated)</li>
+      </ul>
+
+      <h3 class="sub-h">Training Steps</h3>
+      <div class="steps">
+        <div class="step"><div class="step-num">1</div><div class="step-body"><div class="step-title">Initialize</div><div class="step-desc">Start with random values for slope and intercept (θ₀, θ₁)</div></div></div>
+        <div class="step"><div class="step-num">2</div><div class="step-body"><div class="step-title">Predict</div><div class="step-desc">Compute predictions using Y = θ₀ + θ₁X</div></div></div>
+        <div class="step"><div class="step-num">3</div><div class="step-body"><div class="step-title">Measure Error</div><div class="step-desc">Compare predictions with actual values using MSE</div></div></div>
+        <div class="step"><div class="step-num">4</div><div class="step-body"><div class="step-title">Optimize</div><div class="step-desc">Use Gradient Descent to update weights and reduce error</div></div></div>
+        <div class="step"><div class="step-num">5</div><div class="step-body"><div class="step-title">Repeat</div><div class="step-desc">Iterate until error stops improving (convergence)</div></div></div>
+      </div>
+
+      <div class="pros-cons">
+        <div class="pros"><div class="pros-title">Advantages</div><ul><li>Easy to understand and implement</li><li>Fast to train even on large datasets</li><li>Doesn't require tuning</li></ul></div>
+        <div class="cons"><div class="cons-title">Disadvantages</div><ul><li>Assumes linear relationship (not always true)</li><li>Very sensitive to outliers</li><li>Poor with highly correlated features</li><li>Can underfit complex patterns</li></ul></div>
+      </div>
+    </div>
+
+    <!-- POLYNOMIAL REGRESSION -->
+    <div class="content-section">
+      <span class="section-anchor" id="poly"></span>
+      <h2 class="section-h">4.2 Polynomial Regression <span class="section-badge">Regression</span></h2>
+      <p>Used to model <strong style="color:var(--accent2)">non-linear relationships</strong>. Think of it as linear regression with extra powers of X (X², X³) to better fit curved pattern data.</p>
+      <div class="callout yellow">
+        <div class="callout-title">Key Insight</div>
+        The underlying model is still linear regression — but the features are transformed to polynomial features (X, X², X³, ...).
+      </div>
+      <div class="formula">
+        <span class="formula-label">Polynomial</span>
+        Y = b₀ + b₁X + b₂X² + b₃X³ + ... + bₙXⁿ
+        where X², X³ = new features (higher-order terms)
+      </div>
+
+      <h3 class="sub-h">Training</h3>
+      <ul class="content-list">
+        <li>Add new polynomial features (X², X³, etc.) to your dataset</li>
+        <li>Use regular linear regression to fit those features</li>
+        <li>Find the best curve that minimizes error (like MSE)</li>
+      </ul>
+
+      <div class="pros-cons">
+        <div class="pros"><div class="pros-title">Advantages</div><ul><li>Can model non-linear relationships</li><li>Uses simple linear model internally</li></ul></div>
+        <div class="cons"><div class="cons-title">Disadvantages</div><ul><li>Can create weird curves outside data range</li><li>Sensitive to outliers</li><li>High degrees = more overfitting risk</li></ul></div>
+      </div>
+    </div>
+
+    <!-- LOGISTIC REGRESSION -->
+    <div class="content-section">
+      <span class="section-anchor" id="logistic"></span>
+      <h2 class="section-h">4.3 Logistic Regression <span class="section-badge">Classification</span></h2>
+      <p>Despite the name, Logistic Regression is a <strong style="color:var(--accent2)">classification algorithm</strong> used to classify data into two categories. Instead of predicting a number, it predicts a <em>probability</em>.</p>
+
+      <div class="formula">
+        <span class="formula-label">Sigmoid Function</span>
+        P = 1 / (1 + e^(−y_pred))
+        where y_pred = θ₀ + θ₁X
+      </div>
+      <div class="callout">
+        <div class="callout-title">How it Works</div>
+        The linear score is passed through a sigmoid function → squashes output between 0 and 1 → this probability is converted to class (0 or 1) using a threshold (default 0.5)
+      </div>
+
+      <table class="data-table">
+        <thead><tr><th>Predicted Probability</th><th>Class (threshold = 0.5)</th></tr></thead>
+        <tbody>
+          <tr><td>0.8</td><td style="color:var(--accent3)">Class 1 (Yes)</td></tr>
+          <tr><td>0.3</td><td style="color:var(--accent4)">Class 0 (No)</td></tr>
+        </tbody>
+      </table>
+
+      <h3 class="sub-h">Loss Function</h3>
+      <p><strong>Binary Cross-Entropy (Log Loss)</strong> — measures how far off the probability prediction is from the actual class label.</p>
+
+      <h3 class="sub-h">Training</h3>
+      <div class="steps">
+        <div class="step"><div class="step-num">1</div><div class="step-body"><div class="step-title">Initialize Weights</div><div class="step-desc">Start with random weights θ₀, θ₁</div></div></div>
+        <div class="step"><div class="step-num">2</div><div class="step-body"><div class="step-title">Compute Score</div><div class="step-desc">z = θ₀ + θ₁X for each data point</div></div></div>
+        <div class="step"><div class="step-num">3</div><div class="step-body"><div class="step-title">Apply Sigmoid</div><div class="step-desc">P = sigmoid(z) → probability between 0 and 1</div></div></div>
+        <div class="step"><div class="step-num">4</div><div class="step-body"><div class="step-title">Compute Loss</div><div class="step-desc">Cross-entropy loss between predicted probability and actual label</div></div></div>
+        <div class="step"><div class="step-num">5</div><div class="step-body"><div class="step-title">Update Weights</div><div class="step-desc">Gradient descent to reduce loss</div></div></div>
+      </div>
+
+      <div class="pros-cons">
+        <div class="pros"><div class="pros-title">Advantages</div><ul><li>Works well on linearly separable data</li><li>Fast to train and predict</li><li>Easy to understand and implement</li></ul></div>
+        <div class="cons"><div class="cons-title">Disadvantages</div><ul><li>Struggles with non-linear relationships</li><li>Sensitive to outliers</li><li>Not ideal when features are highly correlated</li><li>Doesn't handle complex decision boundaries</li></ul></div>
+      </div>
+    </div>
+
+    <!-- DECISION TREES -->
+    <div class="content-section">
+      <span class="section-anchor" id="dtree"></span>
+      <h2 class="section-h">4.4 Decision Trees <span class="section-badge">Both</span></h2>
+      <p>A supervised algorithm that mimics <strong style="color:var(--accent2)">human decision-making</strong> by breaking a dataset into smaller subsets while building a tree structure. Works for both classification and regression.</p>
+
+      <h3 class="sub-h">Tree Anatomy</h3>
+      <div class="compare-grid">
+        <div class="compare-card"><div class="compare-card-title">Root Node</div><ul><li>Represents the best feature to split on</li><li>Top of the tree</li></ul></div>
+        <div class="compare-card"><div class="compare-card-title">Internal Nodes</div><ul><li>Each represents a feature</li><li>Contains a decision rule</li></ul></div>
+        <div class="compare-card"><div class="compare-card-title">Branch</div><ul><li>Represents a decision rule outcome</li><li>Connects nodes</li></ul></div>
+        <div class="compare-card"><div class="compare-card-title">Leaf Node</div><ul><li>Classification: gives class label</li><li>Regression: gives avg numerical value</li></ul></div>
+      </div>
+
+      <h3 class="sub-h">Training Algorithm</h3>
+      <ol class="content-list">
+        <li>Start with a root node</li>
+        <li>Find the feature that best splits data into its pre-labeled classes</li>
+        <li>Each split partitions the input data → passes along branches to new nodes</li>
+        <li>Repeat for each new node (each feature used only once) until stopping criterion</li>
+      </ol>
+
+      <h3 class="sub-h">Tree Pruning</h3>
+      <p>A deep tree may overfit. Pruning removes less informative branches to improve generalizability.</p>
+      <ul class="content-list">
+        <li>Maximum depth is reached</li>
+        <li>Minimum number of data points in a node exceeded</li>
+        <li>Minimum samples in a leaf exceeded</li>
+        <li>Maximum number of leaf nodes reached</li>
+      </ul>
+
+      <h3 class="sub-h">Choosing the Best Feature — Splitting Criteria</h3>
+      <div class="callout yellow">
+        <div class="callout-title">The Goal</div>
+        Find the feature that splits data to produce the <strong>purest possible child nodes</strong>.
+      </div>
+      <div class="compare-grid">
+        <div class="compare-card"><div class="compare-card-title" style="color:var(--accent)">For Classification</div><ul><li><strong>Entropy</strong> — measures information disorder</li><li><strong>Information Gain</strong> — how much entropy is reduced by a split</li><li>Higher IG = better feature for splitting</li></ul></div>
+        <div class="compare-card"><div class="compare-card-title" style="color:var(--accent3)">For Regression</div><ul><li><strong>MSE</strong> — Mean Squared Error</li><li><strong>MAE</strong> — Mean Absolute Error</li><li>Minimizes prediction error in each leaf</li></ul></div>
+      </div>
+
+      <div class="formula">
+        <span class="formula-label">Entropy</span>
+        Entropy = −Σ pᵢ × log₂(pᵢ)
+        If entropy = 0 → pure node (one class only)
+        Higher entropy = more mixed classes
+      </div>
+    </div>
+
+    <!-- SVM -->
+    <div class="content-section">
+      <span class="section-anchor" id="svm"></span>
+      <h2 class="section-h">4.5 Support Vector Machines <span class="section-badge">Both</span></h2>
+      <p>SVM (Support Vector Machine) is used for both classification (<strong>SVC</strong>) and regression (<strong>SVR</strong>).</p>
+
+      <div class="callout">
+        <div class="callout-title">Core Idea</div>
+        SVM tries to find a <strong>hyperplane</strong> that divides data into two classes with the <strong>widest possible margin</strong> between the closest points (support vectors) of each class.
+      </div>
+
+      <h3 class="sub-h">Key Concepts</h3>
+      <div class="compare-grid">
+        <div class="compare-card"><div class="compare-card-title">Hyperplane</div><ul><li>The decision boundary separating classes</li><li>In 2D: a line; in 3D: a plane</li></ul></div>
+        <div class="compare-card"><div class="compare-card-title">Support Vectors</div><ul><li>Data points closest to the hyperplane</li><li>These define the margin boundaries</li></ul></div>
+        <div class="compare-card"><div class="compare-card-title">Margin</div><ul><li>Distance between hyperplane and support vectors</li><li>Larger margin = better generalization</li></ul></div>
+      </div>
+
+      <h3 class="sub-h">Soft Margins (C Parameter)</h3>
+      <p>Real data is noisy and overlapping. Soft margins allow some misclassifications to achieve a better overall margin.</p>
+      <table class="data-table">
+        <thead><tr><th>C Value</th><th>Margin</th><th>Effect</th></tr></thead>
+        <tbody>
+          <tr><td style="color:var(--accent3)">Low C</td><td>Soft (wide)</td><td>More misclassifications, high bias, underfitting risk</td></tr>
+          <tr><td style="color:var(--accent4)">High C</td><td>Hard (narrow)</td><td>Fewer errors, but risk of overfitting</td></tr>
+        </tbody>
+      </table>
+
+      <h3 class="sub-h">Kernels — Handling Non-Linear Data</h3>
+      <p>Real-world data is rarely linearly separable. SVM uses <strong>kernel tricks</strong> to transform data into higher dimensions where a hyperplane can separate them.</p>
+      <table class="data-table">
+        <thead><tr><th>Kernel</th><th>Use Case</th></tr></thead>
+        <tbody>
+          <tr><td><strong style="color:var(--accent)">Linear</strong></td><td>When data is linearly separable</td></tr>
+          <tr><td><strong style="color:var(--accent3)">Polynomial</strong></td><td>When data has polynomial relations</td></tr>
+          <tr><td><strong style="color:var(--accent2)">RBF (Radial Basis Functions)</strong></td><td>Most commonly used for complex, non-linear data</td></tr>
+          <tr><td><strong style="color:var(--muted)">Sigmoid</strong></td><td>Less common; similar to neural network activation</td></tr>
+        </tbody>
+      </table>
+
+      <h3 class="sub-h">SVR — Epsilon Parameter</h3>
+      <div class="formula">
+        <span class="formula-label">SVR Epsilon Tube</span>
+        Smaller ε → Tighter tube → Overfitting
+        Larger ε → Allow error → Smoother model (less noise-sensitive)
+      </div>
+      <p>Points <em>inside</em> the epsilon tube: <strong style="color:var(--accent3)">No penalty</strong>. Points <em>outside</em>: <strong style="color:var(--accent4)">Penalized</strong> (adds to loss).</p>
+
+      <div class="pros-cons">
+        <div class="pros"><div class="pros-title">Advantages</div><ul><li>High accuracy in high-dimensional spaces</li><li>Handles linear and non-linear data</li></ul></div>
+        <div class="cons"><div class="cons-title">Disadvantages</div><ul><li>Poor performance on large datasets</li><li>Requires careful hyperparameter tuning</li><li>Harder to interpret than decision trees</li><li>Struggles with noisy overlapping classes</li></ul></div>
+      </div>
+    </div>
+
+    <!-- KNN -->
+    <div class="content-section">
+      <span class="section-anchor" id="knn"></span>
+      <h2 class="section-h">4.6 K Nearest Neighbors (KNN) <span class="section-badge">Both</span></h2>
+      <p>KNN predicts a value or class based on how its <strong style="color:var(--accent2)">nearest neighbors</strong> are labeled. Also called a <em>lazy learner</em> because it does no computation during training.</p>
+
+      <div class="callout yellow">
+        <div class="callout-title">Why "Lazy Learner"?</div>
+        <ul class="content-list" style="margin:0">
+          <li>No computation during training (just memorizes data)</li>
+          <li>All computation happens at prediction time</li>
+          <li>Computes distances to all training points for each new input</li>
+        </ul>
+      </div>
+
+      <h3 class="sub-h">Working</h3>
+      <ol class="content-list">
+        <li>Pick a value for K (number of neighbors)</li>
+        <li>For each query point, measure distance to all training samples</li>
+        <li>Select K nearest neighbors (top-K smallest distances)</li>
+        <li>For Classification: pick majority class among neighbors</li>
+        <li>For Regression: take average/median of neighbors' target values</li>
+      </ol>
+
+      <h3 class="sub-h">Handling Imbalanced Classes</h3>
+      <p>In skewed/imbalanced datasets, new predictions will tend to belong to the majority class.</p>
+      <div class="compare-grid">
+        <div class="compare-card"><div class="compare-card-title">Solution 1: Weight Classification</div><ul><li>Assign weights to neighbors based on distance</li><li>Closer neighbors get more influence</li></ul></div>
+        <div class="compare-card"><div class="compare-card-title">Solution 2: Resampling</div><ul><li>Oversampling minority class (SMOTE)</li><li>Undersampling majority class</li></ul></div>
+      </div>
+
+      <div class="callout red">
+        <div class="callout-title">⚠️ Curse of Dimensionality</div>
+        As number of features increases, distances become less meaningful — all points appear equidistant. KNN suffers badly with many features.
+      </div>
+
+      <div class="pros-cons">
+        <div class="pros"><div class="pros-title">Advantages</div><ul><li>No training time</li><li>Works well with small datasets</li><li>Naturally adapts to new data</li></ul></div>
+        <div class="cons"><div class="cons-title">Disadvantages</div><ul><li>Requires storing entire dataset (memory-heavy)</li><li>Slow predictions on large datasets</li><li>Sensitive to irrelevant/noisy features</li><li>Requires feature scaling</li><li>Suffers from curse of dimensionality</li></ul></div>
+      </div>
+    </div>
+
+    <div class="chapter-nav">
+      <a href="chapter3.html"><span class="nav-dir">← Previous</span><span class="nav-title">Chapter 3: Regularization</span></a>
+      <a href="chapter5.html"><span class="nav-dir">Next Chapter →</span><span class="nav-title">Errors in ML</span></a>
+    </div>
+
+  </main>
+</div>
+
+<script>
+  const sections = document.querySelectorAll('.section-anchor');
+  const links = document.querySelectorAll('.sidebar-nav a');
+  window.addEventListener('scroll', () => {
+    let cur = '';
+    sections.forEach(s => { if (window.scrollY >= s.offsetTop - 120) cur = s.id; });
+    links.forEach(l => { l.classList.remove('active'); if (l.getAttribute('href') === '#' + cur) l.classList.add('active'); });
+  });
+</script>
+</body>
+</html>

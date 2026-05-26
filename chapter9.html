@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chapter 9 — Hyperparameter Tuning | ML Notes</title>
+<link rel="stylesheet" href="shared.css">
+</head>
+<body>
+<nav>
+  <a href="index.html" class="nav-logo">ML<span>.</span>Notes</a>
+  <ul class="nav-links">
+    <li><a href="index.html" class="nav-back">← Home</a></li>
+    <li><a href="chapter8.html">Ch.8 PCA</a></li>
+    <li><a href="chapter10.html">Ch.10 Metrics</a></li>
+  </ul>
+</nav>
+
+<div class="page-hero">
+  <div class="page-hero-grid"></div>
+  <div class="page-hero-glow" style="background:radial-gradient(circle, rgba(247,200,106,0.15) 0%, transparent 70%)"></div>
+  <p class="page-eyebrow fade-up">Chapter 09</p>
+  <h1 class="page-title fade-up d1">Hyperparameter <em>Tuning</em></h1>
+  <p class="page-desc fade-up d2">Configure model parameters optimally. Master data splitting strategies, K-Fold cross-validation, Grid Search, and Random Search.</p>
+</div>
+
+<div class="page-layout">
+  <aside class="sidebar">
+    <div class="sidebar-section">
+      <p class="sidebar-label">This Chapter</p>
+      <ul class="sidebar-nav">
+        <li><a href="#validation" class="active">9.1 Model Validation</a></li>
+        <li><a href="#splitting">9.2 Data Splitting</a></li>
+        <li><a href="#crossval">9.3 Cross-Validation</a></li>
+        <li><a href="#tuning">9.4 Tuning Methods</a></li>
+      </ul>
+    </div>
+    <div class="sidebar-section">
+      <p class="sidebar-label">Next</p>
+      <ul class="sidebar-nav">
+        <li><a href="chapter10.html">Chapter 10 →</a></li>
+      </ul>
+    </div>
+  </aside>
+
+  <main class="main-content">
+
+    <!-- MODEL VALIDATION -->
+    <div class="content-section">
+      <span class="section-anchor" id="validation"></span>
+      <h2 class="section-h">9.1 Model Validation <span class="section-badge">Concepts</span></h2>
+      <p>Hyperparameters are the settings of the model that you choose and configure manually <em>before training begins</em> (such as the number of trees in a random forest, learning rate, regularization coefficient $\lambda$, or K in KNN).</p>
+      <p><strong style="color:var(--white)">Model Validation</strong> is the process of testing how well your model performs on unseen data. Optimizing hyperparameters without compromising the validation process prevents overfitting when selecting the best configuration.</p>
+
+      <div class="callout yellow">
+        <div class="callout-title">Validation Set</div>
+        A subset of the training set used during model optimization to evaluate different configurations (hyperparameters) without touching or leaking the final test data.
+      </div>
+    </div>
+
+    <!-- DATA SPLITTING -->
+    <div class="content-section">
+      <span class="section-anchor" id="splitting"></span>
+      <h2 class="section-h">9.2 Data Splitting Strategy</h2>
+      <p>To properly train and evaluate models, datasets are divided into three mutually exclusive subsets:</p>
+
+      <div class="compare-grid">
+        <div class="compare-card">
+          <div class="compare-card-title" style="color:var(--accent)">🏋️ Training Set</div>
+          <p style="font-size: 13px; color: var(--muted);">Used by the algorithm to learn patterns, optimize weights, and fit model parameters.</p>
+        </div>
+        <div class="compare-card">
+          <div class="compare-card-title" style="color:var(--accent2)">🔬 Validation Set</div>
+          <p style="font-size: 13px; color: var(--muted);">Used during model tuning to evaluate different hyperparameter combinations and select the best setup.</p>
+        </div>
+        <div class="compare-card">
+          <div class="compare-card-title" style="color:var(--accent3)">🎯 Test Set</div>
+          <p style="font-size: 13px; color: var(--muted);">Held back completely until the final step. Used to provide an unbiased estimate of real-world generalization performance.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- CROSS VALIDATION -->
+    <div class="content-section">
+      <span class="section-anchor" id="crossval"></span>
+      <h2 class="section-h">9.3 Cross-Validation <span class="section-badge">Methods</span></h2>
+      <p>Cross-Validation is a robust and effective method to validate your model by utilizing all available data for both training and validation without leaking information.</p>
+      <p>It splits the dataset into multiple folds, trains the model, and validates it multiple times across different configurations.</p>
+
+      <h3 class="sub-h">Types of Cross-Validation</h3>
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">1</div>
+          <div class="step-body">
+            <div class="step-title">K-Fold Cross-Validation</div>
+            <div class="step-desc">
+              <ul style="margin: 4px 0; padding-left: 20px;">
+                <li>Split the dataset into K equal-sized parts (folds).</li>
+                <li>Use K-1 folds to train the model, and the remaining 1 fold for validation.</li>
+                <li>Repeat this process K times, rotationally changing the validation fold.</li>
+                <li>Average the performance metrics across all K runs to obtain a stable score.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">2</div>
+          <div class="step-body">
+            <div class="step-title">Stratified K-Fold Cross-Validation</div>
+            <div class="step-desc">
+              Like K-Fold, but ensures that each fold maintains the same percentage of samples for each target class as the complete dataset. Essential for <strong>imbalanced classification tasks</strong> to prevent folds from missing class representations.
+            </div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">3</div>
+          <div class="step-body">
+            <div class="step-title">Time Series Split</div>
+            <div class="step-desc">
+              Used for time-series and sequential data where data ordering is critical. It ensures that the validation set <strong>always chronologically follows</strong> the training set, preventing the model from "peeking" into the future.
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TUNING METHODS -->
+    <div class="content-section">
+      <span class="section-anchor" id="tuning"></span>
+      <h2 class="section-h">9.4 Methods of Hyperparameter Tuning</h2>
+      <p>Two primary strategies are used to search the hyperparameter configuration space:</p>
+
+      <div class="compare-grid">
+        <div class="compare-card">
+          <div class="compare-card-title" style="color:var(--accent4)">Grid Search (Exhaustive)</div>
+          <p style="font-size: 13px; color: var(--muted); margin-bottom: 12px;">Attempts **every single possible combination** of hyperparameters within a predefined search grid.</p>
+          <ul class="content-list" style="font-size: 12px;">
+            <li>Guarantees finding the absolute best point in the defined grid.</li>
+            <li>⚠️ Highly computationally expensive and slow. Complexity scales exponentially with the number of hyperparameters.</li>
+          </ul>
+        </div>
+        <div class="compare-card">
+          <div class="compare-card-title" style="color:var(--accent3)">Random Search (Stochastic)</div>
+          <p style="font-size: 13px; color: var(--muted); margin-bottom: 12px;">Evaluates a **randomly sampled selection of configurations** from the hyperparameter space for a fixed number of iterations.</p>
+          <ul class="content-list" style="font-size: 12px;">
+            <li>Drastically faster and more efficient than Grid Search.</li>
+            <li>Highly effective because most model performances are dominated by only a few key hyperparameters.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="chapter-nav">
+      <a href="chapter8.html"><span class="nav-dir">← Previous</span><span class="nav-title">Chapter 8: PCA</span></a>
+      <a href="chapter10.html"><span class="nav-dir">Next Chapter →</span><span class="nav-title">Model Evaluation Metrics</span></a>
+    </div>
+
+  </main>
+</div>
+
+<script>
+  const sections = document.querySelectorAll('.section-anchor');
+  const links = document.querySelectorAll('.sidebar-nav a');
+  window.addEventListener('scroll', () => {
+    let cur = '';
+    sections.forEach(s => { if (window.scrollY >= s.offsetTop - 120) cur = s.id; });
+    links.forEach(l => { l.classList.remove('active'); if (l.getAttribute('href') === '#' + cur) l.classList.add('active'); });
+  });
+</script>
+</body>
+</html>

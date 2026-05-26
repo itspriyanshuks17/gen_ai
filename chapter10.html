@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chapter 10 — Model Evaluation Metrics | ML Notes</title>
+<link rel="stylesheet" href="shared.css">
+</head>
+<body>
+<nav>
+  <a href="index.html" class="nav-logo">ML<span>.</span>Notes</a>
+  <ul class="nav-links">
+    <li><a href="index.html" class="nav-back">← Home</a></li>
+    <li><a href="chapter9.html">Ch.9 Tuning</a></li>
+    <li><a href="llm.html" style="color:var(--accent2); font-weight: bold;">LLM Notes →</a></li>
+  </ul>
+</nav>
+
+<div class="page-hero">
+  <div class="page-hero-grid"></div>
+  <div class="page-hero-glow" style="background:radial-gradient(circle, rgba(124,106,247,0.15) 0%, transparent 70%)"></div>
+  <p class="page-eyebrow fade-up">Chapter 10</p>
+  <h1 class="page-title fade-up d1">Evaluation <em>Metrics</em></h1>
+  <p class="page-desc fade-up d2">Quantify model performance. Master metrics for classification, regression, and unsupervised clustering algorithms.</p>
+</div>
+
+<div class="page-layout">
+  <aside class="sidebar">
+    <div class="sidebar-section">
+      <p class="sidebar-label">This Chapter</p>
+      <ul class="sidebar-nav">
+        <li><a href="#classification" class="active">10.1 Classification Metrics</a></li>
+        <li><a href="#regression">10.2 Regression Metrics</a></li>
+        <li><a href="#clustering">10.3 Clustering Metrics</a></li>
+      </ul>
+    </div>
+    <div class="sidebar-section">
+      <p class="sidebar-label">Companion Book</p>
+      <ul class="sidebar-nav">
+        <li><a href="llm.html" style="color:var(--accent2); font-weight:bold;">Large Language Models →</a></li>
+      </ul>
+    </div>
+  </aside>
+
+  <main class="main-content">
+
+    <!-- CLASSIFICATION METRICS -->
+    <div class="content-section">
+      <span class="section-anchor" id="classification"></span>
+      <h2 class="section-h">10.1 Classification Metrics <span class="section-badge">Supervised</span></h2>
+      <p>Classification metrics measure how correctly a model assigns target classes or labels to input data.</p>
+
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Metric</th>
+            <th>Description &amp; Use Case</th>
+            <th>Mathematical Formula</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Accuracy</strong></td>
+            <td>Overall correctness of the model. Best when class distributions are well-balanced.</td>
+            <td>
+              <div class="formula" style="margin: 0; padding: 6px 12px; font-size: 11.5px; border-left-color: var(--accent);">
+                (TP + TN) / (TP + TN + FP + FN)
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td><strong>Precision</strong></td>
+            <td>Of all predicted positive instances, how many were actually positive. Crucial in cost-minimizing cases like <strong>spam detection</strong> (reducing false positives).</td>
+            <td>
+              <div class="formula" style="margin: 0; padding: 6px 12px; font-size: 11.5px; border-left-color: var(--accent2);">
+                TP / (TP + FP)
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td><strong>Recall (Sensitivity)</strong></td>
+            <td>Of all actual positive instances, how many were correctly identified. Crucial in high-risk cases like <strong>medical diagnostics</strong> (reducing false negatives).</td>
+            <td>
+              <div class="formula" style="margin: 0; padding: 6px 12px; font-size: 11.5px; border-left-color: var(--accent3);">
+                TP / (TP + FN)
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td><strong>F1 Score</strong></td>
+            <td>The harmonic mean of precision and recall. Provides a balanced score, especially when dealing with <strong>imbalanced target classes</strong>.</td>
+            <td>
+              <div class="formula" style="margin: 0; padding: 6px 12px; font-size: 11.5px; border-left-color: var(--accent4);">
+                2 × (Precision × Recall) / (Precision + Recall)
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3 class="sub-h" style="margin-top: 24px;">The Confusion Matrix</h3>
+      <p>A structured table mapping actual class labels against predicted ones. Used as the core foundation to compute all evaluation metrics:</p>
+      
+      <div style="display:flex; justify-content:center; margin: 20px 0;">
+        <table style="max-width: 400px; border: 1px solid var(--border); border-collapse: collapse; text-align: center;">
+          <thead>
+            <tr>
+              <th colspan="2" rowspan="2" style="background:var(--surface2);"></th>
+              <th colspan="2" style="text-align:center; background: var(--surface2);">Predicted Class</th>
+            </tr>
+            <tr>
+              <th style="text-align:center; border: 1px solid var(--border); font-size:10px;">Positive (1)</th>
+              <th style="text-align:center; border: 1px solid var(--border); font-size:10px;">Negative (0)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <th rowspan="2" style="vertical-align: middle; background:var(--surface2); border: 1px solid var(--border); font-size:10px; padding: 10px;">Actual<br>Class</th>
+              <td style="font-weight:bold; border: 1px solid var(--border); padding: 14px; font-size:10px;">Positive (1)</td>
+              <td style="background:rgba(106,247,200,0.12); color:var(--accent3); font-weight:600; border: 1px solid var(--border); padding: 14px;">True Positive (TP)</td>
+              <td style="background:rgba(247,106,154,0.12); color:var(--accent4); font-weight:600; border: 1px solid var(--border); padding: 14px;">False Negative (FN)</td>
+            </tr>
+            <tr>
+              <td style="font-weight:bold; border: 1px solid var(--border); padding: 14px; font-size:10px;">Negative (0)</td>
+              <td style="background:rgba(247,106,154,0.12); color:var(--accent4); font-weight:600; border: 1px solid var(--border); padding: 14px;">False Positive (FP)</td>
+              <td style="background:rgba(106,247,200,0.12); color:var(--accent3); font-weight:600; border: 1px solid var(--border); padding: 14px;">True Negative (TN)</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- REGRESSION METRICS -->
+    <div class="content-section">
+      <span class="section-anchor" id="regression"></span>
+      <h2 class="section-h">10.2 Regression Metrics <span class="section-badge">Supervised</span></h2>
+      <p>Regression metrics quantify the error or deviation between continuous numerical predictions and actual targets.</p>
+
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Metric</th>
+            <th>Description &amp; Interpretation</th>
+            <th>Mathematical Formula</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>MAE (Mean Absolute Error)</strong></td>
+            <td>The average of the absolute differences between actual values and predictions. Intuitively simple and easy to interpret in same units as the target.</td>
+            <td>
+              <div class="formula" style="margin: 0; padding: 6px 12px; font-size: 11.5px; border-left-color: var(--accent);">
+                MAE = (1/n) × Σ |y - ŷ|
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td><strong>MSE (Mean Squared Error)</strong></td>
+            <td>The average of the squared errors. By squaring the differences, it **heavily penalizes larger errors**, making it ideal when large mistakes are highly undesirable.</td>
+            <td>
+              <div class="formula" style="margin: 0; padding: 6px 12px; font-size: 11.5px; border-left-color: var(--accent4);">
+                MSE = (1/n) × Σ (y - ŷ)²
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td><strong>RMSE (Root Mean Squared Error)</strong></td>
+            <td>The square root of the MSE. It penalizes larger errors similarly to MSE, but returns the units back to the target's scale for easier interpretation.</td>
+            <td>
+              <div class="formula" style="margin: 0; padding: 6px 12px; font-size: 11.5px; border-left-color: var(--accent2);">
+                RMSE = √(MSE)
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td><strong>R² Score (R-squared)</strong></td>
+            <td>The coefficient of determination. Represents the proportion of variance in the target explained by the input features. Ranges from -&infin; to 1 (1 indicates perfect fit).</td>
+            <td>
+              <div class="formula" style="margin: 0; padding: 6px 12px; font-size: 11.5px; border-left-color: var(--accent3);">
+                R² = 1 - [Σ(y - ŷ)² / Σ(y - ȳ)²]
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- CLUSTERING METRICS -->
+    <div class="content-section">
+      <span class="section-anchor" id="clustering"></span>
+      <h2 class="section-h">10.3 Clustering Metrics <span class="section-badge">Unsupervised</span></h2>
+      <p>Clustering metrics evaluate the separation, compactness, and quality of grouped data in unsupervised spaces where ground truth target labels are unavailable.</p>
+
+      <div class="compare-grid">
+        <div class="compare-card">
+          <div class="compare-card-title" style="color:var(--accent3)">Silhouette Score</div>
+          <p style="font-size: 13px; color: var(--muted); margin-bottom: 12px;">Measures how closely matched a point is to its own cluster compared to neighboring clusters.</p>
+          <div class="formula" style="margin: 0 0 12px; padding: 8px 16px; font-size: 11px;">
+            s(i) = (b - a) / max(a, b)
+          </div>
+          <p style="font-size: 11.5px; color: var(--muted); line-height: 1.5;">Where <strong>a</strong> represents the mean intra-cluster distance, and <strong>b</strong> represents the mean distance to the nearest neighboring cluster. Ranges from -1 to +1.</p>
+        </div>
+        <div class="compare-card">
+          <div class="compare-card-title" style="color:var(--accent4)">Inertia (Within-Cluster Sum of Squares)</div>
+          <p style="font-size: 13px; color: var(--muted); margin-bottom: 12px;">Measures the tightness or compactness of clusters by calculating distance to their respective centroids.</p>
+          <div class="formula" style="margin: 0 0 12px; padding: 8px 16px; font-size: 11px;">
+            Inertia = Σ (x - cᵢ)²
+          </div>
+          <p style="font-size: 11.5px; color: var(--muted); line-height: 1.5;">Calculates the sum of squared Euclidean distances between each point and its assigned cluster centroid $c_i$. Lower inertia indicates tighter clusters (used as K-Means objective function).</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="chapter-nav">
+      <a href="chapter9.html"><span class="nav-dir">← Previous</span><span class="nav-title">Chapter 9: Hyperparameter Tuning</span></a>
+      <a href="llm.html" style="border-color: rgba(247,200,106,0.45); background: linear-gradient(to right, rgba(20,20,28,0.4), rgba(247,200,106,0.06));"><span class="nav-dir" style="color: var(--accent2);">Start Next Book →</span><span class="nav-title" style="color: var(--accent2);">Foundational LLMs</span></a>
+    </div>
+
+  </main>
+</div>
+
+<script>
+  const sections = document.querySelectorAll('.section-anchor');
+  const links = document.querySelectorAll('.sidebar-nav a');
+  window.addEventListener('scroll', () => {
+    let cur = '';
+    sections.forEach(s => { if (window.scrollY >= s.offsetTop - 120) cur = s.id; });
+    links.forEach(l => { l.classList.remove('active'); if (l.getAttribute('href') === '#' + cur) l.classList.add('active'); });
+  });
+</script>
+</body>
+</html>

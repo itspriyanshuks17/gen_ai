@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chapter 8 — PCA & Dimensionality Reduction | ML Notes</title>
+<link rel="stylesheet" href="shared.css">
+</head>
+<body>
+<nav>
+  <a href="index.html" class="nav-logo">ML<span>.</span>Notes</a>
+  <ul class="nav-links">
+    <li><a href="index.html" class="nav-back">← Home</a></li>
+    <li><a href="chapter7.html">Ch.7 Unsupervised</a></li>
+    <li><a href="chapter9.html">Ch.9 Tuning</a></li>
+  </ul>
+</nav>
+
+<div class="page-hero">
+  <div class="page-hero-grid"></div>
+  <div class="page-hero-glow" style="background:radial-gradient(circle, rgba(247,106,154,0.15) 0%, transparent 70%)"></div>
+  <p class="page-eyebrow fade-up">Chapter 08</p>
+  <h1 class="page-title fade-up d1">PCA &amp; <em>Dim. Reduction</em></h1>
+  <p class="page-desc fade-up d2">Reduce high-dimensional data while preserving as much variance as possible. Master PCA, t-SNE, and UMAP.</p>
+</div>
+
+<div class="page-layout">
+  <aside class="sidebar">
+    <div class="sidebar-section">
+      <p class="sidebar-label">This Chapter</p>
+      <ul class="sidebar-nav">
+        <li><a href="#dimred" class="active">8.1 Dimensionality Reduction</a></li>
+        <li><a href="#pca">8.2 PCA Basics</a></li>
+        <li><a href="#compare">8.3 Comparing Methods</a></li>
+      </ul>
+    </div>
+    <div class="sidebar-section">
+      <p class="sidebar-label">Next</p>
+      <ul class="sidebar-nav">
+        <li><a href="chapter9.html">Chapter 9 →</a></li>
+      </ul>
+    </div>
+  </aside>
+
+  <main class="main-content">
+
+    <!-- DIMENSIONALITY REDUCTION -->
+    <div class="content-section">
+      <span class="section-anchor" id="dimred"></span>
+      <h2 class="section-h">8.1 Dimensionality Reduction <span class="section-badge">Concepts</span></h2>
+      <p>Dimensionality Reduction is the process of reducing the number of input features (dimensions) in your dataset. The goal is to <strong style="color:var(--white)">retain as much important information as possible</strong> while making the data simpler, faster, and easier to analyze or visualize.</p>
+
+      <h3 class="sub-h">Problems with High-Dimensional Data</h3>
+      <ul class="content-list">
+        <li><strong>Distance Metrics Collapse:</strong> High-dimensional data poses severe challenges for distance-based algorithms like K-Means or DBSCAN. As dimensions increase, all data points become roughly equidistant from each other, rendering distance measures meaningless.</li>
+        <li><strong>The Curse of Dimensionality:</strong> As dimensionality increases, the volume of the space expands exponentially. The available data points become extremely sparse, which leads to tiny, fragmented clusters or overfitting.</li>
+        <li><strong>Visualization Limits:</strong> It is impossible to visualize data distributions directly when working with more than 3 features or dimensions.</li>
+      </ul>
+      
+      <div class="callout green">
+        <div class="callout-title">Core Objective</div>
+        Simplify the data → Make ML training faster → Prevent overfitting → Enable visual exploration in 2D or 3D.
+      </div>
+    </div>
+
+    <!-- PCA -->
+    <div class="content-section">
+      <span class="section-anchor" id="pca"></span>
+      <h2 class="section-h">8.2 PCA (Principal Component Analysis) <span class="section-badge">Linear</span></h2>
+      <p>Principal Component Analysis (PCA) is the most widely used <strong style="color:var(--accent2)">linear dimensionality reduction technique</strong>. It assumes that the dataset's features are linearly correlated and projects the data onto a lower-dimensional space.</p>
+
+      <h3 class="sub-h">How PCA Works</h3>
+      <p>PCA transforms the original correlated features into a new set of uncorrelated, orthogonal variables called <strong>Principal Components (PCs)</strong>. These principal components are computed to capture the maximum variance in the data:</p>
+
+      <div class="steps">
+        <div class="step"><div class="step-num">1</div><div class="step-body"><div class="step-title">Standardize the Data</div><div class="step-desc">Center the data around the origin and scale it so that every feature has a mean of 0 and variance of 1.</div></div></div>
+        <div class="step"><div class="step-num">2</div><div class="step-body"><div class="step-title">Compute Covariance Matrix</div><div class="step-desc">Analyze how the features vary together (correlate) by constructing a covariance matrix.</div></div></div>
+        <div class="step"><div class="step-num">3</div><div class="step-body"><div class="step-title">Calculate Eigenvectors &amp; Eigenvalues</div><div class="step-desc">Solve for the eigenvectors (the directions of the new axes / Principal Components) and eigenvalues (the magnitude of variance captured by each PC).</div></div></div>
+        <div class="step"><div class="step-num">4</div><div class="step-body"><div class="step-title">Sort &amp; Project</div><div class="step-desc">Sort the Principal Components in descending order of their eigenvalues. Project the original data points onto the top K components.</div></div></div>
+      </div>
+
+      <div class="callout yellow">
+        <div class="callout-title">Properties of Principal Components</div>
+        <ul style="margin: 0; padding-left: 20px;">
+          <li>All Principal Components are **orthogonal (perpendicular)** to each other.</li>
+          <li>The **first component (PC1)** captures the most variation, the **second component (PC2)** captures the next most variation, and so on.</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- COMPARING TECHNIQUES -->
+    <div class="content-section">
+      <span class="section-anchor" id="compare"></span>
+      <h2 class="section-h">8.3 Comparing PCA, t-SNE, and UMAP</h2>
+      <p>Depending on the goal (preprocessing vs. visualization), you can choose between linear and non-linear reduction techniques:</p>
+
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Feature</th>
+            <th>PCA</th>
+            <th>t-SNE</th>
+            <th>UMAP</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Type</strong></td>
+            <td>Linear</td>
+            <td>Non-linear</td>
+            <td>Non-linear</td>
+          </tr>
+          <tr>
+            <td><strong>Speed</strong></td>
+            <td style="color:var(--accent3)">Fast</td>
+            <td style="color:var(--accent4)">Slow</td>
+            <td>Faster than t-SNE</td>
+          </tr>
+          <tr>
+            <td><strong>Structure Preserved</strong></td>
+            <td>Global structure</td>
+            <td>Local structure</td>
+            <td style="color:var(--accent3)">Local + some global structure</td>
+          </tr>
+          <tr>
+            <td><strong>Best For</strong></td>
+            <td>Preprocessing, feature reduction</td>
+            <td>Visualization (2D, 3D)</td>
+            <td>Visualization + downstream tasks</td>
+          </tr>
+          <tr>
+            <td><strong>Num. of Dimensions</strong></td>
+            <td>Any</td>
+            <td>Usually 2 or 3</td>
+            <td>Flexible (2D to many)</td>
+          </tr>
+          <tr>
+            <td><strong>Scalability</strong></td>
+            <td style="color:var(--accent3)">Good for large datasets</td>
+            <td style="color:var(--accent4)">Poor</td>
+            <td>Better than t-SNE</td>
+          </tr>
+          <tr>
+            <td><strong>Use Case Example</strong></td>
+            <td>Speeding up ML models</td>
+            <td>Visualizing word embeddings</td>
+            <td>Visualizing and clustering text</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="chapter-nav">
+      <a href="chapter7.html"><span class="nav-dir">← Previous</span><span class="nav-title">Chapter 7: Unsupervised ML</span></a>
+      <a href="chapter9.html"><span class="nav-dir">Next Chapter →</span><span class="nav-title">Hyperparameter Tuning</span></a>
+    </div>
+
+  </main>
+</div>
+
+<script>
+  const sections = document.querySelectorAll('.section-anchor');
+  const links = document.querySelectorAll('.sidebar-nav a');
+  window.addEventListener('scroll', () => {
+    let cur = '';
+    sections.forEach(s => { if (window.scrollY >= s.offsetTop - 120) cur = s.id; });
+    links.forEach(l => { l.classList.remove('active'); if (l.getAttribute('href') === '#' + cur) l.classList.add('active'); });
+  });
+</script>
+</body>
+</html>

@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chapter 7 — Unsupervised ML Models | ML Notes</title>
+<link rel="stylesheet" href="shared.css">
+</head>
+<body>
+<nav>
+  <a href="index.html" class="nav-logo">ML<span>.</span>Notes</a>
+  <ul class="nav-links">
+    <li><a href="index.html" class="nav-back">← Home</a></li>
+    <li><a href="chapter6.html">Ch.6 Ensemble</a></li>
+    <li><a href="chapter8.html">Ch.8 PCA</a></li>
+  </ul>
+</nav>
+
+<div class="page-hero">
+  <div class="page-hero-grid"></div>
+  <div class="page-hero-glow" style="background:radial-gradient(circle, rgba(106,247,200,0.15) 0%, transparent 70%)"></div>
+  <p class="page-eyebrow fade-up">Chapter 07</p>
+  <h1 class="page-title fade-up d1">Unsupervised <em>ML Models</em></h1>
+  <p class="page-desc fade-up d2">Explore K-Means, DBSCAN, HDBSCAN, and Agglomerative clustering to find hidden patterns in data without using labels.</p>
+</div>
+
+<div class="page-layout">
+  <aside class="sidebar">
+    <div class="sidebar-section">
+      <p class="sidebar-label">This Chapter</p>
+      <ul class="sidebar-nav">
+        <li><a href="#kmeans" class="active">7.1 K-Means</a></li>
+        <li><a href="#dbscan">7.2 DBSCAN</a></li>
+        <li><a href="#hdbscan">7.3 HDBSCAN</a></li>
+        <li><a href="#agglomerative">7.4 Agglomerative</a></li>
+      </ul>
+    </div>
+    <div class="sidebar-section">
+      <p class="sidebar-label">Next</p>
+      <ul class="sidebar-nav">
+        <li><a href="chapter8.html">Chapter 8 →</a></li>
+      </ul>
+    </div>
+  </aside>
+
+  <main class="main-content">
+
+    <!-- K-MEANS -->
+    <div class="content-section">
+      <span class="section-anchor" id="kmeans"></span>
+      <h2 class="section-h">7.1 K-Means Clustering <span class="section-badge">Centroid-Based</span></h2>
+      <p>K-Means is a partition-based or centroid-based unsupervised learning algorithm used to group data into <strong style="color:var(--white)">K distinct, non-overlapping clusters</strong> based on similarity.</p>
+      
+      <p>Each group is formed by minimizing the distance between data points and the center of the group (called the <strong>centroid</strong>).</p>
+
+      <div class="compare-grid">
+        <div class="compare-card">
+          <div class="compare-card-title" style="color:var(--accent2)">Higher K Value</div>
+          <p>Smaller, tightly packed clusters with greater localized detail.</p>
+        </div>
+        <div class="compare-card">
+          <div class="compare-card-title" style="color:var(--accent)">Lower K Value</div>
+          <p>Larger, broader clusters that capture generalized patterns with less granularity.</p>
+        </div>
+      </div>
+
+      <h3 class="sub-h">Training Process</h3>
+      <div class="steps">
+        <div class="step"><div class="step-num">1</div><div class="step-body"><div class="step-title">Choose K</div><div class="step-desc">Select the number of clusters to form upfront.</div></div></div>
+        <div class="step"><div class="step-num">2</div><div class="step-body"><div class="step-title">Initialize Centroids</div><div class="step-desc">Initialize K centroids randomly in the feature space as starting cluster centers.</div></div></div>
+        <div class="step"><div class="step-num">3</div><div class="step-body"><div class="step-title">Assign Points</div><div class="step-desc">Assign each data point to its nearest centroid based on distance.</div></div></div>
+        <div class="step"><div class="step-num">4</div><div class="step-body"><div class="step-title">Recalculate Centroids</div><div class="step-desc">Compute the mean position of all data points assigned to each cluster and move the centroid there.</div></div></div>
+        <div class="step"><div class="step-num">5</div><div class="step-body"><div class="step-title">Repeat Until Convergence</div><div class="step-desc">Repeat steps 3 and 4 until centroids stop moving (stabilize) or max iterations are reached.</div></div></div>
+      </div>
+
+      <h3 class="sub-h">Choosing the Optimal K Value</h3>
+      <ul class="content-list">
+        <li><strong>Visualization:</strong> Plot the data points as a 2D or 3D scatter plot and visually identify how many natural groupings are visible.</li>
+        <li><strong>Elbow Method:</strong> 
+          <div class="formula" style="margin: 12px 0;">
+            <span class="formula-label">Inertia</span>
+            Sum of Squared Distances to Centroids
+          </div>
+          Plot inertia vs. K. Find the "elbow" point where the rate of inertia decrease slows down. This indicates the optimal K.
+        </li>
+        <li><strong>Silhouette Score:</strong> Measures how similar a point is to its own cluster compared to other clusters. The score ranges from -1 to +1, where a higher score indicates better cluster separation.</li>
+      </ul>
+
+      <div class="pros-cons">
+        <div class="pros">
+          <div class="pros-title">Advantages</div>
+          <ul>
+            <li>Simple to understand and fast to implement.</li>
+            <li>Efficient with low computational cost; scales well to large datasets.</li>
+            <li>Works exceptionally well when clusters are spherical and well-separated.</li>
+          </ul>
+        </div>
+        <div class="cons">
+          <div class="cons-title">Disadvantages</div>
+          <ul>
+            <li>You must predefine the value of K.</li>
+            <li>Struggles with irregular-shaped or non-spherical clusters.</li>
+            <li>Highly sensitive to outliers, which can skew the mean and misplace centroids.</li>
+            <li>Initial centroid selection can drastically affect results (getting stuck in local minima).</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- DBSCAN -->
+    <div class="content-section">
+      <span class="section-anchor" id="dbscan"></span>
+      <h2 class="section-h">7.2 DBSCAN Clustering <span class="section-badge">Density-Based</span></h2>
+      <p>DBSCAN (Density-Based Spatial Clustering of Applications with Noise) forms clusters based on the <strong style="color:var(--accent3)">density of data points</strong> and automatically filters out outliers as noise.</p>
+      <p>It is especially useful when clusters are non-spherical, irregular, or contain noise, and it does not require you to predefine the number of clusters.</p>
+
+      <h3 class="sub-h">Parameters</h3>
+      <div class="compare-grid">
+        <div class="compare-card">
+          <div class="compare-card-title" style="color:var(--accent3)">Epsilon (eps)</div>
+          <p>The maximum radius distance to search for neighboring points.</p>
+        </div>
+        <div class="compare-card">
+          <div class="compare-card-title" style="color:var(--accent2)">Min Samples</div>
+          <p>The minimum number of points required within the eps radius to form a dense region.</p>
+        </div>
+      </div>
+
+      <h3 class="sub-h">How It Works</h3>
+      <div class="steps">
+        <div class="step"><div class="step-num">1</div><div class="step-body"><div class="step-title">Identify Core Points</div><div class="step-desc">For each point, if the number of points within its eps radius &ge; min_samples, label it a <strong>Core Point</strong>.</div></div></div>
+        <div class="step"><div class="step-num">2</div><div class="step-body"><div class="step-title">Identify Border Points</div><div class="step-desc">A point with fewer neighbors than min_samples, but within the eps radius of a Core Point, is labeled a <strong>Border Point</strong>.</div></div></div>
+        <div class="step"><div class="step-num">3</div><div class="step-body"><div class="step-title">Group Clusters</div><div class="step-desc">Group all core points and their connected border points into single clusters.</div></div></div>
+        <div class="step"><div class="step-num">4</div><div class="step-body"><div class="step-title">Label Noise</div><div class="step-desc">Any point that is not a core point and is unreachable from any cluster is labeled as <strong>Noise (-1)</strong>.</div></div></div>
+      </div>
+
+      <div class="pros-cons">
+        <div class="pros">
+          <div class="pros-title">Advantages</div>
+          <ul>
+            <li>No need to specify the number of clusters upfront.</li>
+            <li>Can find clusters of arbitrary or non-spherical shapes (e.g., rings, spirals).</li>
+            <li>Detects and isolates noise and outliers automatically.</li>
+          </ul>
+        </div>
+        <div class="cons">
+          <div class="cons-title">Disadvantages</div>
+          <ul>
+            <li>Needs careful tuning of the hyperparameters eps and min_samples.</li>
+            <li>Does not scale well to extremely large datasets due to distance computations.</li>
+            <li>Struggles when the density varies significantly across different clusters.</li>
+            <li>Performance drops in very high-dimensional spaces (curse of dimensionality).</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- HDBSCAN -->
+    <div class="content-section">
+      <span class="section-anchor" id="hdbscan"></span>
+      <h2 class="section-h">7.3 HDBSCAN Clustering <span class="section-badge" style="background:rgba(247,106,154,0.15); color:var(--accent4);">Hierarchical Density-Based</span></h2>
+      <p>HDBSCAN (Hierarchical Density-Based Spatial Clustering of Applications with Noise) is a state-of-the-art improvement over DBSCAN, designed to handle <strong style="color:var(--accent4)">clusters of varying densities</strong>.</p>
+      <p>Unlike DBSCAN, it does not require a single fixed epsilon threshold, allowing it to adapt to varying densities across the feature space.</p>
+
+      <h3 class="sub-h">Key Steps in HDBSCAN</h3>
+      <div class="steps">
+        <div class="step"><div class="step-num">1</div><div class="step-body"><div class="step-title">Transform Space</div><div class="step-desc">Transform the mutual reachability distance space to make sparse points more distant and push dense regions closer.</div></div></div>
+        <div class="step"><div class="step-num">2</div><div class="step-body"><div class="step-title">Build Minimum Spanning Tree</div><div class="step-desc">Construct a minimum spanning tree representing the relative densities and distances between points.</div></div></div>
+        <div class="step"><div class="step-num">3</div><div class="step-body"><div class="step-title">Build Cluster Hierarchy</div><div class="step-desc">Create a hierarchical tree (dendrogram) of connected components based on varying density levels.</div></div></div>
+        <div class="step"><div class="step-num">4</div><div class="step-body"><div class="step-title">Condense & Extract</div><div class="step-desc">Condense the tree by removing small branches (less than minimum cluster size) and extract the most stable clusters.</div></div></div>
+      </div>
+
+      <div class="pros-cons">
+        <div class="pros">
+          <div class="pros-title">Advantages</div>
+          <ul>
+            <li>No need to predefine K or the eps parameter.</li>
+            <li>Highly robust in finding clusters of varying density.</li>
+            <li>Excels at isolating noise points in real-world, messy datasets.</li>
+            <li>Provides a stable hierarchical structure of clusters.</li>
+          </ul>
+        </div>
+        <div class="cons">
+          <div class="cons-title">Disadvantages</div>
+          <ul>
+            <li>Slightly slower computationally than standard DBSCAN.</li>
+            <li>Hierarchical outputs are harder to visualize and interpret for large datasets.</li>
+            <li>Requires setting the minimum cluster size parameter.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- AGGLOMERATIVE -->
+    <div class="content-section">
+      <span class="section-anchor" id="agglomerative"></span>
+      <h2 class="section-h">7.4 Agglomerative Clustering <span class="section-badge">Hierarchical</span></h2>
+      <p>Agglomerative Clustering is a **bottom-up hierarchical clustering method** that starts by treating every single data point as its own cluster and iteratively merges the closest pairs step-by-step until only one large cluster remains.</p>
+
+      <h3 class="sub-h">How It Works</h3>
+      <div class="steps">
+        <div class="step"><div class="step-num">1</div><div class="step-body"><div class="step-title">Initialize N Clusters</div><div class="step-desc">Start with N clusters, where each data point is its own individual cluster.</div></div></div>
+        <div class="step"><div class="step-num">2</div><div class="step-body"><div class="step-title">Compute Distance Matrix</div><div class="step-desc">Compute the similarity or distance between all existing clusters.</div></div></div>
+        <div class="step"><div class="step-num">3</div><div class="step-body"><div class="step-title">Merge Closest Clusters</div><div class="step-desc">Identify and merge the two closest clusters into a single parent cluster.</div></div></div>
+        <div class="step"><div class="step-num">4</div><div class="step-body"><div class="step-title">Iterate to End</div><div class="step-desc">Repeat steps 2 and 3 until all points are merged into a single cluster or a predefined number of clusters is reached.</div></div></div>
+      </div>
+
+      <div class="callout green">
+        <div class="callout-title">Visualizing the Hierarchy</div>
+        The merge history is visualized using a tree-like structure called a <strong>Dendrogram</strong>. By cutting the dendrogram horizontally at a chosen distance threshold, you can extract the desired number of clusters without retraining.
+      </div>
+
+      <div class="pros-cons">
+        <div class="pros">
+          <div class="pros-title">Advantages</div>
+          <ul>
+            <li>No need to specify the number of clusters upfront.</li>
+            <li>Can capture nested clusters and natural hierarchical relationships (ideal for taxonomies).</li>
+            <li>Works well with non-spherical shapes when using appropriate linkage criteria.</li>
+          </ul>
+        </div>
+        <div class="cons">
+          <div class="cons-title">Disadvantages</div>
+          <ul>
+            <li>Not scalable: extremely high computational and memory complexity ($O(N^3)$ or $O(N^2 \log N)$).</li>
+            <li>Sensitive to noise and outliers, which can force early incorrect merges.</li>
+            <li>Once two clusters are merged, the decision cannot be undone.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="chapter-nav">
+      <a href="chapter6.html"><span class="nav-dir">← Previous</span><span class="nav-title">Chapter 6: Ensemble Methods</span></a>
+      <a href="chapter8.html"><span class="nav-dir">Next Chapter →</span><span class="nav-title">PCA & Dimensionality Reduction</span></a>
+    </div>
+
+  </main>
+</div>
+
+<script>
+  const sections = document.querySelectorAll('.section-anchor');
+  const links = document.querySelectorAll('.sidebar-nav a');
+  window.addEventListener('scroll', () => {
+    let cur = '';
+    sections.forEach(s => { if (window.scrollY >= s.offsetTop - 120) cur = s.id; });
+    links.forEach(l => { l.classList.remove('active'); if (l.getAttribute('href') === '#' + cur) l.classList.add('active'); });
+  });
+</script>
+</body>
+</html>

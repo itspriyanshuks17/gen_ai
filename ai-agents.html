@@ -598,5 +598,17 @@
   <div class="footer-note">AI Agents &amp; Multi-Agent Architectures — Study Guide based on julia Wiesinger et al. (Google, 2025)</div>
 </footer>
 
+  <script>
+    // Fixed top header navbar mobile toggle
+    const navToggle = document.getElementById('navToggle');
+    const siteNav = document.getElementById('siteNav');
+    if (navToggle && siteNav) {
+      navToggle.addEventListener('click', () => {
+        const expanded = navToggle.getAttribute('aria-expanded') === 'true';
+        navToggle.setAttribute('aria-expanded', !expanded);
+        siteNav.classList.toggle('active');
+      });
+    }
+  </script>
 </body>
 </html>

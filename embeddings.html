@@ -580,5 +580,17 @@
   <div class="footer-note">Embeddings &amp; Vector Stores Study Guide — Based on Anant Nawalgaria et al. (Google, 2025)</div>
 </footer>
 
+  <script>
+    // Fixed top header navbar mobile toggle
+    const navToggle = document.getElementById('navToggle');
+    const siteNav = document.getElementById('siteNav');
+    if (navToggle && siteNav) {
+      navToggle.addEventListener('click', () => {
+        const expanded = navToggle.getAttribute('aria-expanded') === 'true';
+        navToggle.setAttribute('aria-expanded', !expanded);
+        siteNav.classList.toggle('active');
+      });
+    }
+  </script>
 </body>
 </html>

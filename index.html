@@ -410,6 +410,116 @@
     from { opacity: 0; transform: translateY(-8px); }
     to { opacity: 1; transform: translateY(0); }
   }
+
+  /* ROADMAP CURRICULUM */
+  .roadmap-flow {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    max-width: 800px;
+    margin-top: 40px;
+  }
+  .roadmap-step {
+    display: flex;
+    gap: 32px;
+    position: relative;
+    padding-bottom: 48px;
+  }
+  .roadmap-line {
+    position: absolute;
+    top: 36px;
+    left: 17px;
+    bottom: 0;
+    width: 2px;
+    background: linear-gradient(to bottom, var(--border) 60%, transparent);
+  }
+  .roadmap-num {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    border: 2px solid var(--accent);
+    color: var(--accent);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 14px;
+    background: var(--bg);
+    flex-shrink: 0;
+    z-index: 2;
+    transition: transform 0.2s;
+  }
+  .roadmap-step:hover .roadmap-num {
+    transform: scale(1.1);
+  }
+  .roadmap-content {
+    flex-grow: 1;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 24px;
+    position: relative;
+    transition: border-color 0.2s, transform 0.2s;
+  }
+  .roadmap-content:hover {
+    border-color: var(--accent);
+    transform: translateY(-2px);
+  }
+  .roadmap-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--white);
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  .roadmap-tag {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    padding: 2px 8px;
+    border-radius: 2px;
+    font-weight: 400;
+  }
+  .roadmap-desc {
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.6;
+    margin-bottom: 16px;
+  }
+  .roadmap-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .roadmap-btn {
+    display: inline-flex;
+    align-items: center;
+    padding: 6px 12px;
+    border: 1px solid rgba(124,106,247,0.3);
+    color: var(--accent);
+    text-decoration: none;
+    font-size: 11px;
+    font-family: 'Syne', sans-serif;
+    font-weight: 600;
+    transition: all 0.2s;
+  }
+  .roadmap-btn:hover {
+    background: rgba(124,106,247,0.05);
+    border-color: var(--accent);
+    transform: translateX(2px);
+  }
+
+  @media (max-width: 768px) {
+    .roadmap-step {
+      gap: 16px;
+    }
+    .roadmap-line {
+      left: 17px;
+    }
+  }
 </style>
 </head>
 <body>
@@ -467,6 +577,84 @@
     <div class="hero-stat">
       <span class="hero-stat-num">3</span>
       <span class="hero-stat-label">ML Types</span>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<section class="section" style="padding-bottom: 0;">
+  <p class="section-label">Study Path</p>
+  <h2 class="section-title">Curriculum Learning Roadmap</h2>
+  <p style="color: var(--muted); max-width: 600px; margin-bottom: 40px; font-size: 14px;">
+    Follow this progressive, end-to-end curriculum roadmap designed to take you from foundational mathematics to production-scale autonomous AI agents.
+  </p>
+  
+  <div class="roadmap-flow">
+    <!-- Step 1 -->
+    <div class="roadmap-step">
+      <div class="roadmap-line"></div>
+      <div class="roadmap-num">01</div>
+      <div class="roadmap-content">
+        <h3 class="roadmap-title">Core Fundamentals <span class="roadmap-tag tag-core">Ch. 1 - 5</span></h3>
+        <p class="roadmap-desc">Start with raw data lifecycles, features encoding/scaling, L1/L2 regularization math, and error bias-variance tradeoffs.</p>
+        <div class="roadmap-links">
+          <a href="chapter1.html" class="roadmap-btn">Foundations Hub →</a>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Step 2 -->
+    <div class="roadmap-step">
+      <div class="roadmap-line"></div>
+      <div class="roadmap-num" style="border-color: var(--accent3); color: var(--accent3);">02</div>
+      <div class="roadmap-content">
+        <h3 class="roadmap-title">Advanced Models &amp; Tuning <span class="roadmap-tag tag-supervised">Ch. 6 - 10</span></h3>
+        <p class="roadmap-desc">Study ensemble bagging/boosting (XGBoost), DBSCAN clustering, PCA dimensionality reduction, and cross-validation tuning strategies.</p>
+        <div class="roadmap-links">
+          <a href="chapter6.html" class="roadmap-btn" style="border-color: rgba(106,247,200,0.3); color: var(--accent3);">Ensemble Hub →</a>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Step 3 -->
+    <div class="roadmap-step">
+      <div class="roadmap-line"></div>
+      <div class="roadmap-num" style="border-color: var(--accent2); color: var(--accent2);">03</div>
+      <div class="roadmap-content">
+        <h3 class="roadmap-title">Transformer &amp; Large Language Models <span class="roadmap-tag tag-advanced">Volume 02</span></h3>
+        <p class="roadmap-desc">Deep dive into sequence-to-sequence networks: Self-Attention query-key-value math, RLHF alignment, and FP8 quantization inference speedups.</p>
+        <div class="roadmap-links">
+          <a href="llm.html" class="roadmap-btn" style="border-color: rgba(247,200,106,0.3); color: var(--accent2);">LLM Index Hub →</a>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Step 4 -->
+    <div class="roadmap-step">
+      <div class="roadmap-line"></div>
+      <div class="roadmap-num" style="border-color: #c77dff; color: #c77dff;">04</div>
+      <div class="roadmap-content">
+        <h3 class="roadmap-title">Vector Data &amp; Retrieval (RAG) <span class="roadmap-tag tag-unsupervised">Volume 03 &amp; 04</span></h3>
+        <p class="roadmap-desc">Master dense semantic embeddings, dual-encoder pretraining, HNSW Proximity Graphs, ScaNN anisotropic quantization, and prompt sampling stochastics.</p>
+        <div class="roadmap-links">
+          <a href="embeddings.html" class="roadmap-btn" style="border-color: rgba(199,125,255,0.3); color: #c77dff;">Vectors Hub →</a>
+          <a href="prompt-engineering.html" class="roadmap-btn" style="border-color: rgba(199,125,255,0.3); color: #c77dff; margin-left: 8px;">Prompts Hub →</a>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Step 5 -->
+    <div class="roadmap-step">
+      <div class="roadmap-num" style="border-color: #00bbf9; color: #00bbf9;">05</div>
+      <div class="roadmap-content">
+        <h3 class="roadmap-title">Production Verticals &amp; AI Agents <span class="roadmap-tag tag-advanced" style="background: rgba(0,187,249,0.15); color: #00bbf9;">Volume 05 &amp; 06</span></h3>
+        <p class="roadmap-desc">Apply SecLM cybersecurity and MedLM health models, and build autonomous agents using cyclic ReAct loops, tool-calling APIs, and multi-agent mesh networks.</p>
+        <div class="roadmap-links">
+          <a href="domain-specific-llms.html" class="roadmap-btn" style="border-color: rgba(0,187,249,0.3); color: #00bbf9;">Vertical Hub →</a>
+          <a href="ai-agents.html" class="roadmap-btn" style="border-color: rgba(0,187,249,0.3); color: #00bbf9; margin-left: 8px;">Agents Hub →</a>
+        </div>
+      </div>
     </div>
   </div>
 </section>

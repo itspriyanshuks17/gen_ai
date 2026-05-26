@@ -28,8 +28,9 @@
   <aside class="sidebar">
     <button class="note-sidebar-toggle" id="sidebarToggle" aria-expanded="false" aria-controls="sidebarNoteList">All Notes <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><polyline points="2 5 7 10 12 5"></polyline></svg></button>
     <div class="sidebar-note-list" id="sidebarNoteList">
-
-    <div class="sidebar-section">
+      <div class="sidebar-grid">
+        <div class="sidebar-column">
+          <div class="sidebar-section">
       <p class="sidebar-label">This Chapter</p>
       <ul class="sidebar-nav">
         <li><a href="#dimred" class="active">8.1 Dimensionality Reduction</a></li>
@@ -43,7 +44,24 @@
         <li><a href="chapter9.html">Chapter 9 →</a></li>
       </ul>
     </div>
+        </div>
+        <div class="sidebar-column">
+          <p class="sidebar-label">All Subjects</p>
+          <ul class="sidebar-nav global-nav">
+            <li><a href="chapter1.html" id="nav-Foundations">Foundations</a></li>
+            <li><a href="chapter2.html" id="nav-Features">Features</a></li>
+            <li><a href="chapter4.html" id="nav-Models">Models</a></li>
+            <li><a href="chapter6.html" id="nav-Ensemble">Ensemble</a></li>
+            <li><a href="chapter9.html" id="nav-Tuning">Tuning</a></li>
+            <li><a href="llm.html" id="nav-LLMs" style="color:var(--accent2); font-weight:bold;">LLMs</a></li>
+            <li><a href="embeddings.html" id="nav-Vectors" style="color:var(--accent3); font-weight:bold;">Vectors</a></li>
+            <li><a href="prompt-engineering.html" id="nav-Prompts" style="color:#c77dff; font-weight:bold;">Prompts</a></li>
+            <li><a href="domain-specific-llms.html" id="nav-Vertical" style="color:#ef233c; font-weight:bold;">Vertical</a></li>
+            <li><a href="ai-agents.html" id="nav-Agents" style="color:#00bbf9; font-weight:bold;">Agents</a></li>
+          </ul>
+        </div>
       </div>
+    </div>
   </aside>
 
   <main class="main-content">
@@ -175,7 +193,7 @@
     });
   });
 
-  // Mobile dropdown toggler
+  // Mobile/Universal dropdown toggler
   const toggleBtn = document.getElementById('sidebarToggle');
   const noteList = document.getElementById('sidebarNoteList');
   if (toggleBtn && noteList) {
@@ -184,14 +202,41 @@
       toggleBtn.setAttribute('aria-expanded', !expanded);
       noteList.classList.toggle('active');
     });
+    // Close dropdown on click of any sidebar link
     noteList.querySelectorAll('.sidebar-nav a').forEach(link => {
       link.addEventListener('click', () => {
-        if (window.innerWidth <= 900) {
-          toggleBtn.setAttribute('aria-expanded', 'false');
-          noteList.classList.remove('active');
-        }
+        toggleBtn.setAttribute('aria-expanded', 'false');
+        noteList.classList.remove('active');
       });
     });
+  }
+
+  // Dynamic global book active highlighting based on URL pathname
+  const currentPath = window.location.pathname;
+  let activeBookId = '';
+  if (currentPath.includes('chapter1') || currentPath.includes('chapter2') || currentPath.includes('chapter3')) {
+    activeBookId = 'nav-Foundations';
+  } else if (currentPath.includes('chapter4') || currentPath.includes('chapter5')) {
+    activeBookId = 'nav-Models';
+  } else if (currentPath.includes('chapter6') || currentPath.includes('chapter7') || currentPath.includes('chapter8')) {
+    activeBookId = 'nav-Ensemble';
+  } else if (currentPath.includes('chapter9') || currentPath.includes('chapter10')) {
+    activeBookId = 'nav-Tuning';
+  } else if (currentPath.includes('llm')) {
+    activeBookId = 'nav-LLMs';
+  } else if (currentPath.includes('embeddings') || currentPath.includes('training') || currentPath.includes('vector-search')) {
+    activeBookId = 'nav-Vectors';
+  } else if (currentPath.includes('prompt') || currentPath.includes('pe-')) {
+    activeBookId = 'nav-Prompts';
+  } else if (currentPath.includes('domain') || currentPath.includes('ds-')) {
+    activeBookId = 'nav-Vertical';
+  } else if (currentPath.includes('agent')) {
+    activeBookId = 'nav-Agents';
+  }
+  
+  if (activeBookId) {
+    const activeBookLink = document.getElementById(activeBookId);
+    if (activeBookLink) activeBookLink.classList.add('active-book');
   }
 </script>
 </body>

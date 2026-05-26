@@ -12,6 +12,49 @@
   --accent3: #d48c10;
   --accent4: #f76a9a;
 }
+
+.visual-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(260px, 100%), 1fr));
+  gap: 16px;
+  margin: 24px 0;
+}
+
+.note-visual,
+.ascii-diagram {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  padding: 18px;
+  min-width: 0;
+}
+
+.note-visual svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.diagram-caption {
+  margin-top: 12px;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.ascii-diagram {
+  color: var(--accent2);
+  font-family: 'DM Mono', monospace;
+  font-size: 12px;
+  line-height: 1.55;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 600px) {
+  .note-visual,
+  .ascii-diagram {
+    padding: 14px;
+  }
+}
 </style>
 </head>
 <body>
@@ -102,6 +145,53 @@
           <div class="callout-title">Large Language Model (LLM)</div>
           An advanced AI system implemented as a <strong>deep neural network</strong>, trained on <mark>massive amounts of text data</mark> to learn intricate language patterns — enabling machine translation, creative text generation, question answering, summarization, and complex reasoning.
         </div>
+        <div class="visual-grid" aria-label="Language model flow diagrams">
+          <figure class="note-visual">
+            <svg viewBox="0 0 640 230" role="img" aria-label="Language model predicts likely next tokens from context">
+              <rect width="640" height="230" fill="#111118"/>
+              <g fill="#1a1a24" stroke="#2a2a3a" stroke-width="2">
+                <rect x="28" y="48" width="150" height="56" rx="4"/>
+                <rect x="245" y="36" width="150" height="80" rx="4"/>
+                <rect x="462" y="48" width="150" height="56" rx="4"/>
+              </g>
+              <g fill="#e8e8f0" font-family="sans-serif" font-size="15" font-weight="700" text-anchor="middle">
+                <text x="103" y="75">Prompt Context</text>
+                <text x="320" y="69">Transformer</text>
+                <text x="537" y="75">Next Token</text>
+              </g>
+              <g fill="#6b6b88" font-family="monospace" font-size="12" text-anchor="middle">
+                <text x="103" y="92">"The capital of..."</text>
+                <text x="320" y="90">attention + weights</text>
+                <text x="537" y="92">Paris: 0.72</text>
+              </g>
+              <g stroke="#f7c86a" stroke-width="3" fill="none" marker-end="url(#lmArrow)">
+                <path d="M178 76 L238 76"/>
+                <path d="M395 76 L455 76"/>
+              </g>
+              <g fill="#d48c10" font-family="monospace" font-size="12">
+                <text x="56" y="158">1. Read prior tokens</text>
+                <text x="230" y="158">2. Score likely continuations</text>
+                <text x="444" y="158">3. Sample or choose output</text>
+              </g>
+              <defs>
+                <marker id="lmArrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+                  <path d="M 0 0 L 10 5 L 0 10 z" fill="#f7c86a"/>
+                </marker>
+              </defs>
+            </svg>
+            <figcaption class="diagram-caption">Image diagram: an LLM repeatedly predicts the next token from the current context.</figcaption>
+          </figure>
+          <pre class="ascii-diagram" aria-label="ASCII language model pipeline">Text prompt
+   |
+   v
+[Token IDs] -> [Embedding vectors] -> [Transformer stack]
+                                           |
+                                           v
+                                  [Token probabilities]
+                                           |
+                                           v
+                                    Next token</pre>
+        </div>
       </div>
 
       <div class="section">
@@ -113,6 +203,18 @@
           <li>Theoretically infinite context, but suffer from <strong>vanishing gradient problem</strong></li>
           <li>Compute-intensive, slow to train at scale</li>
         </ul>
+        <pre class="ascii-diagram" aria-label="ASCII comparison of RNN and transformer token processing">RNN / LSTM sequence processing
+
+token1 -> h1 -> token2 -> h2 -> token3 -> h3 -> token4 -> h4
+          ^ sequential dependency: later work waits for earlier work
+
+Transformer self-attention
+
+token1 ----\
+token2 -----+--> attention layer --> contextual token vectors
+token3 -----+
+token4 ----/
+          ^ all tokens can be processed together</pre>
       </div>
 
       <div class="section">
@@ -176,6 +278,45 @@
       <div class="section">
         <div class="section-title">Input Preparation & Embedding</div>
         <p>Before tokens enter the transformer, raw text undergoes a multi-step preparation pipeline:</p>
+        <figure class="note-visual">
+          <svg viewBox="0 0 760 220" role="img" aria-label="Transformer input preparation pipeline">
+            <rect width="760" height="220" fill="#111118"/>
+            <g fill="#1a1a24" stroke="#2a2a3a" stroke-width="2">
+              <rect x="20" y="58" width="120" height="62" rx="4"/>
+              <rect x="175" y="58" width="120" height="62" rx="4"/>
+              <rect x="330" y="58" width="120" height="62" rx="4"/>
+              <rect x="485" y="58" width="120" height="62" rx="4"/>
+              <rect x="640" y="58" width="100" height="62" rx="4"/>
+            </g>
+            <g fill="#ffffff" font-family="sans-serif" font-size="14" font-weight="700" text-anchor="middle">
+              <text x="80" y="86">Raw Text</text>
+              <text x="235" y="86">Tokens</text>
+              <text x="390" y="86">Token IDs</text>
+              <text x="545" y="86">Embeddings</text>
+              <text x="690" y="86">+ Position</text>
+            </g>
+            <g fill="#6b6b88" font-family="monospace" font-size="11" text-anchor="middle">
+              <text x="80" y="105">"hello world"</text>
+              <text x="235" y="105">["hello", "world"]</text>
+              <text x="390" y="105">[15339, 1917]</text>
+              <text x="545" y="105">dense vectors</text>
+              <text x="690" y="105">ordered input</text>
+            </g>
+            <g stroke="#f7c86a" stroke-width="3" fill="none" marker-end="url(#prepArrow)">
+              <path d="M140 89 L168 89"/>
+              <path d="M295 89 L323 89"/>
+              <path d="M450 89 L478 89"/>
+              <path d="M605 89 L633 89"/>
+            </g>
+            <text x="380" y="170" fill="#d48c10" font-family="monospace" font-size="13" text-anchor="middle">The model never sees raw words directly; it sees vectors with position information.</text>
+            <defs>
+              <marker id="prepArrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+                <path d="M 0 0 L 10 5 L 0 10 z" fill="#f7c86a"/>
+              </marker>
+            </defs>
+          </svg>
+          <figcaption class="diagram-caption">Image diagram: text becomes token IDs, then dense vectors, then position-aware transformer input.</figcaption>
+        </figure>
         <ol class="steps">
           <li>
             <strong>Normalization (Optional)</strong>
@@ -224,6 +365,14 @@
           <div class="callout-title">Majority of Modern LLMs = Decoder-Only</div>
           GPT, Gemini, LLaMA, Gopher, PaLM, etc. all use the decoder-only variant. It forgoes encoder-decoder separation and directly generates output from input via masked self-attention.
         </div>
+        <pre class="ascii-diagram" aria-label="ASCII encoder decoder comparison">Encoder-only (BERT-style)
+input tokens -> bidirectional attention -> understanding vector
+
+Encoder-decoder (original translation transformer)
+source text -> encoder states -> decoder -> translated text
+
+Decoder-only (GPT-style)
+prompt tokens -> masked self-attention -> next token -> next token -> ...</pre>
       </div>
 
       <div class="section">
@@ -297,6 +446,48 @@
             <span class="card-tag tag-rust">Wv matrix</span>
           </div>
         </div>
+        <div class="visual-grid">
+          <pre class="ascii-diagram" aria-label="ASCII Q K V attention flow">For each token embedding x:
+
+x * Wq = Query  : what am I looking for?
+x * Wk = Key    : what do I contain?
+x * Wv = Value  : what information do I pass on?
+
+score = Query dot Key
+weight = softmax(score)
+output = sum(weight * Value)</pre>
+          <figure class="note-visual">
+            <svg viewBox="0 0 520 320" role="img" aria-label="Self attention heat map example">
+              <rect width="520" height="320" fill="#111118"/>
+              <text x="260" y="32" fill="#ffffff" font-family="sans-serif" font-size="17" font-weight="700" text-anchor="middle">Attention Weight Map</text>
+              <g font-family="monospace" font-size="12" fill="#6b6b88">
+                <text x="96" y="72">The</text>
+                <text x="176" y="72">tiger</text>
+                <text x="266" y="72">drank</text>
+                <text x="356" y="72">water</text>
+                <text x="14" y="116">The</text>
+                <text x="14" y="176">tiger</text>
+                <text x="14" y="236">it</text>
+              </g>
+              <g stroke="#2a2a3a" stroke-width="2">
+                <rect x="85" y="88" width="58" height="58" fill="#2a2114"/>
+                <rect x="165" y="88" width="58" height="58" fill="#5d4318"/>
+                <rect x="255" y="88" width="58" height="58" fill="#2a2114"/>
+                <rect x="345" y="88" width="58" height="58" fill="#1a1a24"/>
+                <rect x="85" y="148" width="58" height="58" fill="#3d2c16"/>
+                <rect x="165" y="148" width="58" height="58" fill="#f7c86a"/>
+                <rect x="255" y="148" width="58" height="58" fill="#5d4318"/>
+                <rect x="345" y="148" width="58" height="58" fill="#2a2114"/>
+                <rect x="85" y="208" width="58" height="58" fill="#2a2114"/>
+                <rect x="165" y="208" width="58" height="58" fill="#f7c86a"/>
+                <rect x="255" y="208" width="58" height="58" fill="#3d2c16"/>
+                <rect x="345" y="208" width="58" height="58" fill="#5d4318"/>
+              </g>
+              <text x="260" y="294" fill="#d48c10" font-family="monospace" font-size="12" text-anchor="middle">Bright cells = strong attention between tokens</text>
+            </svg>
+            <figcaption class="diagram-caption">Image diagram: attention can connect a later pronoun back to the relevant noun.</figcaption>
+          </figure>
+        </div>
       </div>
 
       <div class="section">
@@ -332,6 +523,12 @@
       <div class="section">
         <div class="section-title">Multi-Head Attention: Power in Diversity</div>
         <p>Instead of one set of Q/K/V matrices, multi-head attention runs <strong>multiple attention "heads" in parallel</strong>, each potentially focusing on different aspects of relationships.</p>
+        <pre class="ascii-diagram" aria-label="ASCII multi head attention diagram">Input vectors
+    |
+    +--> Head 1: syntax relationships --------\
+    +--> Head 2: subject-object links ---------+--> concatenate -> linear projection
+    +--> Head 3: nearby phrase context --------/
+    +--> Head N: learned pattern specialization</pre>
         <ul class="note-list">
           <li>Each head learns different Q, K, V projections → captures different relationship types</li>
           <li>Outputs from all heads are <strong>concatenated</strong> then linearly projected</li>
@@ -361,6 +558,11 @@
         </div>
       </div>
     </div>
+    </div>
+
+    <div class="chapter-nav">
+      <a href="llm.html"><span class="nav-dir">← Previous</span><span class="nav-title">LLM Foundations Hub</span></a>
+      <a href="page-llm-training.html"><span class="nav-dir">Next Chapter →</span><span class="nav-title">Training &amp; Human Alignment</span></a>
     </div>
 
   </main>

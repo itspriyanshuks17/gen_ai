@@ -428,6 +428,43 @@
     from { opacity: 0; transform: translateY(-8px); }
     to { opacity: 1; transform: translateY(0); }
   }
+
+  @media (max-width: 480px) {
+    nav {
+      padding: 10px 16px;
+    }
+    .hero {
+      padding: 80px 16px 40px !important;
+      min-height: 60vh !important;
+    }
+    h1 {
+      font-size: 28px !important;
+      letter-spacing: -0.5px !important;
+    }
+    .hero-sub, .hero-desc {
+      font-size: 13px !important;
+    }
+    .section {
+      padding: 40px 16px !important;
+    }
+    .chapter-card {
+      padding: 24px 20px !important;
+    }
+    .hero-actions {
+      flex-direction: column !important;
+      gap: 12px !important;
+      align-items: stretch !important;
+    }
+    .hero-actions a {
+      text-align: center !important;
+      justify-content: center !important;
+    }
+    .hero-stat-row {
+      flex-direction: column !important;
+      gap: 20px !important;
+    }
+  }
+
 </style>
 </head>
 <body>
@@ -579,7 +616,7 @@
 
 <div class="divider"></div>
 
-<section class="section" style="max-width: 900px; margin: 0 auto;">
+<section class="section" style="max-width: min(900px, 100%); margin: 0 auto; padding: 0 16px; box-sizing: border-box;">
   <p class="section-label">Architectural Overview</p>
   <h2 class="section-title" style="margin-bottom: 24px;">The Modular Agent Ecosystem</h2>
   <p style="color: var(--muted); margin-bottom: 24px;">Deploying AI agents at scale requires shifting from monolithic single-prompts to specialized, decentralized networks. Each agent functions as an independent expert with defined roles, sharing tasks durable across protocols:</p>

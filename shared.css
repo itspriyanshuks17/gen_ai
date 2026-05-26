@@ -334,12 +334,98 @@ li strong { color: var(--accent2); }
 .fade-up { animation: fadeUp 0.5s ease both; }
 .d1 { animation-delay:0.1s; } .d2 { animation-delay:0.2s; } .d3 { animation-delay:0.3s; }
 
+/* Sidebar mobile toggle button (hidden on desktop) */
+.note-sidebar-toggle {
+  display: none;
+}
+
+/* Sidebar list wrapper (visible on desktop) */
+.sidebar-note-list {
+  display: block;
+}
+
 @media (max-width: 900px) {
   .page-layout { grid-template-columns: 1fr; }
-  .sidebar { display: none; }
+  
+  /* Sticky mobile bar sitting right below fixed header */
+  .sidebar {
+    display: block;
+    position: sticky;
+    top: 55px;
+    height: auto;
+    width: 100%;
+    z-index: 90;
+    background: rgba(10, 10, 15, 0.95);
+    backdrop-filter: blur(12px);
+    border-right: none;
+    border-bottom: 1px solid var(--border);
+    padding: 0;
+    overflow-y: visible;
+  }
+  
+  .note-sidebar-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    padding: 12px 24px;
+    background: var(--surface);
+    color: var(--white);
+    border: none;
+    border-bottom: 1px solid var(--border);
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 13px;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s;
+    text-align: left;
+  }
+  
+  .note-sidebar-toggle:hover {
+    background: var(--surface2);
+  }
+  
+  .note-sidebar-toggle svg {
+    transition: transform 0.3s ease;
+    color: var(--muted);
+  }
+  
+  .note-sidebar-toggle[aria-expanded="true"] svg {
+    transform: rotate(180deg);
+    color: var(--accent);
+  }
+  
+  .sidebar-note-list {
+    display: none;
+    background: var(--surface);
+    max-height: 60vh;
+    overflow-y: auto;
+    padding: 16px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  
+  .sidebar-note-list.active {
+    display: block;
+    animation: sidebarSlideDown 0.2s ease-out;
+  }
+  
+  .sidebar-section {
+    margin-bottom: 16px;
+  }
+  .sidebar-section:last-child {
+    margin-bottom: 0;
+  }
+  
   nav { padding: 16px 24px; }
   .nav-links { display: none; }
   .page-hero { padding: 100px 24px 48px; }
   .main-content { padding: 32px 24px 64px; }
   .pros-cons { grid-template-columns: 1fr; }
+}
+
+@keyframes sidebarSlideDown {
+  from { opacity: 0; transform: translateY(-8px); }
+  to { opacity: 1; transform: translateY(0); }
 }

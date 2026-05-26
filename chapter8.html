@@ -26,6 +26,9 @@
 
 <div class="page-layout">
   <aside class="sidebar">
+    <button class="note-sidebar-toggle" id="sidebarToggle" aria-expanded="false" aria-controls="sidebarNoteList">All Notes <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><polyline points="2 5 7 10 12 5"></polyline></svg></button>
+    <div class="sidebar-note-list" id="sidebarNoteList">
+
     <div class="sidebar-section">
       <p class="sidebar-label">This Chapter</p>
       <ul class="sidebar-nav">
@@ -40,6 +43,7 @@
         <li><a href="chapter9.html">Chapter 9 →</a></li>
       </ul>
     </div>
+      </div>
   </aside>
 
   <main class="main-content">
@@ -159,13 +163,36 @@
 </div>
 
 <script>
+  // Active link highlighting on scroll
   const sections = document.querySelectorAll('.section-anchor');
   const links = document.querySelectorAll('.sidebar-nav a');
   window.addEventListener('scroll', () => {
     let cur = '';
     sections.forEach(s => { if (window.scrollY >= s.offsetTop - 120) cur = s.id; });
-    links.forEach(l => { l.classList.remove('active'); if (l.getAttribute('href') === '#' + cur) l.classList.add('active'); });
+    links.forEach(l => {
+      l.classList.remove('active');
+      if (l.getAttribute('href') === '#' + cur) l.classList.add('active');
+    });
   });
+
+  // Mobile dropdown toggler
+  const toggleBtn = document.getElementById('sidebarToggle');
+  const noteList = document.getElementById('sidebarNoteList');
+  if (toggleBtn && noteList) {
+    toggleBtn.addEventListener('click', () => {
+      const expanded = toggleBtn.getAttribute('aria-expanded') === 'true';
+      toggleBtn.setAttribute('aria-expanded', !expanded);
+      noteList.classList.toggle('active');
+    });
+    noteList.querySelectorAll('.sidebar-nav a').forEach(link => {
+      link.addEventListener('click', () => {
+        if (window.innerWidth <= 900) {
+          toggleBtn.setAttribute('aria-expanded', 'false');
+          noteList.classList.remove('active');
+        }
+      });
+    });
+  }
 </script>
 </body>
 </html>

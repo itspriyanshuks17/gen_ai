@@ -13,21 +13,6 @@
     --accent4: #f76a9a;
   }
   
-  /* Mobile Menu Hamburger */
-  .mobile-menu-btn {
-    display: none;
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    color: var(--white);
-    padding: 8px 16px;
-    font-family: 'Syne', sans-serif;
-    font-size: 12px;
-    font-weight: bold;
-    cursor: pointer;
-    align-items: center;
-    gap: 8px;
-    transition: all 0.2s;
-  }
   .mobile-menu-btn:hover {
     border-color: var(--accent);
     color: var(--accent2);
@@ -75,14 +60,11 @@
     <li><a href="index.html">ML Notes</a></li>
     <li><a href="page-pe-sampling.html">Ch.1 Sampling</a></li>
     <li><a href="page-pe-techniques.html">Ch.2 Techniques</a></li>
-    <li><button class="mobile-menu-btn" id="menu-toggle">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
-      Chapters
-    </button></li>
+    
   </ul>
 </nav>
 
-<div class="sidebar-overlay" id="sidebar-overlay"></div>
+
 
 <div class="page-hero" style="background: linear-gradient(135deg, #09090e, #1a0f30);">
   <div class="page-hero-grid"></div>
@@ -94,6 +76,9 @@
 
 <div class="page-layout">
   <aside class="sidebar" id="sidebar">
+    <button class="note-sidebar-toggle" id="sidebarToggle" aria-expanded="false" aria-controls="sidebarNoteList">All Notes <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><polyline points="2 5 7 10 12 5"></polyline></svg></button>
+    <div class="sidebar-note-list" id="sidebarNoteList">
+
     <div class="sidebar-section">
       <p class="sidebar-label">This Volume</p>
       <ul class="sidebar-nav">
@@ -109,6 +94,7 @@
         <li><a href="domain-specific-llms.html" style="color:var(--accent2); font-weight:bold;">Ch.4 Domain LLMs →</a></li>
       </ul>
     </div>
+      </div>
   </aside>
 
   <main class="main-content">
@@ -206,30 +192,36 @@
 </div>
 
 <script>
-  // Mobile drawer trigger
-  const menuToggle = document.getElementById('menu-toggle');
-  const sidebar = document.getElementById('sidebar');
-  const overlay = document.getElementById('sidebar-overlay');
-  
-  function toggleSidebar() {
-    sidebar.classList.toggle('active');
-    overlay.classList.toggle('active');
-  }
-  
-  menuToggle.addEventListener('click', toggleSidebar);
-  overlay.addEventListener('click', toggleSidebar);
-
   // Active link highlighting on scroll
   const sections = document.querySelectorAll('.section-anchor');
   const links = document.querySelectorAll('.sidebar-nav a');
   window.addEventListener('scroll', () => {
     let cur = '';
     sections.forEach(s => { if (window.scrollY >= s.offsetTop - 120) cur = s.id; });
-    links.forEach(l => { 
-      l.classList.remove('active'); 
-      if (l.getAttribute('href') === '#' + cur) l.classList.add('active'); 
+    links.forEach(l => {
+      l.classList.remove('active');
+      if (l.getAttribute('href') === '#' + cur) l.classList.add('active');
     });
   });
+
+  // Mobile dropdown toggler
+  const toggleBtn = document.getElementById('sidebarToggle');
+  const noteList = document.getElementById('sidebarNoteList');
+  if (toggleBtn && noteList) {
+    toggleBtn.addEventListener('click', () => {
+      const expanded = toggleBtn.getAttribute('aria-expanded') === 'true';
+      toggleBtn.setAttribute('aria-expanded', !expanded);
+      noteList.classList.toggle('active');
+    });
+    noteList.querySelectorAll('.sidebar-nav a').forEach(link => {
+      link.addEventListener('click', () => {
+        if (window.innerWidth <= 900) {
+          toggleBtn.setAttribute('aria-expanded', 'false');
+          noteList.classList.remove('active');
+        }
+      });
+    });
+  }
 </script>
 </body>
 </html>

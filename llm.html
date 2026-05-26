@@ -8,21 +8,21 @@
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=DM+Mono:wght@300;400;500&family=Lora:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
 <style>
   :root {
-    --ink: #1a1208;
-    --parchment: #f5f0e8;
-    --cream: #faf7f2;
-    --amber: #c8851a;
-    --amber-light: #e8a830;
-    --amber-dark: #8b5e0f;
-    --rust: #9b3a1a;
-    --sage: #4a6741;
-    --midnight: #0d1117;
-    --steel: #2c3e50;
-    --muted: #6b5d4f;
-    --border: #d4c4a0;
-    --highlight: #fff3cd;
-    --card-bg: #fffef9;
-    --shadow: rgba(26,18,8,0.12);
+    --ink: #e2e8f0;
+    --parchment: #151d36;
+    --cream: #070a13;
+    --amber: #f7c86a;
+    --amber-light: #ffe1a8;
+    --amber-dark: #d48c10;
+    --rust: #ff758f;
+    --sage: #6af7c8;
+    --midnight: #0e1324;
+    --steel: #8fa0c0;
+    --muted: #64748b;
+    --border: #212c4e;
+    --highlight: rgba(247,200,106,0.15);
+    --card-bg: #0e1324;
+    --shadow: rgba(0,0,0,0.4);
   }
 
   * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -248,7 +248,8 @@
 
   p {
     margin-bottom: 16px;
-    color: #2d2010;
+    color: var(--ink);
+    opacity: 0.9;
     font-size: 1rem;
   }
 
@@ -261,25 +262,26 @@
   }
 
   .callout-definition {
-    background: #fef9ec;
-    border: 1px solid #e8c96a;
+    background: rgba(247,200,106,0.06);
+    border: 1px solid rgba(247,200,106,0.2);
     border-left: 5px solid var(--amber);
   }
 
   .callout-key {
-    background: #f0f7ee;
-    border: 1px solid #b8d4b0;
+    background: rgba(106,247,200,0.06);
+    border: 1px solid rgba(106,247,200,0.2);
     border-left: 5px solid var(--sage);
   }
 
   .callout-warning {
-    background: #fef2f0;
-    border: 1px solid #e8b4a8;
+    background: rgba(255,117,143,0.06);
+    border: 1px solid rgba(255,117,143,0.2);
     border-left: 5px solid var(--rust);
   }
 
   .callout-formula {
     background: var(--midnight);
+    border: 1px solid var(--border);
     border-left: 5px solid var(--amber);
     color: #e8e0d0;
     font-family: 'DM Mono', monospace;
@@ -529,8 +531,9 @@
     padding: 8px 0 8px 20px;
     position: relative;
     font-size: 0.95rem;
-    color: #2d2010;
-    border-bottom: 1px dotted rgba(200,133,26,0.2);
+    color: var(--ink);
+    opacity: 0.9;
+    border-bottom: 1px dotted rgba(247,200,106,0.15);
   }
 
   .note-list li::before {

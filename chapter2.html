@@ -146,14 +146,14 @@
         City = {Delhi, Mumbai, Kolkata}
         Creates columns: City_Delhi | City_Mumbai | City_Kolkata
       </div>
-      <table class="data-table" style="margin:16px 0">
+      <div class="data-table-wrap"><table class="data-table" style="margin:16px 0">
         <thead><tr><th>ID</th><th>City</th><th>City_Delhi</th><th>City_Mumbai</th><th>City_Kolkata</th></tr></thead>
         <tbody>
           <tr><td>1</td><td>Delhi</td><td style="color:var(--accent3)">1</td><td style="color:var(--muted)">0</td><td style="color:var(--muted)">0</td></tr>
           <tr><td>2</td><td>Mumbai</td><td style="color:var(--muted)">0</td><td style="color:var(--accent3)">1</td><td style="color:var(--muted)">0</td></tr>
           <tr><td>3</td><td>Kolkata</td><td style="color:var(--muted)">0</td><td style="color:var(--muted)">0</td><td style="color:var(--accent3)">1</td></tr>
         </tbody>
-      </table>
+      </table></div>
       <div class="callout red">
         <div class="callout-title">⚠️ Watch Out</div>
         Can increase dataset size quickly with too many categories (dimensionality issue / curse of dimensionality).
@@ -171,14 +171,14 @@
 
       <h3 class="sub-h">4. Target Encoding</h3>
       <p>Replace each category with the <strong>mean value of the target variable</strong> for that category (classification only).</p>
-      <table class="data-table">
+      <div class="data-table-wrap"><table class="data-table">
         <thead><tr><th>City</th><th>Mean Purchased (Target)</th></tr></thead>
         <tbody>
           <tr><td>Delhi</td><td style="color:var(--accent2)">(1+0)/2 = 0.5</td></tr>
           <tr><td>Mumbai</td><td style="color:var(--accent2)">0/1 = 0.0</td></tr>
           <tr><td>Kolkata</td><td style="color:var(--accent2)">(1+1)/2 = 1.0</td></tr>
         </tbody>
-      </table>
+      </table></div>
       <div class="callout red">
         <div class="callout-title">⚠️ Risk</div>
         Risk of data leakage — apply on training data only with cross-validation. Not suitable for unseen categories in test data.
@@ -239,7 +239,7 @@
 
       <h3 class="sub-h">1. Manual Feature Extraction</h3>
       <p>Create new features using logic, experience, or real-world domain knowledge.</p>
-      <table class="data-table">
+      <div class="data-table-wrap"><table class="data-table">
         <thead><tr><th>Raw Feature</th><th>Extracted Feature</th></tr></thead>
         <tbody>
           <tr><td>Date of Birth</td><td style="color:var(--accent3)">Age</td></tr>
@@ -247,18 +247,18 @@
           <tr><td>Full Address</td><td style="color:var(--accent3)">City, State, Zip Code</td></tr>
           <tr><td>Review Text</td><td style="color:var(--accent3)">Length of Review, Sentiment Score</td></tr>
         </tbody>
-      </table>
+      </table></div>
 
       <h3 class="sub-h">2. Binning (Discretization)</h3>
       <p>Group continuous numeric values into categories or buckets. Reduces noise and makes patterns easier to detect.</p>
-      <table class="data-table">
+      <div class="data-table-wrap"><table class="data-table">
         <thead><tr><th>Type</th><th>Description</th><th>Example</th></tr></thead>
         <tbody>
           <tr><td><strong style="color:var(--accent)">Equal Width Binning</strong></td><td>Divides values into equal ranges</td><td>Age: 0–20, 21–40, 41–60</td></tr>
           <tr><td><strong style="color:var(--accent3)">Equal Frequency Binning</strong></td><td>Equal number of data points in each bin</td><td>Top 25% sales → High, next 25% → Medium</td></tr>
           <tr><td><strong style="color:var(--accent2)">Custom Binning</strong></td><td>Based on domain knowledge</td><td>Income: Low (&lt;30k), Medium, High</td></tr>
         </tbody>
-      </table>
+      </table></div>
 
       <h3 class="sub-h">3. Time-based Feature Extraction</h3>
       <p>From timestamps like <code>2024-06-07 14:30:00</code>, you can extract:</p>
@@ -389,45 +389,5 @@
     });
   }
 </script>
-  <script>
-    // ── Sidebar "All Notes" toggle ──────────────────────────────────────────
-    const sidebarToggle = document.getElementById('sidebarToggle');
-    const sidebarNoteList = document.getElementById('sidebarNoteList');
-    if (sidebarToggle && sidebarNoteList) {
-      sidebarToggle.addEventListener('click', () => {
-        const expanded = sidebarToggle.getAttribute('aria-expanded') === 'true';
-        sidebarToggle.setAttribute('aria-expanded', !expanded);
-        sidebarNoteList.classList.toggle('active');
-      });
-    }
-
-    // ── Top nav hamburger toggle ──────────────────────────────────────────
-    const navToggle = document.getElementById('navToggle');
-    const siteNav   = document.getElementById('siteNav');
-    if (navToggle && siteNav) {
-      navToggle.addEventListener('click', () => {
-        const expanded = navToggle.getAttribute('aria-expanded') === 'true';
-        navToggle.setAttribute('aria-expanded', !expanded);
-        siteNav.classList.toggle('active');
-      });
-    }
-
-    // ── Active book highlighting ──────────────────────────────────────────
-    const path = window.location.pathname;
-    let activeId = '';
-    if (/chapter[123]/.test(path))                          activeId = 'nav-Foundations';
-    else if (/chapter[45]/.test(path))                      activeId = 'nav-Models';
-    else if (/chapter[678]/.test(path))                     activeId = 'nav-Ensemble';
-    else if (/chapter(9|10)/.test(path))                    activeId = 'nav-Tuning';
-    else if (/llm/.test(path) && !/embeddings/.test(path))  activeId = 'nav-LLMs';
-    else if (/embed|training|vector/.test(path))             activeId = 'nav-Vectors';
-    else if (/prompt|pe-/.test(path))                        activeId = 'nav-Prompts';
-    else if (/domain|ds-/.test(path))                        activeId = 'nav-Vertical';
-    else if (/agent/.test(path))                             activeId = 'nav-Agents';
-    if (activeId) {
-      const el = document.getElementById(activeId);
-      if (el) el.classList.add('active-book');
-    }
-  </script>
 </body>
 </html>

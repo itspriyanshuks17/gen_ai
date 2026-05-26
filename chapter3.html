@@ -140,7 +140,7 @@
       </ul>
 
       <h3 class="sub-h">Comparison: L1 vs L2 vs Elastic Net</h3>
-      <table class="data-table">
+      <div class="data-table-wrap"><table class="data-table">
         <thead><tr><th>Property</th><th>L1 (Lasso)</th><th>L2 (Ridge)</th><th>Elastic Net</th></tr></thead>
         <tbody>
           <tr><td>Penalty</td><td>|w|</td><td>w²</td><td>|w| + w²</td></tr>
@@ -150,7 +150,7 @@
           <tr><td>Correlated Features</td><td style="color:var(--accent4)">Poor</td><td style="color:var(--accent3)">Good</td><td style="color:var(--accent3)">Best</td></tr>
           <tr><td>Best Use Case</td><td>Few important features</td><td>All features useful</td><td>Correlated features</td></tr>
         </tbody>
-      </table>
+      </table></div>
     </div>
 
     <div class="content-section">
@@ -259,45 +259,5 @@
     });
   }
 </script>
-  <script>
-    // ── Sidebar "All Notes" toggle ──────────────────────────────────────────
-    const sidebarToggle = document.getElementById('sidebarToggle');
-    const sidebarNoteList = document.getElementById('sidebarNoteList');
-    if (sidebarToggle && sidebarNoteList) {
-      sidebarToggle.addEventListener('click', () => {
-        const expanded = sidebarToggle.getAttribute('aria-expanded') === 'true';
-        sidebarToggle.setAttribute('aria-expanded', !expanded);
-        sidebarNoteList.classList.toggle('active');
-      });
-    }
-
-    // ── Top nav hamburger toggle ──────────────────────────────────────────
-    const navToggle = document.getElementById('navToggle');
-    const siteNav   = document.getElementById('siteNav');
-    if (navToggle && siteNav) {
-      navToggle.addEventListener('click', () => {
-        const expanded = navToggle.getAttribute('aria-expanded') === 'true';
-        navToggle.setAttribute('aria-expanded', !expanded);
-        siteNav.classList.toggle('active');
-      });
-    }
-
-    // ── Active book highlighting ──────────────────────────────────────────
-    const path = window.location.pathname;
-    let activeId = '';
-    if (/chapter[123]/.test(path))                          activeId = 'nav-Foundations';
-    else if (/chapter[45]/.test(path))                      activeId = 'nav-Models';
-    else if (/chapter[678]/.test(path))                     activeId = 'nav-Ensemble';
-    else if (/chapter(9|10)/.test(path))                    activeId = 'nav-Tuning';
-    else if (/llm/.test(path) && !/embeddings/.test(path))  activeId = 'nav-LLMs';
-    else if (/embed|training|vector/.test(path))             activeId = 'nav-Vectors';
-    else if (/prompt|pe-/.test(path))                        activeId = 'nav-Prompts';
-    else if (/domain|ds-/.test(path))                        activeId = 'nav-Vertical';
-    else if (/agent/.test(path))                             activeId = 'nav-Agents';
-    if (activeId) {
-      const el = document.getElementById(activeId);
-      if (el) el.classList.add('active-book');
-    }
-  </script>
 </body>
 </html>

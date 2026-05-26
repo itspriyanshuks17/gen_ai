@@ -157,13 +157,13 @@
         The linear score is passed through a sigmoid function → squashes output between 0 and 1 → this probability is converted to class (0 or 1) using a threshold (default 0.5)
       </div>
 
-      <table class="data-table">
+      <div class="data-table-wrap"><table class="data-table">
         <thead><tr><th>Predicted Probability</th><th>Class (threshold = 0.5)</th></tr></thead>
         <tbody>
           <tr><td>0.8</td><td style="color:var(--accent3)">Class 1 (Yes)</td></tr>
           <tr><td>0.3</td><td style="color:var(--accent4)">Class 0 (No)</td></tr>
         </tbody>
-      </table>
+      </table></div>
 
       <h3 class="sub-h">Loss Function</h3>
       <p><strong>Binary Cross-Entropy (Log Loss)</strong> — measures how far off the probability prediction is from the actual class label.</p>
@@ -252,17 +252,17 @@
 
       <h3 class="sub-h">Soft Margins (C Parameter)</h3>
       <p>Real data is noisy and overlapping. Soft margins allow some misclassifications to achieve a better overall margin.</p>
-      <table class="data-table">
+      <div class="data-table-wrap"><table class="data-table">
         <thead><tr><th>C Value</th><th>Margin</th><th>Effect</th></tr></thead>
         <tbody>
           <tr><td style="color:var(--accent3)">Low C</td><td>Soft (wide)</td><td>More misclassifications, high bias, underfitting risk</td></tr>
           <tr><td style="color:var(--accent4)">High C</td><td>Hard (narrow)</td><td>Fewer errors, but risk of overfitting</td></tr>
         </tbody>
-      </table>
+      </table></div>
 
       <h3 class="sub-h">Kernels — Handling Non-Linear Data</h3>
       <p>Real-world data is rarely linearly separable. SVM uses <strong>kernel tricks</strong> to transform data into higher dimensions where a hyperplane can separate them.</p>
-      <table class="data-table">
+      <div class="data-table-wrap"><table class="data-table">
         <thead><tr><th>Kernel</th><th>Use Case</th></tr></thead>
         <tbody>
           <tr><td><strong style="color:var(--accent)">Linear</strong></td><td>When data is linearly separable</td></tr>
@@ -270,7 +270,7 @@
           <tr><td><strong style="color:var(--accent2)">RBF (Radial Basis Functions)</strong></td><td>Most commonly used for complex, non-linear data</td></tr>
           <tr><td><strong style="color:var(--muted)">Sigmoid</strong></td><td>Less common; similar to neural network activation</td></tr>
         </tbody>
-      </table>
+      </table></div>
 
       <h3 class="sub-h">SVR — Epsilon Parameter</h3>
       <div class="formula">
@@ -405,45 +405,5 @@
     });
   }
 </script>
-  <script>
-    // ── Sidebar "All Notes" toggle ──────────────────────────────────────────
-    const sidebarToggle = document.getElementById('sidebarToggle');
-    const sidebarNoteList = document.getElementById('sidebarNoteList');
-    if (sidebarToggle && sidebarNoteList) {
-      sidebarToggle.addEventListener('click', () => {
-        const expanded = sidebarToggle.getAttribute('aria-expanded') === 'true';
-        sidebarToggle.setAttribute('aria-expanded', !expanded);
-        sidebarNoteList.classList.toggle('active');
-      });
-    }
-
-    // ── Top nav hamburger toggle ──────────────────────────────────────────
-    const navToggle = document.getElementById('navToggle');
-    const siteNav   = document.getElementById('siteNav');
-    if (navToggle && siteNav) {
-      navToggle.addEventListener('click', () => {
-        const expanded = navToggle.getAttribute('aria-expanded') === 'true';
-        navToggle.setAttribute('aria-expanded', !expanded);
-        siteNav.classList.toggle('active');
-      });
-    }
-
-    // ── Active book highlighting ──────────────────────────────────────────
-    const path = window.location.pathname;
-    let activeId = '';
-    if (/chapter[123]/.test(path))                          activeId = 'nav-Foundations';
-    else if (/chapter[45]/.test(path))                      activeId = 'nav-Models';
-    else if (/chapter[678]/.test(path))                     activeId = 'nav-Ensemble';
-    else if (/chapter(9|10)/.test(path))                    activeId = 'nav-Tuning';
-    else if (/llm/.test(path) && !/embeddings/.test(path))  activeId = 'nav-LLMs';
-    else if (/embed|training|vector/.test(path))             activeId = 'nav-Vectors';
-    else if (/prompt|pe-/.test(path))                        activeId = 'nav-Prompts';
-    else if (/domain|ds-/.test(path))                        activeId = 'nav-Vertical';
-    else if (/agent/.test(path))                             activeId = 'nav-Agents';
-    if (activeId) {
-      const el = document.getElementById(activeId);
-      if (el) el.classList.add('active-book');
-    }
-  </script>
 </body>
 </html>
